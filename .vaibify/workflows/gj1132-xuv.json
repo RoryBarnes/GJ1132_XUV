@@ -1,0 +1,321 @@
+{
+  "sWorkflowName": "GJ 1132 XUV Evolution",
+  "sProjectTitle": "XUV Irradiation History of GJ 1132 b",
+  "sPlotDirectory": "Plot",
+  "sFigureType": "pdf",
+  "iNumberOfCores": -1,
+  "sTexFilename": "main.tex",
+  "sOverleafFigureDirectory": "figures",
+  "sGithubBaseUrl": "https://github.com/RoryBarnes/GJ1132_XUV/tree/main",
+  "sLicense": "CC-BY-4.0",
+  "listCreators": [
+    {"name": "Barnes, Rory", "orcid": "0000-0002-7373-570X"}
+  ],
+  "listKeywords": [
+    "stellar activity",
+    "flare frequency distribution",
+    "XUV irradiation",
+    "habitability",
+    "GJ 1132"
+  ],
+  "sZenodoCommunity": "aas",
+  "listSteps": [
+    {
+      "sName": "Kepler FFD Corner",
+      "sDirectory": "KeplerFfdCorner",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": ["python dataKeplerFfd.py"],
+      "saDataFiles": [
+        "flare_mcmc_samples.npy",
+        "kepler_ffd_posterior_stats.json"
+      ],
+      "saPlotCommands": [
+        "python plotCornerVariableSlope.py {sPlotDirectory}/CornerVariableSlope.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/CornerVariableSlope.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "FFD Age Comparison",
+      "sDirectory": "FfdAgeComparison",
+      "bEnabled": true,
+      "bPlotOnly": true,
+      "saDataCommands": [],
+      "saDataFiles": [],
+      "saPlotCommands": [
+        "python plotFfdComparison.py {sPlotDirectory}/ffd_comp.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/ffd_comp.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "TESS Flare Candidates",
+      "sDirectory": "TessFlareCandidates",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": [
+        "python dataIdentifyFlareCandidates.py --review flare_candidates.json"
+      ],
+      "saDataFiles": ["flare_candidates.json"],
+      "saPlotCommands": [],
+      "saPlotFiles": [],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "TESS Flare Lightcurves",
+      "sDirectory": "TessFlareLightcurves",
+      "bEnabled": true,
+      "bPlotOnly": true,
+      "saDataCommands": [],
+      "saDataFiles": [],
+      "saPlotCommands": [
+        "python plotFlaresFromTess.py --flare-candidates {Step03.flare_candidates} --plot-flares {sPlotDirectory}/GJ1132_flares.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/GJ1132_flares.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "Comprehensive FFD Comparison",
+      "sDirectory": "TessFlareLightcurves",
+      "bEnabled": true,
+      "bPlotOnly": true,
+      "saDataCommands": [],
+      "saDataFiles": [],
+      "saPlotCommands": [
+        "python plotFlaresFromTess.py --flare-candidates {Step03.flare_candidates} --kepler-posterior {Step01.kepler_ffd_posterior_stats} --plot-comprehensive {sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "XUV Luminosity Distribution",
+      "sDirectory": "XuvLuminosityDistribution",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": [
+        "python dataLxuv.py --output-directory {sPlotDirectory} --figure-type {sFigureType}"
+      ],
+      "saDataFiles": [
+        "lxuv_samples.txt",
+        "lxuv_constraints.json"
+      ],
+      "saPlotCommands": [],
+      "saPlotFiles": [
+        "{sPlotDirectory}/lxuv_hist.{sFigureType}",
+        "{sPlotDirectory}/log_lxuv_lbol_hist.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "Engle Age Distribution",
+      "sDirectory": "EngleAgeDistribution",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": [
+        "python dataAge.py {sPlotDirectory}/EngleAgeHist.{sFigureType}"
+      ],
+      "saDataFiles": ["age_samples.txt"],
+      "saPlotCommands": [],
+      "saPlotFiles": [
+        "{sPlotDirectory}/EngleAgeHist.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "Maximum Likelihood",
+      "sDirectory": "MaximumLikelihood",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": ["maxlev gj1132_ribas.json"],
+      "saDataFiles": ["maxlike_results.txt"],
+      "saPlotCommands": [],
+      "saPlotFiles": [],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "Bayesian Posteriors",
+      "sDirectory": "BayesianPosteriors",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": [
+        "cp {Step06.lxuv_constraints} lxuv_constraints.json",
+        "python dataBayesianPosteriors.py {sPlotDirectory}/sampler_comparison.{sFigureType}"
+      ],
+      "saDataFiles": ["output/dynesty_transform_final.npy"],
+      "saPlotCommands": [],
+      "saPlotFiles": [
+        "{sPlotDirectory}/sampler_comparison.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "XUV Evolution",
+      "sDirectory": "XuvEvolution",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": [
+        "cp {Step01.flare_mcmc_samples} EngleBarnes/flares_variable_slope.npy",
+        "cp {Step07.age_samples} EngleBarnes/age_samples.txt",
+        "cp {Step09.dynesty_transform_final} EngleBarnes/dynesty_transform_final.npy",
+        "cd EngleBarnes && vconverge vconverge.in",
+        "cp {Step01.flare_mcmc_samples} RibasBarnes/flares_variable_slope.npy",
+        "cp {Step07.age_samples} RibasBarnes/age_samples.txt",
+        "cp {Step09.dynesty_transform_final} RibasBarnes/dynesty_transform_final.npy",
+        "cd RibasBarnes && vconverge vconverge.in"
+      ],
+      "saDataFiles": [
+        "EngleBarnes/output/Converged_Param_Dictionary.json",
+        "RibasBarnes/output/Converged_Param_Dictionary.json"
+      ],
+      "saPlotCommands": [
+        "python plotXuvEvolution.py {sPlotDirectory}/XUVEvol.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/XUVEvol.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "Cumulative XUV and Cosmic Shoreline",
+      "sDirectory": "CumulativeXuvAndCosmicShoreline",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": [
+        "cp {Step07.age_samples} Engle/age_samples.txt",
+        "cd Engle && vconverge vconverge.in",
+        "cp {Step09.dynesty_transform_final} Ribas/dynesty_transform_final.npy",
+        "cd Ribas && vconverge vconverge.in"
+      ],
+      "saDataFiles": [
+        "Engle/output/Converged_Param_Dictionary.json",
+        "Ribas/output/Converged_Param_Dictionary.json"
+      ],
+      "saPlotCommands": [
+        "python plotCumulativeXuv.py {sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType}",
+        "python plotCosmicShoreline.py {sPlotDirectory}/CosmicShoreline.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType}",
+        "{sPlotDirectory}/CosmicShoreline.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "Error Source Comparison",
+      "sDirectory": "ErrorSourceComparison",
+      "bEnabled": true,
+      "bPlotOnly": false,
+      "saDataCommands": [
+        "cd EngleModelErrorsOnly && vconverge vconverge.in",
+        "cp {Step07.age_samples} EngleStellarErrorsOnly/age_samples.txt",
+        "cd EngleStellarErrorsOnly && vconverge vconverge.in",
+        "cp {Step09.dynesty_transform_final} RibasModelErrorsOnly/dynesty_transform_final.npy",
+        "cd RibasModelErrorsOnly && vconverge vconverge.in",
+        "cp {Step09.dynesty_transform_final} RibasStellarErrorsOnly/dynesty_transform_final.npy",
+        "cd RibasStellarErrorsOnly && vconverge vconverge.in"
+      ],
+      "saDataFiles": [
+        "EngleModelErrorsOnly/output/Converged_Param_Dictionary.json",
+        "EngleStellarErrorsOnly/output/Converged_Param_Dictionary.json",
+        "RibasModelErrorsOnly/output/Converged_Param_Dictionary.json",
+        "RibasStellarErrorsOnly/output/Converged_Param_Dictionary.json"
+      ],
+      "saPlotCommands": [
+        "python plotErrorSourceComparison.py {sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    },
+    {
+      "sName": "Kepler vs TESS Comparison",
+      "sDirectory": "TessFlareLightcurves",
+      "bEnabled": true,
+      "bPlotOnly": true,
+      "saDataCommands": [],
+      "saDataFiles": [],
+      "saPlotCommands": [
+        "python plotFlaresFromTess.py --flare-candidates {Step03.flare_candidates} --kepler-posterior {Step01.kepler_ffd_posterior_stats} --plot-fit-comparison {sPlotDirectory}/FitComparison.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/FitComparison.{sFigureType}"
+      ],
+      "saTestCommands": [],
+      "dictPlotFileCategories": {},
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sUser": "untested"
+      }
+    }
+  ]
+}
