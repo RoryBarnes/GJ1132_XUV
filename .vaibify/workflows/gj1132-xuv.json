@@ -1,31 +1,19 @@
 {
-  "sWorkflowName": "GJ 1132 XUV Evolution",
-  "sProjectTitle": "XUV Irradiation History of GJ 1132 b",
   "sPlotDirectory": "Plot",
+  "sVplanetBinaryDirectory": "/workspace/vplanet-private/bin",
   "sFigureType": "pdf",
   "iNumberOfCores": -1,
-  "sTexFilename": "main.tex",
-  "sOverleafFigureDirectory": "figures",
-  "sGithubBaseUrl": "https://github.com/RoryBarnes/GJ1132_XUV/tree/main",
-  "sLicense": "CC-BY-4.0",
-  "listCreators": [
-    {"name": "Barnes, Rory", "orcid": "0000-0002-7373-570X"}
-  ],
-  "listKeywords": [
-    "stellar activity",
-    "flare frequency distribution",
-    "XUV irradiation",
-    "habitability",
-    "GJ 1132"
-  ],
-  "sZenodoCommunity": "aas",
+  "sWorkflowName": "GJ 1132 XUV Evolution",
   "listSteps": [
     {
       "sName": "Kepler FFD Corner",
-      "sDirectory": "KeplerFfdCorner",
+      "sDirectory": "/workspace/GJ1132_XUV/KeplerFfdCorner",
       "bEnabled": true,
       "bPlotOnly": false,
-      "saDataCommands": ["python dataKeplerFfd.py"],
+      "bInteractive": false,
+      "saDataCommands": [
+        "python dataKeplerFfd.py"
+      ],
       "saDataFiles": [
         "flare_mcmc_samples.npy",
         "kepler_ffd_posterior_stats.json"
@@ -36,8 +24,6 @@
       "saPlotFiles": [
         "{sPlotDirectory}/CornerVariableSlope.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -45,9 +31,10 @@
     },
     {
       "sName": "FFD Age Comparison",
-      "sDirectory": "FfdAgeComparison",
+      "sDirectory": "/workspace/GJ1132_XUV/FfdAgeComparison",
       "bEnabled": true,
       "bPlotOnly": true,
+      "bInteractive": false,
       "saDataCommands": [],
       "saDataFiles": [],
       "saPlotCommands": [
@@ -56,8 +43,6 @@
       "saPlotFiles": [
         "{sPlotDirectory}/ffd_comp.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -65,27 +50,29 @@
     },
     {
       "sName": "TESS Flare Candidates",
-      "sDirectory": "TessFlareCandidates",
+      "sDirectory": "/workspace/GJ1132_XUV/TessFlareCandidates",
       "bEnabled": true,
-      "bPlotOnly": false,
+      "bPlotOnly": true,
+      "bInteractive": true,
       "saDataCommands": [
-        "python dataIdentifyFlareCandidates.py --review flare_candidates.json"
+        "python dataIdentifyFlareCandidates.py --output flare_candidates.json"
       ],
-      "saDataFiles": ["flare_candidates.json"],
+      "saDataFiles": [
+        "flare_candidates.json"
+      ],
       "saPlotCommands": [],
       "saPlotFiles": [],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
-        "sUser": "untested"
+        "sUser": "passed"
       }
     },
     {
       "sName": "TESS Flare Lightcurves",
-      "sDirectory": "TessFlareLightcurves",
+      "sDirectory": "/workspace/GJ1132_XUV/TessFlareLightcurves",
       "bEnabled": true,
       "bPlotOnly": true,
+      "bInteractive": false,
       "saDataCommands": [],
       "saDataFiles": [],
       "saPlotCommands": [
@@ -94,8 +81,6 @@
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132_flares.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -103,9 +88,10 @@
     },
     {
       "sName": "Comprehensive FFD Comparison",
-      "sDirectory": "TessFlareLightcurves",
+      "sDirectory": "/workspace/GJ1132_XUV/ComprehensiveFfdComparison",
       "bEnabled": true,
       "bPlotOnly": true,
+      "bInteractive": false,
       "saDataCommands": [],
       "saDataFiles": [],
       "saPlotCommands": [
@@ -114,8 +100,6 @@
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -123,23 +107,22 @@
     },
     {
       "sName": "XUV Luminosity Distribution",
-      "sDirectory": "XuvLuminosityDistribution",
+      "sDirectory": "/workspace/GJ1132_XUV/XuvLuminosityDistribution",
       "bEnabled": true,
       "bPlotOnly": false,
-      "saDataCommands": [
-        "python dataLxuv.py --output-directory {sPlotDirectory} --figure-type {sFigureType}"
-      ],
+      "bInteractive": false,
+      "saDataCommands": [],
       "saDataFiles": [
         "lxuv_samples.txt",
         "lxuv_constraints.json"
       ],
-      "saPlotCommands": [],
+      "saPlotCommands": [
+        "python dataLxuv.py --output-directory {sPlotDirectory} --figure-type {sFigureType}"
+      ],
       "saPlotFiles": [
         "{sPlotDirectory}/lxuv_hist.{sFigureType}",
         "{sPlotDirectory}/log_lxuv_lbol_hist.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -147,19 +130,20 @@
     },
     {
       "sName": "Engle Age Distribution",
-      "sDirectory": "EngleAgeDistribution",
+      "sDirectory": "/workspace/GJ1132_XUV/EngleAgeDistribution",
       "bEnabled": true,
       "bPlotOnly": false,
-      "saDataCommands": [
+      "bInteractive": false,
+      "saDataCommands": [],
+      "saDataFiles": [
+        "age_samples.txt"
+      ],
+      "saPlotCommands": [
         "python dataAge.py {sPlotDirectory}/EngleAgeHist.{sFigureType}"
       ],
-      "saDataFiles": ["age_samples.txt"],
-      "saPlotCommands": [],
       "saPlotFiles": [
         "{sPlotDirectory}/EngleAgeHist.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -167,15 +151,18 @@
     },
     {
       "sName": "Maximum Likelihood",
-      "sDirectory": "MaximumLikelihood",
+      "sDirectory": "/workspace/GJ1132_XUV/MaximumLikelihood",
       "bEnabled": true,
       "bPlotOnly": false,
-      "saDataCommands": ["maxlev gj1132_ribas.json"],
-      "saDataFiles": ["maxlike_results.txt"],
+      "bInteractive": false,
+      "saDataCommands": [
+        "maxlev gj1132_ribas.json"
+      ],
+      "saDataFiles": [
+        "maxlike_results.txt"
+      ],
       "saPlotCommands": [],
       "saPlotFiles": [],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -183,20 +170,23 @@
     },
     {
       "sName": "Bayesian Posteriors",
-      "sDirectory": "BayesianPosteriors",
+      "sDirectory": "/workspace/GJ1132_XUV/BayesianPosteriors",
       "bEnabled": true,
       "bPlotOnly": false,
+      "bInteractive": false,
       "saDataCommands": [
         "cp {Step06.lxuv_constraints} lxuv_constraints.json",
         "python dataBayesianPosteriors.py {sPlotDirectory}/sampler_comparison.{sFigureType}"
       ],
-      "saDataFiles": ["output/dynesty_transform_final.npy"],
-      "saPlotCommands": [],
+      "saDataFiles": [
+        "output/dynesty_transform_final.npy"
+      ],
+      "saPlotCommands": [
+        "python dataBayesianPosteriors.py {sPlotDirectory}/sampler_comparison.{sFigureType}"
+      ],
       "saPlotFiles": [
         "{sPlotDirectory}/sampler_comparison.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -204,18 +194,27 @@
     },
     {
       "sName": "XUV Evolution",
-      "sDirectory": "XuvEvolution",
+      "sDirectory": "/workspace/GJ1132_XUV/XuvEvolution",
       "bEnabled": true,
       "bPlotOnly": false,
+      "bInteractive": false,
       "saDataCommands": [
+        "echo --- EngleBarnes: copying priors ---",
         "cp {Step01.flare_mcmc_samples} EngleBarnes/flares_variable_slope.npy",
         "cp {Step07.age_samples} EngleBarnes/age_samples.txt",
         "cp {Step09.dynesty_transform_final} EngleBarnes/dynesty_transform_final.npy",
-        "cd EngleBarnes && vconverge vconverge.in",
+        "cp EngleBarnes/output/Converged_Param_Dictionary.json EngleBarnes/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
+        "echo --- EngleBarnes: running vconverge ---",
+        "cd EngleBarnes && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
+        "rm -f EngleBarnes/.Converged_Param_Dictionary.json.bak",
+        "echo --- RibasBarnes: copying priors ---",
         "cp {Step01.flare_mcmc_samples} RibasBarnes/flares_variable_slope.npy",
         "cp {Step07.age_samples} RibasBarnes/age_samples.txt",
         "cp {Step09.dynesty_transform_final} RibasBarnes/dynesty_transform_final.npy",
-        "cd RibasBarnes && vconverge vconverge.in"
+        "cp RibasBarnes/output/Converged_Param_Dictionary.json RibasBarnes/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
+        "echo --- RibasBarnes: running vconverge ---",
+        "cd RibasBarnes && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
+        "rm -f RibasBarnes/.Converged_Param_Dictionary.json.bak"
       ],
       "saDataFiles": [
         "EngleBarnes/output/Converged_Param_Dictionary.json",
@@ -227,8 +226,6 @@
       "saPlotFiles": [
         "{sPlotDirectory}/XUVEvol.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -236,14 +233,23 @@
     },
     {
       "sName": "Cumulative XUV and Cosmic Shoreline",
-      "sDirectory": "CumulativeXuvAndCosmicShoreline",
+      "sDirectory": "/workspace/GJ1132_XUV/CumulativeXuvAndCosmicShoreline",
       "bEnabled": true,
       "bPlotOnly": false,
+      "bInteractive": false,
       "saDataCommands": [
+        "echo --- Engle: copying priors ---",
         "cp {Step07.age_samples} Engle/age_samples.txt",
-        "cd Engle && vconverge vconverge.in",
+        "cp Engle/output/Converged_Param_Dictionary.json Engle/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
+        "echo --- Engle: running vconverge ---",
+        "cd Engle && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
+        "rm -f Engle/.Converged_Param_Dictionary.json.bak",
+        "echo --- Ribas: copying priors ---",
         "cp {Step09.dynesty_transform_final} Ribas/dynesty_transform_final.npy",
-        "cd Ribas && vconverge vconverge.in"
+        "cp Ribas/output/Converged_Param_Dictionary.json Ribas/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
+        "echo --- Ribas: running vconverge ---",
+        "cd Ribas && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
+        "rm -f Ribas/.Converged_Param_Dictionary.json.bak"
       ],
       "saDataFiles": [
         "Engle/output/Converged_Param_Dictionary.json",
@@ -257,8 +263,6 @@
         "{sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType}",
         "{sPlotDirectory}/CosmicShoreline.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -266,17 +270,33 @@
     },
     {
       "sName": "Error Source Comparison",
-      "sDirectory": "ErrorSourceComparison",
+      "sDirectory": "/workspace/GJ1132_XUV/ErrorSourceComparison",
       "bEnabled": true,
       "bPlotOnly": false,
+      "bInteractive": false,
       "saDataCommands": [
-        "cd EngleModelErrorsOnly && vconverge vconverge.in",
+        "echo --- EngleModelErrorsOnly: running vconverge ---",
+        "cp EngleModelErrorsOnly/output/Converged_Param_Dictionary.json EngleModelErrorsOnly/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
+        "cd EngleModelErrorsOnly && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
+        "rm -f EngleModelErrorsOnly/.Converged_Param_Dictionary.json.bak",
+        "echo --- EngleStellarErrorsOnly: copying priors ---",
         "cp {Step07.age_samples} EngleStellarErrorsOnly/age_samples.txt",
-        "cd EngleStellarErrorsOnly && vconverge vconverge.in",
+        "cp EngleStellarErrorsOnly/output/Converged_Param_Dictionary.json EngleStellarErrorsOnly/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
+        "echo --- EngleStellarErrorsOnly: running vconverge ---",
+        "cd EngleStellarErrorsOnly && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
+        "rm -f EngleStellarErrorsOnly/.Converged_Param_Dictionary.json.bak",
+        "echo --- RibasModelErrorsOnly: copying priors ---",
         "cp {Step09.dynesty_transform_final} RibasModelErrorsOnly/dynesty_transform_final.npy",
-        "cd RibasModelErrorsOnly && vconverge vconverge.in",
+        "cp RibasModelErrorsOnly/output/Converged_Param_Dictionary.json RibasModelErrorsOnly/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
+        "echo --- RibasModelErrorsOnly: running vconverge ---",
+        "cd RibasModelErrorsOnly && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
+        "rm -f RibasModelErrorsOnly/.Converged_Param_Dictionary.json.bak",
+        "echo --- RibasStellarErrorsOnly: copying priors ---",
         "cp {Step09.dynesty_transform_final} RibasStellarErrorsOnly/dynesty_transform_final.npy",
-        "cd RibasStellarErrorsOnly && vconverge vconverge.in"
+        "cp RibasStellarErrorsOnly/output/Converged_Param_Dictionary.json RibasStellarErrorsOnly/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
+        "echo --- RibasStellarErrorsOnly: running vconverge ---",
+        "cd RibasStellarErrorsOnly && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
+        "rm -f RibasStellarErrorsOnly/.Converged_Param_Dictionary.json.bak"
       ],
       "saDataFiles": [
         "EngleModelErrorsOnly/output/Converged_Param_Dictionary.json",
@@ -290,8 +310,6 @@
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"
@@ -299,9 +317,10 @@
     },
     {
       "sName": "Kepler vs TESS Comparison",
-      "sDirectory": "TessFlareLightcurves",
+      "sDirectory": "/workspace/GJ1132_XUV/KeplerVsTessComparison",
       "bEnabled": true,
       "bPlotOnly": true,
+      "bInteractive": false,
       "saDataCommands": [],
       "saDataFiles": [],
       "saPlotCommands": [
@@ -310,8 +329,6 @@
       "saPlotFiles": [
         "{sPlotDirectory}/FitComparison.{sFigureType}"
       ],
-      "saTestCommands": [],
-      "dictPlotFileCategories": {},
       "dictVerification": {
         "sUnitTest": "untested",
         "sUser": "untested"

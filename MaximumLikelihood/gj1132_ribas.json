@@ -1,0 +1,128 @@
+{
+  "name": "GJ1132_Ribas_XUV",
+  "description": "MAP estimation for GJ 1132 Ribas XUV evolution model",
+
+  "vplanet": {
+    "inpath": ".",
+    "executable": "vplanet",
+    "vplfile": "vpl.in",
+    "verbose": false,
+    "timeout": 120
+  },
+
+  "parameters": [
+    {
+      "name": "star.dMass",
+      "bounds": [0.17, 0.22],
+      "units": "Msun",
+      "description": "Stellar mass",
+      "prior": {
+        "type": "asymmetric_gaussian",
+        "mean": 0.1945,
+        "std_upper": 0.0048,
+        "std_lower": 0.0046
+      }
+    },
+    {
+      "name": "star.dSatXUVFrac",
+      "bounds": [-4.0, -2.15],
+      "units": "dex(dimensionless)",
+      "description": "XUV saturation fraction (log10)",
+      "prior": {
+        "type": "gaussian",
+        "mean": -2.92,
+        "std": 0.26
+      }
+    },
+    {
+      "name": "star.dSatXUVTime",
+      "bounds": [0.1, 5.0],
+      "units": "Gyr",
+      "description": "XUV saturation timescale"
+    },
+    {
+      "name": "vpl.dStopTime",
+      "bounds": [1.0, 13.0],
+      "units": "Gyr",
+      "description": "System age",
+      "prior": {
+        "type": "empirical",
+        "samples_file": "/workspace/GJ1132_XUV/EngleAgeDistribution/age_samples.txt",
+        "bounds": [1.0, 13.0],
+        "scale_factor": 1e-9
+      }
+    },
+    {
+      "name": "star.dXUVBeta",
+      "bounds": [0.4, 2.1],
+      "units": "dimensionless",
+      "description": "XUV decay power law exponent",
+      "prior": {
+        "type": "gaussian",
+        "mean": 1.18,
+        "std": 0.31
+      }
+    }
+  ],
+
+  "outputs": [
+    {
+      "name": "final.star.Luminosity",
+      "units": "Lsun"
+    },
+    {
+      "name": "final.star.LXUVStellar",
+      "units": "Lsun"
+    }
+  ],
+
+  "observables": [
+    {
+      "name": "L_bol",
+      "type": "direct",
+      "output": "final.star.Luminosity",
+      "observed_value": 4.38e-3,
+      "uncertainty": 3.4e-4
+    },
+    {
+      "name": "log_Lxuv_Lbol",
+      "type": "derived",
+      "expression": "log10(final.star.LXUVStellar / final.star.Luminosity)",
+      "observed_value": -4.26,
+      "uncertainty": 0.15
+    }
+  ],
+
+  "likelihood": {
+    "type": "gaussian",
+    "failure_penalty": 1.0e10,
+    "return_negative": true
+  },
+
+  "optimizer": {
+    "algorithm": "differential_evolution",
+    "seed": 42,
+    "maxiter": 500,
+    "tol": 0.01,
+    "de_settings": {
+      "strategy": "best1bin",
+      "popsize": 5,
+      "mutation": [0.5, 1.0],
+      "recombination": 0.7,
+      "workers": 1,
+      "updating": "deferred",
+      "polish": true
+    }
+  },
+
+  "output": {
+    "results_file": "maxlike_results.txt",
+    "plot_evolution": false,
+    "plot_file": "gj1132_maxlike_evolution.pdf",
+    "evolution": {
+      "time_range": [0.1, 13.0],
+      "num_points": 100,
+      "log_scale": true
+    }
+  }
+}

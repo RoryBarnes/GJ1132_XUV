@@ -112,11 +112,10 @@ iNumCores = max(1, multiprocessing.cpu_count() - 1)
 sInpath = os.path.dirname(os.path.abspath(__file__))
 sSaveDir = "output/"
 sMaxLevResultsPath = str(
-    Path(sInpath).parent.parent.parent.parent / "EvolutionPlots"
-    / "MaximumLikelihood" / "maxlike_results.txt"
+    Path(sInpath).parent / "MaximumLikelihood" / "maxlike_results.txt"
 )
 sAgeSamplesPath = str(
-    Path(sInpath).parent.parent.parent / "Engle" / "Age" / "age_samples.txt"
+    Path(sInpath).parent / "EngleAgeDistribution" / "age_samples.txt"
 )
 
 
@@ -926,10 +925,10 @@ def fnRunSelectedSamplers(sm, daMaxLikeParams, sSamplerOnly):
 
 def fnPlotSamplerComparison(sm, daMaxLikeParams, sOutputFile=None):
     """Generate corner plot comparing all four samplers."""
-    sColorEmcee = vplot.colors.sOrange
-    sColorDynesty = vplot.colors.sPaleBlue
-    sColorMultinest = vplot.colors.sPurple
-    sColorUltranest = vplot.colors.sDarkBlue
+    sColorEmcee = vplot.colors.orange
+    sColorDynesty = vplot.colors.pale_blue
+    sColorMultinest = vplot.colors.purple
+    sColorUltranest = vplot.colors.dark_blue
     if sOutputFile is None:
         sOutputFile = os.path.join(sSaveDir, "sampler_comparison.pdf")
 
