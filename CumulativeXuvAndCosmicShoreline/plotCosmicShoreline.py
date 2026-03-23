@@ -31,8 +31,7 @@ SA_PLANET_LABELS = [
     ('Uranus', 23, 0.002), ('Neptune', 26, 0.0007),
 ]
 
-SA_CUMXUV_DIR = str(pathlib.Path(__file__).parents[1] / "Distributions"
-                     / "CumulativeXUV")
+SA_CUMXUV_DIR = str(pathlib.Path(__file__).parent)
 
 
 def ftLoadModelStatistics(sModelDirectory):
