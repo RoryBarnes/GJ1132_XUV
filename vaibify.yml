@@ -1,0 +1,78 @@
+projectName: gj1132-xuv
+containerUser: vplanet
+pythonVersion: "3.11"
+baseImage: ubuntu:24.04
+workspaceRoot: /workspace
+packageManager: pip
+
+repositories:
+  - name: vplanet
+    url: git@github.com:VirtualPlanetaryLaboratory/vplanet.git
+    branch: main
+    installMethod: c_and_pip
+  - name: vplot
+    url: git@github.com:VirtualPlanetaryLaboratory/vplot.git
+    branch: main
+    installMethod: pip_no_deps
+  - name: vspace
+    url: git@github.com:VirtualPlanetaryLaboratory/vspace.git
+    branch: main
+    installMethod: pip_no_deps
+  - name: bigplanet
+    url: git@github.com:VirtualPlanetaryLaboratory/bigplanet.git
+    branch: main
+    installMethod: pip_no_deps
+  - name: multi-planet
+    url: git@github.com:VirtualPlanetaryLaboratory/multi-planet.git
+    branch: main
+    installMethod: pip_no_deps
+  - name: alabi
+    url: git@github.com:RoryBarnes/alabi.git
+    branch: main
+    installMethod: pip_editable
+  - name: vplanet_inference
+    url: git@github.com:jbirky/vplanet_inference.git
+    branch: main
+    installMethod: pip_no_deps
+  - name: vconverge
+    url: git@github.com:RoryBarnes/vconverge.git
+    branch: main
+    installMethod: pip_no_deps
+  - name: MaxLEV
+    url: git@github.com:RoryBarnes/MaxLEV.git
+    branch: main
+    installMethod: pip_no_deps
+  - name: vplanet-private
+    url: git@github.com:VirtualPlanetaryLaboratory/vplanet-private.git
+    branch: v3.0
+    installMethod: c_and_pip
+  - name: GJ1132
+    url: git@github.com:RoryBarnes/GJ1132.git
+    branch: main
+    installMethod: reference
+  - name: claude
+    url: git@github.com:RoryBarnes/claude.git
+    branch: main
+    installMethod: reference
+
+systemPackages:
+  - gcc
+  - make
+  - git
+  - curl
+  - ca-certificates
+  - gnupg
+  - gosu
+  - sudo
+
+features:
+  jupyter: false
+  rLanguage: false
+  julia: false
+  database: false
+  dvc: false
+  latex: true
+  claude: true
+  gpu: false
+
+networkIsolation: false
