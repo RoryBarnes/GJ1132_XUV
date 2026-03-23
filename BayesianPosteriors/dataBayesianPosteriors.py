@@ -799,15 +799,17 @@ def fnMain():
 
     fnRunSelectedSamplers(sm, daMaxLikeParams, args.sampler)
 
-    listSamplerResults = [
-        ("Emcee", sm.emcee_samples),
-        ("Dynesty", sm.dynesty_samples),
-        ("MultiNest", sm.pymultinest_samples),
-        ("UltraNest", sm.ultranest_samples),
-    ]
-    fnPrintPosteriorComparison(listSamplerResults)
+    if args.sampler is None:
+        listSamplerResults = [
+            ("Emcee", sm.emcee_samples),
+            ("Dynesty", sm.dynesty_samples),
+            ("MultiNest", sm.pymultinest_samples),
+            ("UltraNest", sm.ultranest_samples),
+        ]
+        fnPrintPosteriorComparison(listSamplerResults)
 
-    sTransformPath = os.path.join(sSaveDir, "dynesty_transform_final.npy")
+    sTransformPath = os.path.join(
+        sSaveDir, "dynesty_transform_final.npy")
     fnSaveVspaceTransform(sm.dynesty_samples, sTransformPath)
 
     print("\nDone.")
