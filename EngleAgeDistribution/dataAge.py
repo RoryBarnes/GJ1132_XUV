@@ -1,13 +1,13 @@
-import sys
+"""
+Compute Engle gyrochronology age distribution for GJ 1132 via Monte Carlo.
 
-import matplotlib.pyplot as plt
+Samples the calibration coefficients and rotation period with uncertainties,
+filters unphysical ages, and saves the resulting age distribution.
+"""
+
 import numpy as np
 from scipy import stats
-import vplot
 
-I_NUM_BINS = 50
-D_FIG_SIZE_X = 3.25
-D_FIG_SIZE_Y = 3
 D_MAX_LOG_AGE = np.log10(13)
 
 
@@ -40,24 +40,6 @@ def fdComputeAnalyticalMeanAge(daA, daB, daC, daD, daRotationPeriod):
             + daB[0] - daC[0] * daD[0])
 
 
-def fnPlotNormalizedHistogram(daLogAge, sOutputPath):
-    """Save a normalized histogram of the age distribution."""
-    plt.figure(figsize=(D_FIG_SIZE_X, D_FIG_SIZE_Y))
-    daAge = 10**daLogAge
-    daCounts, daBinEdges = np.histogram(daAge, bins=I_NUM_BINS)
-    daFractions = daCounts / len(daAge)
-    plt.step(daBinEdges[:-1], daFractions, where='mid', color='k')
-    plt.xlabel('Age [Gyr]', fontsize=12)
-    plt.ylabel('Fraction', fontsize=12)
-    plt.xlim(0, 13)
-    plt.ylim(0, 0.04)
-    plt.xticks(fontsize=8)
-    plt.yticks(fontsize=8)
-    plt.tight_layout()
-    plt.savefig(sOutputPath, dpi=300)
-    plt.close()
-
-
 def fnPrintStatistics(daLogAge, dMean, dStdDev, daCI, dAnalytical):
     """Print Monte Carlo and analytical results."""
     print(f"\nMonte Carlo Results ({len(daLogAge):,} samples):")
@@ -80,8 +62,6 @@ def fnSaveAgeSamples(daLogAge, sOutputFile):
 
 
 if __name__ == "__main__":
-    sPlotFile = sys.argv[1] if len(sys.argv) > 1 else "EngleAgeHist.pdf"
-
     daA = (0.0251, 0.0018)
     daB = (-0.1615, 0.0303)
     daC = (-0.0212, 0.0018)
@@ -93,5 +73,4 @@ if __name__ == "__main__":
     dAnalytical = fdComputeAnalyticalMeanAge(daA, daB, daC, daD, daRotationPeriod)
 
     fnPrintStatistics(daLogAge, dMean, dStdDev, daCI, dAnalytical)
-    fnPlotNormalizedHistogram(daLogAge, sPlotFile)
     fnSaveAgeSamples(daLogAge, 'age_samples.txt')

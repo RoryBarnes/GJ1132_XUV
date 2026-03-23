@@ -1,5 +1,8 @@
+import os
 import pathlib
 import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,9 +10,7 @@ import vplot as vpl
 
 import vplanet
 
-sys.path.insert(0, str(pathlib.Path(__file__).parents[1] / "Distributions"
-                       / "CumulativeXUV"))
-from cumulative_xuv import ftGatherFluxes
+from utils.cumulativeXuv import ftGatherFluxes
 
 PATH = pathlib.Path(__file__).parents[0].absolute()
 

@@ -178,6 +178,14 @@ def fnRenderFigureToTk(fig, tkRoot):
     return ImageTk.PhotoImage(imgPil, master=tkRoot)
 
 
+def fsBuildCandidateTitle(dictCandidate, iNumber, iTotal):
+    """Build the title string for a candidate flare panel."""
+    return (f"Candidate {iNumber}/{iTotal}  |  "
+            f"Sector {dictCandidate['iSectorNumber']}  |  "
+            f"{dictCandidate['dPeakSigma']:.1f}\u03c3  |  "
+            f"{dictCandidate['dDurationMinutes']:.0f} min")
+
+
 def fnPlotCandidatePanel(lcNorm, dictCandidate, iNumber, iTotal):
     """Build a candidate flare figure (does not display it)."""
     daTime = np.array(lcNorm['time'].value, dtype=float)
@@ -195,11 +203,8 @@ def fnPlotCandidatePanel(lcNorm, dictCandidate, iNumber, iTotal):
     plt.xlabel('Time [days]', fontsize=20)
     plt.ylabel('Relative Flux', fontsize=20)
     plt.tick_params(axis='both', labelsize=16)
-    sTitle = (f"Candidate {iNumber}/{iTotal}  |  "
-              f"Sector {dictCandidate['iSectorNumber']}  |  "
-              f"{dictCandidate['dPeakSigma']:.1f}\u03c3  |  "
-              f"{dictCandidate['dDurationMinutes']:.0f} min")
-    plt.title(sTitle, fontsize=14)
+    plt.title(fsBuildCandidateTitle(dictCandidate, iNumber, iTotal),
+              fontsize=14)
     plt.tight_layout()
     return fig
 
@@ -234,28 +239,41 @@ def fsPromptUserLabel(iNumber, iTotal, dictCandidate, tkRoot):
         print("  Invalid input. Enter f, n, u, b, or q.")
 
 
-def fnRunInteractiveSession(listLightcurves, dictSession,
-                            sOutputPath, iStartIndex=0):
-    """Main interactive labeling loop with crash-safe saves."""
+def ftInitializeTkWindow():
+    """Create and return a Tk root window and label for display."""
     tkRoot = tk.Tk()
     tkRoot.title("GJ 1132 Flare Candidates")
     tkLabel = tk.Label(tkRoot)
     tkLabel.pack()
-    imgRef = None
+    return tkRoot, tkLabel
+
+
+def fnDisplayCandidate(listLightcurves, dictCandidate, iIndex,
+                       iTotal, tkRoot, tkLabel):
+    """Render a candidate flare panel in the Tk window."""
+    iSectorIdx = dictCandidate['iSectorIndex']
+    lcNorm = listLightcurves[iSectorIdx].normalize()
+    fig = fnPlotCandidatePanel(lcNorm, dictCandidate, iIndex + 1, iTotal)
+    imgRef = fnRenderFigureToTk(fig, tkRoot)
+    tkLabel.configure(image=imgRef)
+    tkRoot.update()
+    plt.close(fig)
+    return imgRef
+
+
+def fnRunInteractiveSession(listLightcurves, dictSession,
+                            sOutputPath, iStartIndex=0):
+    """Main interactive labeling loop with crash-safe saves."""
+    tkRoot, tkLabel = ftInitializeTkWindow()
     listCandidates = dictSession['listCandidates']
     iIndex = iStartIndex
     while iIndex < len(listCandidates):
         dictCandidate = listCandidates[iIndex]
-        iSectorIdx = dictCandidate['iSectorIndex']
-        lcNorm = listLightcurves[iSectorIdx].normalize()
-        fig = fnPlotCandidatePanel(lcNorm, dictCandidate, iIndex + 1,
-                                   len(listCandidates))
-        imgRef = fnRenderFigureToTk(fig, tkRoot)
-        tkLabel.configure(image=imgRef)
-        tkRoot.update()
-        plt.close(fig)
-        sLabel = fsPromptUserLabel(iIndex + 1, len(listCandidates),
-                                   dictCandidate, tkRoot)
+        iTotal = len(listCandidates)
+        imgRef = fnDisplayCandidate(
+            listLightcurves, dictCandidate, iIndex, iTotal, tkRoot, tkLabel
+        )
+        sLabel = fsPromptUserLabel(iIndex + 1, iTotal, dictCandidate, tkRoot)
         if sLabel == 'quit':
             break
         if sLabel == 'back':

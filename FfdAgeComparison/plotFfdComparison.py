@@ -38,21 +38,8 @@ def fnPlotFFD(daLogAge, daParams, daLogEnergies, daAgesMyr, dMass,
                  linestyle=sLinestyle, label=sLabel)
 
 
-def fnPlot(daParams, dMass=0.5, sFilename='ffd_comp.png'):
-    """Create Figure 10 comparing old and new fitted parameters."""
-    daLogEnergies = np.linspace(33, 36, 100)
-    listAgesMyr = [10, 100, 1000, 10000]
-    daLogAge = np.log10(listAgesMyr)
-
-    plt.figure(figsize=(6.5, 6))
-
-    tOldParams = ftOldConstants()
-
-    fnPlotFFD(daLogAge, tOldParams, daLogEnergies, listAgesMyr,
-              dMass, 'old', 'dashed')
-    fnPlotFFD(daLogAge, daParams, daLogEnergies, listAgesMyr,
-              dMass, 'new', 'solid')
-
+def fnFormatComparisonAxes():
+    """Apply axis formatting to the FFD comparison figure."""
     plt.xlabel('log Flare Energy (erg)', fontsize=18)
     plt.ylabel('Cumulative Flare Freq (#/day)', fontsize=18)
     plt.xlim(8e32, 1.05e36)
@@ -63,7 +50,21 @@ def fnPlot(daParams, dMass=0.5, sFilename='ffd_comp.png'):
                fontsize=14)
     plt.yticks(fontsize=14)
     plt.legend(loc='lower left', fontsize=14)
-    plt.annotate(f'M = 0.5 M$_\\odot$', [2e33, 2.5e-3], fontsize=14)
+    plt.annotate(r'M = 0.5 M$_\odot$', [2e33, 2.5e-3], fontsize=14)
+
+
+def fnPlot(daParams, dMass=0.5, sFilename='ffd_comp.png'):
+    """Create Figure 10 comparing old and new fitted parameters."""
+    daLogEnergies = np.linspace(33, 36, 100)
+    listAgesMyr = [10, 100, 1000, 10000]
+    daLogAge = np.log10(listAgesMyr)
+    plt.figure(figsize=(6.5, 6))
+    tOldParams = ftOldConstants()
+    fnPlotFFD(daLogAge, tOldParams, daLogEnergies, listAgesMyr,
+              dMass, 'old', 'dashed')
+    fnPlotFFD(daLogAge, daParams, daLogEnergies, listAgesMyr,
+              dMass, 'new', 'solid')
+    fnFormatComparisonAxes()
     plt.tight_layout()
     plt.savefig(sFilename, dpi=300, bbox_inches='tight')
     print(f"Figure saved as {sFilename}")

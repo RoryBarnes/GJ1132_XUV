@@ -7,12 +7,9 @@ EUV-to-X-ray scaling relation, and bolometric luminosity with asymmetric errors.
 """
 
 import json
-import os
 
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy import stats
-import vplot
 
 D_L_SUN = 3.846e33
 
@@ -29,10 +26,6 @@ I_NUM_SAMPLES = 10000
 D_L_BOL_MEAN = 0.00477
 D_L_BOL_SIGMA_PLUS = 0.00036
 D_L_BOL_SIGMA_MINUS = 0.00026
-
-D_FIG_SIZE_X = 3.25
-D_FIG_SIZE_Y = 3
-I_NUM_BINS = 50
 
 
 def ftSampleAndFilterParameters():
@@ -100,37 +93,6 @@ def fnPrintBriefStatistics(sLabel, dMean, dStd, daCI):
           f"95% CI: [{daCI[0]:.4e}, {daCI[1]:.4e}]")
 
 
-def fnPlotDistributionPanel(ax, daSamples, dMean, daCI, sXlabel, sTitle):
-    """Plot a histogram panel with mean and CI lines."""
-    ax.hist(daSamples, bins=100, density=True, alpha=0.7,
-            color='skyblue', edgecolor='black')
-    ax.axvline(dMean, color='red', linestyle='--', linewidth=2,
-               label=f'Mean: {dMean:.4e}')
-    ax.axvline(daCI[0], color='orange', linestyle=':', linewidth=2,
-               label=f'95% CI: [{daCI[0]:.4e}, {daCI[1]:.4e}]')
-    ax.axvline(daCI[1], color='orange', linestyle=':', linewidth=2)
-    ax.set_xlabel(sXlabel, fontsize=12)
-    ax.set_ylabel('Probability Density', fontsize=12)
-    ax.set_title(sTitle, fontsize=13, fontweight='bold')
-    ax.legend(fontsize=10, loc='best')
-    ax.grid(True, alpha=0.3)
-
-
-def fnPlotDiagnosticFigure(daSamples, dMean, daCI):
-    """Create two-panel diagnostic plot: histogram + Q-Q plot."""
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6.5, 6))
-    fnPlotDistributionPanel(ax1, daSamples, dMean, daCI,
-                            r'$L_{XUV}$ [$L_\odot$]',
-                            'GJ 1132 XUV Luminosity Distribution')
-    stats.probplot(daSamples, dist="norm", plot=ax2)
-    ax2.set_title('Q-Q Plot: Normality Assessment', fontsize=12,
-                  fontweight='bold')
-    ax2.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig('lxuv_distribution.pdf', dpi=300, bbox_inches='tight')
-    plt.close()
-
-
 def fnSaveSamples(daSamples, sFilename):
     """Save samples to a text file."""
     np.savetxt(sFilename, daSamples)
@@ -166,88 +128,29 @@ def daCalculateLxuvLbolDistribution(daLxuvLsun):
     return daLxuvLsun / daLbolSamples
 
 
-def fnPlotStepHistogram(daSamples, dMean, dStd, sXlabel, dXscale=1.0):
-    """Plot a step histogram with Gaussian overlay on the current figure."""
-    daScaled = daSamples * dXscale
-    dScaledMean = dMean * dXscale
-    dScaledStd = dStd * dXscale
-    daCounts, daBinEdges = np.histogram(daScaled, bins=I_NUM_BINS)
-    daFractions = daCounts / len(daScaled)
-    plt.step(daBinEdges[:-1], daFractions, where='mid',
-             color='k', linewidth=1.5, label='Data')
-    daXgauss = np.linspace(daBinEdges[0], daBinEdges[-1], 200)
-    dBinWidth = daBinEdges[1] - daBinEdges[0]
-    daGaussPdf = stats.norm.pdf(daXgauss, dScaledMean, dScaledStd) * dBinWidth
-    plt.plot(daXgauss, daGaussPdf, color=vplot.colors.red,
-             linestyle='dashed', linewidth=1.5, label="Fit")
-
-
-def fnFormatNormalizedHistogram(sXlabel):
-    """Apply standard formatting to a normalized histogram."""
-    plt.xlabel(sXlabel, fontsize=14)
-    plt.ylabel('Fraction', fontsize=14)
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
-    plt.legend(loc='best', fontsize=10)
-    plt.tight_layout()
-
-
-def fnPlotNormalizedHistogram(daSamples, dMean, dStd, sXlabel, sFilename,
-                              dXscale=1.0):
-    """Create and save a normalized histogram with Gaussian overlay."""
-    plt.figure(figsize=(D_FIG_SIZE_X, D_FIG_SIZE_Y))
-    fnPlotStepHistogram(daSamples, dMean, dStd, sXlabel, dXscale)
-    fnFormatNormalizedHistogram(sXlabel)
-    plt.savefig(sFilename, dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"Histogram saved to: {sFilename}")
-
-
-def fsResolvePath(sFilename, sOutputDirectory=None):
-    """Resolve an output filename with an optional output directory."""
-    if sOutputDirectory:
-        return os.path.join(sOutputDirectory, sFilename)
-    return sFilename
-
-
-def fnProcessDistribution(daSamples, sLabel, sSampleFile, sXlabel,
-                          sHistFile, dXscale=1.0):
-    """Compute stats, print, save samples, and plot histogram for a distribution."""
+def fnProcessDistribution(daSamples, sLabel, sSampleFile):
+    """Compute stats, print, and save samples for a distribution."""
     dMean, dStd, daCI = ftComputeStatistics(daSamples)
     fnPrintBriefStatistics(sLabel, dMean, dStd, daCI)
     fnSaveSamples(daSamples, sSampleFile)
-    fnPlotNormalizedHistogram(daSamples, dMean, dStd, sXlabel, sHistFile,
-                              dXscale)
 
 
-def main(sOutputDirectory=None, sFigureType="pdf"):
-    """Generate all L_XUV distribution figures and statistics."""
+def main():
+    """Generate all L_XUV distribution data files and statistics."""
     np.random.seed(42)
 
     daLxuvErgs = daCalculateLxuvDistribution()
     daLxuvLsun = daConvertToLsun(daLxuvErgs)
     dMean, dStd, daCI = ftComputeStatistics(daLxuvLsun)
     fnPrintLxuvStatistics(daLxuvLsun, dMean, dStd, daCI)
-    fnPlotDiagnosticFigure(daLxuvLsun, dMean, daCI)
     fnSaveSamples(daLxuvLsun, 'lxuv_samples.txt')
 
-    fnPlotNormalizedHistogram(
-        daLxuvLsun, dMean, dStd,
-        sXlabel=r'$L_{XUV}$ [$10^{-7} L_\odot$]',
-        sFilename=fsResolvePath(f'lxuv_hist.{sFigureType}', sOutputDirectory),
-        dXscale=1e7)
-
     daRatio = daCalculateLxuvLbolDistribution(daLxuvLsun)
-    fnProcessDistribution(
-        daRatio, "L_XUV/L_bol", 'lxuv_lbol_samples.txt',
-        r'$L_{XUV} / L_{bol}$',
-        fsResolvePath(f'lxuv_lbol_hist.{sFigureType}', sOutputDirectory))
+    fnProcessDistribution(daRatio, "L_XUV/L_bol", 'lxuv_lbol_samples.txt')
 
     daLogRatio = np.log10(daRatio)
     fnProcessDistribution(
-        daLogRatio, "log10(L_XUV/L_bol)", 'log_lxuv_lbol_samples.txt',
-        r'$\log_{10}(L_{XUV} / L_{bol})$',
-        fsResolvePath(f'log_lxuv_lbol_hist.{sFigureType}', sOutputDirectory))
+        daLogRatio, "log10(L_XUV/L_bol)", 'log_lxuv_lbol_samples.txt')
 
     dLogRatioMean, dLogRatioStd, _ = ftComputeStatistics(daLogRatio)
     fnWriteConstraintsJson(dLogRatioMean, dLogRatioStd,
@@ -257,13 +160,4 @@ def main(sOutputDirectory=None, sFigureType="pdf"):
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(
-        description="GJ 1132 XUV luminosity distribution calculator.")
-    parser.add_argument('--output-directory', metavar='PATH',
-                        help="Directory for output figure files.")
-    parser.add_argument('--figure-type', default='pdf',
-                        help="Figure file extension (default: pdf).")
-    args = parser.parse_args()
-    main(sOutputDirectory=args.output_directory,
-         sFigureType=args.figure_type.lower())
+    main()

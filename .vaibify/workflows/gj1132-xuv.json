@@ -7,7 +7,7 @@
   "listSteps": [
     {
       "sName": "Kepler FFD Corner",
-      "sDirectory": "/workspace/GJ1132_XUV/KeplerFfdCorner",
+      "sDirectory": "KeplerFfdCorner",
       "bEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
@@ -38,14 +38,14 @@
     },
     {
       "sName": "FFD Age Comparison",
-      "sDirectory": "/workspace/GJ1132_XUV/FfdAgeComparison",
+      "sDirectory": "FfdAgeComparison",
       "bEnabled": true,
       "bPlotOnly": true,
       "bInteractive": false,
       "saDataCommands": [],
       "saDataFiles": [],
       "saPlotCommands": [
-        "python plotFfdComparison.py {sPlotDirectory}/ffd_comp.{sFigureType}"
+        "python plotFfdComparison.py --samples {Step01.flare_mcmc_samples} {sPlotDirectory}/ffd_comp.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/ffd_comp.{sFigureType}"
@@ -62,7 +62,7 @@
     },
     {
       "sName": "TESS Flare Candidates",
-      "sDirectory": "/workspace/GJ1132_XUV/TessFlareCandidates",
+      "sDirectory": "TessFlareCandidates",
       "bEnabled": true,
       "bPlotOnly": true,
       "bInteractive": true,
@@ -82,14 +82,14 @@
     },
     {
       "sName": "TESS Flare Lightcurves",
-      "sDirectory": "/workspace/GJ1132_XUV/TessFlareLightcurves",
+      "sDirectory": "TessFlareLightcurves",
       "bEnabled": true,
       "bPlotOnly": true,
       "bInteractive": false,
       "saDataCommands": [],
       "saDataFiles": [],
       "saPlotCommands": [
-        "python plotFlaresFromTess.py --flare-candidates {Step03.flare_candidates} --plot-flares {sPlotDirectory}/GJ1132_flares.{sFigureType}"
+        "python plotFlareLightcurves.py --flare-candidates {Step03.flare_candidates} {sPlotDirectory}/GJ1132_flares.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132_flares.{sFigureType}"
@@ -106,14 +106,14 @@
     },
     {
       "sName": "Comprehensive FFD Comparison",
-      "sDirectory": "/workspace/GJ1132_XUV/ComprehensiveFfdComparison",
+      "sDirectory": "ComprehensiveFfdComparison",
       "bEnabled": true,
       "bPlotOnly": true,
       "bInteractive": false,
       "saDataCommands": [],
       "saDataFiles": [],
       "saPlotCommands": [
-        "python plotFlaresFromTess.py --flare-candidates {Step03.flare_candidates} --kepler-posterior {Step01.kepler_ffd_posterior_stats} --plot-comprehensive {sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
+        "python plotComprehensiveFfd.py --flare-candidates {Step03.flare_candidates} --kepler-posterior {Step01.kepler_ffd_posterior_stats} {sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
@@ -130,17 +130,21 @@
     },
     {
       "sName": "XUV Luminosity Distribution",
-      "sDirectory": "/workspace/GJ1132_XUV/XuvLuminosityDistribution",
+      "sDirectory": "XuvLuminosityDistribution",
       "bEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
-      "saDataCommands": [],
+      "saDataCommands": [
+        "python dataLxuv.py"
+      ],
       "saDataFiles": [
         "lxuv_samples.txt",
+        "lxuv_lbol_samples.txt",
+        "log_lxuv_lbol_samples.txt",
         "lxuv_constraints.json"
       ],
       "saPlotCommands": [
-        "python dataLxuv.py --output-directory {sPlotDirectory} --figure-type {sFigureType}"
+        "python plotLxuv.py --output-directory {sPlotDirectory} --figure-type {sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/lxuv_hist.{sFigureType}",
@@ -158,16 +162,18 @@
     },
     {
       "sName": "Engle Age Distribution",
-      "sDirectory": "/workspace/GJ1132_XUV/EngleAgeDistribution",
+      "sDirectory": "EngleAgeDistribution",
       "bEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
-      "saDataCommands": [],
+      "saDataCommands": [
+        "python dataAge.py"
+      ],
       "saDataFiles": [
         "age_samples.txt"
       ],
       "saPlotCommands": [
-        "python dataAge.py {sPlotDirectory}/EngleAgeHist.{sFigureType}"
+        "python plotAge.py {sPlotDirectory}/EngleAgeHist.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/EngleAgeHist.{sFigureType}"
@@ -184,7 +190,7 @@
     },
     {
       "sName": "Maximum Likelihood",
-      "sDirectory": "/workspace/GJ1132_XUV/MaximumLikelihood",
+      "sDirectory": "MaximumLikelihood",
       "bEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
@@ -208,19 +214,22 @@
     },
     {
       "sName": "Bayesian Posteriors",
-      "sDirectory": "/workspace/GJ1132_XUV/BayesianPosteriors",
+      "sDirectory": "BayesianPosteriors",
       "bEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "cp {Step06.lxuv_constraints} lxuv_constraints.json",
-        "python dataBayesianPosteriors.py {sPlotDirectory}/sampler_comparison.{sFigureType}"
+        "python dataBayesianPosteriors.py --lxuv-constraints {Step06.lxuv_constraints}"
       ],
       "saDataFiles": [
-        "output/dynesty_transform_final.npy"
+        "output/dynesty_transform_final.npy",
+        "output/emcee_samples.npz",
+        "output/dynesty_samples.npz",
+        "output/multinest_samples.npz",
+        "output/ultranest_samples.npz"
       ],
       "saPlotCommands": [
-        "python dataBayesianPosteriors.py {sPlotDirectory}/sampler_comparison.{sFigureType}"
+        "python plotSamplerComparison.py {sPlotDirectory}/sampler_comparison.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/sampler_comparison.{sFigureType}"
@@ -239,27 +248,12 @@
     },
     {
       "sName": "XUV Evolution",
-      "sDirectory": "/workspace/GJ1132_XUV/XuvEvolution",
+      "sDirectory": "XuvEvolution",
       "bEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "echo --- EngleBarnes: copying priors ---",
-        "cp {Step01.flare_mcmc_samples} EngleBarnes/flares_variable_slope.npy",
-        "cp {Step07.age_samples} EngleBarnes/age_samples.txt",
-        "cp {Step09.dynesty_transform_final} EngleBarnes/dynesty_transform_final.npy",
-        "cp EngleBarnes/output/Converged_Param_Dictionary.json EngleBarnes/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
-        "echo --- EngleBarnes: running vconverge ---",
-        "cd EngleBarnes && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
-        "rm -f EngleBarnes/.Converged_Param_Dictionary.json.bak",
-        "echo --- RibasBarnes: copying priors ---",
-        "cp {Step01.flare_mcmc_samples} RibasBarnes/flares_variable_slope.npy",
-        "cp {Step07.age_samples} RibasBarnes/age_samples.txt",
-        "cp {Step09.dynesty_transform_final} RibasBarnes/dynesty_transform_final.npy",
-        "cp RibasBarnes/output/Converged_Param_Dictionary.json RibasBarnes/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
-        "echo --- RibasBarnes: running vconverge ---",
-        "cd RibasBarnes && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
-        "rm -f RibasBarnes/.Converged_Param_Dictionary.json.bak"
+        "python dataRunVconverge.py --flare-samples {Step01.flare_mcmc_samples} --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
       ],
       "saDataFiles": [
         "EngleBarnes/output/Converged_Param_Dictionary.json",
@@ -283,23 +277,12 @@
     },
     {
       "sName": "Cumulative XUV and Cosmic Shoreline",
-      "sDirectory": "/workspace/GJ1132_XUV/CumulativeXuvAndCosmicShoreline",
+      "sDirectory": "CumulativeXuvAndCosmicShoreline",
       "bEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "echo --- Engle: copying priors ---",
-        "cp {Step07.age_samples} Engle/age_samples.txt",
-        "cp Engle/output/Converged_Param_Dictionary.json Engle/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
-        "echo --- Engle: running vconverge ---",
-        "cd Engle && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
-        "rm -f Engle/.Converged_Param_Dictionary.json.bak",
-        "echo --- Ribas: copying priors ---",
-        "cp {Step09.dynesty_transform_final} Ribas/dynesty_transform_final.npy",
-        "cp Ribas/output/Converged_Param_Dictionary.json Ribas/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
-        "echo --- Ribas: running vconverge ---",
-        "cd Ribas && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
-        "rm -f Ribas/.Converged_Param_Dictionary.json.bak"
+        "python dataRunVconverge.py --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
       ],
       "saDataFiles": [
         "Engle/output/Converged_Param_Dictionary.json",
@@ -325,33 +308,12 @@
     },
     {
       "sName": "Error Source Comparison",
-      "sDirectory": "/workspace/GJ1132_XUV/ErrorSourceComparison",
+      "sDirectory": "ErrorSourceComparison",
       "bEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "echo --- EngleModelErrorsOnly: running vconverge ---",
-        "cp EngleModelErrorsOnly/output/Converged_Param_Dictionary.json EngleModelErrorsOnly/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
-        "cd EngleModelErrorsOnly && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
-        "rm -f EngleModelErrorsOnly/.Converged_Param_Dictionary.json.bak",
-        "echo --- EngleStellarErrorsOnly: copying priors ---",
-        "cp {Step07.age_samples} EngleStellarErrorsOnly/age_samples.txt",
-        "cp EngleStellarErrorsOnly/output/Converged_Param_Dictionary.json EngleStellarErrorsOnly/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
-        "echo --- EngleStellarErrorsOnly: running vconverge ---",
-        "cd EngleStellarErrorsOnly && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
-        "rm -f EngleStellarErrorsOnly/.Converged_Param_Dictionary.json.bak",
-        "echo --- RibasModelErrorsOnly: copying priors ---",
-        "cp {Step09.dynesty_transform_final} RibasModelErrorsOnly/dynesty_transform_final.npy",
-        "cp RibasModelErrorsOnly/output/Converged_Param_Dictionary.json RibasModelErrorsOnly/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
-        "echo --- RibasModelErrorsOnly: running vconverge ---",
-        "cd RibasModelErrorsOnly && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
-        "rm -f RibasModelErrorsOnly/.Converged_Param_Dictionary.json.bak",
-        "echo --- RibasStellarErrorsOnly: copying priors ---",
-        "cp {Step09.dynesty_transform_final} RibasStellarErrorsOnly/dynesty_transform_final.npy",
-        "cp RibasStellarErrorsOnly/output/Converged_Param_Dictionary.json RibasStellarErrorsOnly/.Converged_Param_Dictionary.json.bak 2>/dev/null; true",
-        "echo --- RibasStellarErrorsOnly: running vconverge ---",
-        "cd RibasStellarErrorsOnly && vconverge vconverge.in || (cp .Converged_Param_Dictionary.json.bak output/Converged_Param_Dictionary.json 2>/dev/null; exit 1)",
-        "rm -f RibasStellarErrorsOnly/.Converged_Param_Dictionary.json.bak"
+        "python dataRunVconverge.py --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
       ],
       "saDataFiles": [
         "EngleModelErrorsOnly/output/Converged_Param_Dictionary.json",
@@ -377,14 +339,14 @@
     },
     {
       "sName": "Kepler vs TESS Comparison",
-      "sDirectory": "/workspace/GJ1132_XUV/KeplerVsTessComparison",
+      "sDirectory": "KeplerVsTessComparison",
       "bEnabled": true,
       "bPlotOnly": true,
       "bInteractive": false,
       "saDataCommands": [],
       "saDataFiles": [],
       "saPlotCommands": [
-        "python plotFlaresFromTess.py --flare-candidates {Step03.flare_candidates} --kepler-posterior {Step01.kepler_ffd_posterior_stats} --plot-fit-comparison {sPlotDirectory}/FitComparison.{sFigureType}"
+        "python plotKeplerVsTessComparison.py --flare-candidates {Step03.flare_candidates} --kepler-posterior {Step01.kepler_ffd_posterior_stats} {sPlotDirectory}/FitComparison.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/FitComparison.{sFigureType}"

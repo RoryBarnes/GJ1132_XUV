@@ -1,10 +1,13 @@
+import os
 import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import matplotlib.pyplot as plt
 import vplot
 
-from cumulative_xuv import (D_LOWER_BOUND, D_UPPER_BOUND, D_SHORELINE_FLUX,
-                             ftGatherFluxes)
+from utils.cumulativeXuv import (D_LOWER_BOUND, D_UPPER_BOUND,
+                                  D_SHORELINE_FLUX, ftGatherFluxes)
 
 
 def flistPlotPanel(ax, saDirectories, saLabels, saColors, sTitle):
