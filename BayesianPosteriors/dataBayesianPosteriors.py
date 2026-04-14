@@ -49,6 +49,22 @@ from alabi import utility as ut
 import astropy.units as u
 import vplanet_inference as vpi
 
+# Guard dynesty's multi-ellipsoid k-means split against zero-variance
+# live-point clusters. When all live points happen to share a value along
+# one parameter axis, scale=points.std(axis=0) has a zero component, and
+# scipy's kmeans2(..., check_finite=False) segfaults on the resulting
+# inf/nan input. We replace zero stds with 1.0 so the division is safe.
+import dynesty.bounding as _dynesty_bounding
+_fnOriginalBoundingEllipsoids = _dynesty_bounding._bounding_ellipsoids
+
+def _fnSafeBoundingEllipsoids(points, ell, scale=None):
+    if scale is None:
+        scale = points.std(axis=0)[None, :]
+        scale = np.where(scale > 0, scale, 1.0)
+    return _fnOriginalBoundingEllipsoids(points, ell, scale=scale)
+
+_dynesty_bounding._bounding_ellipsoids = _fnSafeBoundingEllipsoids
+
 # =========================================================================
 # Configuration
 # =========================================================================
@@ -149,6 +165,15 @@ dictMultinestConfig = {
         "n_live_points": 100 * I_NUM_DIMENSIONS,
         "sampling_efficiency": 0.8,
         "evidence_tolerance": 0.5,
+        # INS stalls in its C-level importance sampling phase on this
+        # 5D GP surrogate. Disable it; the posterior samples (post_
+        # equal_weights) are unaffected — only Z accuracy changes.
+        "importance_nested_sampling": False,
+        "multimodal": False,
+        # Cap iterations so no single run stalls when a bad random
+        # seed leads the nested sampling into a slow convergence path.
+        "max_iter": 50000,
+        "seed": 42,
     },
     "min_ess": int(1e4),
 }
@@ -264,8 +289,9 @@ def fdLogLikelihood(daTheta):
         daOutput = _vpm.run_model(daTheta, remove=True)
     except Exception:
         return -1e2
-    dLbol = daOutput[1]
-    dLxuv = daOutput[0]
+    # outparams order: [Luminosity, LXUVStellar]
+    dLbol = daOutput[0]
+    dLxuv = daOutput[1]
     if not (np.isfinite(dLbol) and np.isfinite(dLxuv)
             and dLbol > 0 and dLxuv > 0):
         return -1e2
@@ -308,12 +334,19 @@ def fdLogPriorSingleDimension(dValue, tPrior):
 
 
 def fdaPriorTransform(daX):
-    """Transform unit hypercube to parameter space with mixed priors."""
+    """Transform unit hypercube to parameter space with mixed priors.
+
+    All results are clipped to listBounds so that nested samplers never
+    evaluate the GP surrogate outside the training domain (where
+    extrapolation artefacts would dominate the likelihood surface).
+    """
     daX = np.asarray(daX, dtype=float)
     daResult = np.zeros(I_NUM_DIMENSIONS)
     for i in range(I_NUM_DIMENSIONS):
         daResult[i] = fdPriorTransformSingleDimension(
             daX[i], listPriorData[i], i)
+        dLower, dUpper = listBounds[i]
+        daResult[i] = np.clip(daResult[i], dLower, dUpper)
     return daResult
 
 
@@ -597,10 +630,12 @@ def fnRunDynesty(sm):
     fnSurrogate = sm.create_cached_surrogate_likelihood(
         iter=_iActiveIterations)
     fnSafeLikelihood = ffnSafeSurrogate(fnSurrogate)
+    dictSamplerKwargs = dict(dictDynestyConfig["sampler_kwargs"])
+    dictSamplerKwargs["rstate"] = np.random.default_rng(42)
     sm.run_dynesty(
         like_fn=fnSafeLikelihood,
         prior_transform=fdaPriorTransform,
-        sampler_kwargs=dictDynestyConfig["sampler_kwargs"],
+        sampler_kwargs=dictSamplerKwargs,
         run_kwargs=dictDynestyConfig["run_kwargs"],
         min_ess=dictDynestyConfig["min_ess"],
         multi_proc=False,
@@ -772,6 +807,8 @@ def ftParseArguments():
 
 def fnMain():
     """Run posterior inference pipeline."""
+    np.random.seed(42)
+
     args = ftParseArguments()
 
     sInpath = os.path.dirname(os.path.abspath(__file__))
