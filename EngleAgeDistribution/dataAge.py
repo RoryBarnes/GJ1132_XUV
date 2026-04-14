@@ -62,6 +62,8 @@ def fnSaveAgeSamples(daLogAge, sOutputFile):
 
 
 if __name__ == "__main__":
+    np.random.seed(42)
+
     daA = (0.0251, 0.0018)
     daB = (-0.1615, 0.0303)
     daC = (-0.0212, 0.0018)

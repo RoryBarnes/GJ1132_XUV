@@ -109,37 +109,16 @@ def fdaOptimizeInitialParams(fdObjective, listBounds, daDefault):
         print("Using default initial guess")
         return daDefault
 
-def fdataLoadOrFallback(sDataFile):
-    """Load CSV data or fall back to embedded sample data."""
+def fdataLoadEnsembleData(sDataFile):
+    """Load ensemble FFD CSV data. Raises FileNotFoundError if missing."""
     print("Loading ensemble data...")
-    try:
-        dfData = pd.read_csv(sDataFile)
-        print(f"Loaded {len(dfData)} rows from {sDataFile}")
-        return dfData
-    except FileNotFoundError:
-        print(f"Error: Could not find {sDataFile}. Using sample data...")
-        return fdataLoadSampleData()
-
-
-def fdataLoadSampleData():
-    """Return embedded sample FFD data as a DataFrame."""
-    from io import StringIO
-    sSampleData = (
-        "logE,logAge,mass,giclr,Prot,FF,FFerr,logFF,logFFerr\n"
-        "35.349,-0.326,0.691,1.626,0.244,0.00253,0.00219,-2.597,inf\n"
-        "35.149,-0.326,0.691,1.626,0.244,0.00704,0.00254,-2.153,inf\n"
-        "34.949,-0.326,0.691,1.626,0.244,0.02391,0.00415,-1.621,inf\n"
-        "34.749,-0.326,0.691,1.626,0.244,0.06484,0.00580,-1.188,inf\n"
-        "34.549,-0.326,0.691,1.626,0.244,0.14304,0.00790,-0.845,inf\n"
-        "34.349,-0.326,0.691,1.626,0.244,0.25890,0.00957,-0.587,inf\n"
-        "34.149,-0.326,0.691,1.626,0.244,0.33922,0.00816,-0.470,inf\n"
-        "33.949,-0.326,0.691,1.626,0.244,0.35546,0.00308,-0.449,inf\n"
-        "34.578,-0.321,0.804,1.049,0.215,0.00214,0.00374,-2.669,inf\n"
-        "34.378,-0.321,0.804,1.049,0.215,0.00437,0.00327,-2.360,inf\n"
-        "34.178,-0.321,0.804,1.049,0.215,0.00437,0.00262,-2.360,inf"
-    )
-    dfData = pd.read_csv(StringIO(sSampleData))
-    print(f"Using sample data with {len(dfData)} rows")
+    if not os.path.exists(sDataFile):
+        raise FileNotFoundError(
+            f"Required data file not found: {sDataFile}\n"
+            f"Copy ensemble_FFD.csv into this directory before running."
+        )
+    dfData = pd.read_csv(sDataFile)
+    print(f"Loaded {len(dfData)} rows from {sDataFile}")
     return dfData
 
 
@@ -204,7 +183,7 @@ def fnPrintEnsembleStatistics(dfClean, daLogEnergy, daLogAge, daMass,
 
 def ftLoadEnsembleData(sDataFile):
     """Load and process ensemble flare frequency data."""
-    dfData = fdataLoadOrFallback(sDataFile)
+    dfData = fdataLoadEnsembleData(sDataFile)
     print("Processing ensemble data...")
     dfClean = fdataFilterValidRows(dfData)
     listStellarProps = ['logAge', 'mass', 'Prot']
@@ -393,6 +372,7 @@ if __name__ == "__main__":
             os.path.join(sScriptDirectory, "kepler_ffd_posterior_stats.json"),
         )
     else:
+        np.random.seed(42)
         print("Stellar Flare Frequency Ensemble MCMC Analysis")
         print("=" * 50)
         sampler = fnRunMcmcEnsemble(
