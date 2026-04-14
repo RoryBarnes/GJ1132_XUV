@@ -150,7 +150,7 @@ def fdaComputeFlareEquivDurations(lightcurveCollection, listSectors,
     """Compute equivalent durations for detected flares."""
     print("\nComputing flare equivalent durations...")
     daEquivDuration = np.zeros(len(daTimeStart), dtype=float)
-    daTrapezoid = getattr(np, 'trapezoid', np.trapz)
+    daTrapezoid = (np.trapezoid if hasattr(np, "trapezoid") else np.trapz)
     for k in range(len(daTimeStart)):
         daFlareIdx = np.where(
             (lightcurveCollection[listSectors[k]]['time'].value >= daTimeStart[k])

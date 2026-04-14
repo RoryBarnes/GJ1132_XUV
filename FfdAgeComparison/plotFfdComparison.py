@@ -71,22 +71,23 @@ def fnPlot(daParams, dMass=0.5, sFilename='ffd_comp.png'):
 
 
 if __name__ == "__main__":
-    try:
-        daSamples = np.load('flare_mcmc_samples.npy')
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--samples", required=True,
+                        help="Path to flare_mcmc_samples.npy")
+    parser.add_argument("output", nargs="?", default="ffd_comp.pdf",
+                        help="Output figure path")
+    args = parser.parse_args()
 
-        listFittedParams = [np.median(daSamples[:, i]) for i in range(6)]
-        listUncertainties = [np.std(daSamples[:, i]) for i in range(6)]
+    daSamples = np.load(args.samples)
 
-        print("Parameter values (median +/- std):")
-        listParamNames = ['a1', 'a2', 'a3', 'b1', 'b2', 'b3']
-        for sName, dValue, dError in zip(listParamNames, listFittedParams,
-                                         listUncertainties):
-            print(f"  {sName}: {dValue:.4f} +/- {dError:.4f}")
+    listFittedParams = [np.median(daSamples[:, i]) for i in range(6)]
+    listUncertainties = [np.std(daSamples[:, i]) for i in range(6)]
 
-    except (FileNotFoundError, ImportError):
-        print("Could not load MCMC results!")
-        exit()
+    print("Parameter values (median +/- std):")
+    listParamNames = ['a1', 'a2', 'a3', 'b1', 'b2', 'b3']
+    for sName, dValue, dError in zip(listParamNames, listFittedParams,
+                                     listUncertainties):
+        print(f"  {sName}: {dValue:.4f} +/- {dError:.4f}")
 
-    import sys
-    sOutputPath = sys.argv[1] if len(sys.argv) > 1 else "ffd_comp.pdf"
-    fnPlot(listFittedParams, dMass=0.5, sFilename=sOutputPath)
+    fnPlot(listFittedParams, dMass=0.5, sFilename=args.output)
