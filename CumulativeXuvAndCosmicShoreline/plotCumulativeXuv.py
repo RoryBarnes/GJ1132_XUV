@@ -24,6 +24,10 @@ def fnPlotHistograms(listData):
         plt.step(daBins, daFractions, where='mid', color=SA_COLORS[i],
                  alpha=DA_ALPHAS[i], linestyle='-', linewidth=2,
                  label=SA_LABELS[i])
+    plt.axvline(1600, color='k', linestyle='--', linewidth=1.5,
+                label='Pass et al. (2025)')
+    plt.axvline(450, color='k', linestyle=':', linewidth=1.5,
+                label='Xue et al. (2024)')
 
 
 def fnFormatAxes():
@@ -36,7 +40,7 @@ def fnFormatAxes():
     plt.yticks(fontsize=20)
     plt.ylim(0, 0.25)
     plt.legend(loc='upper left', fontsize=16, framealpha=0.9)
-    plt.annotate('Cosmic Shoreline', (40, 0.06), fontsize=20,
+    plt.annotate('Cosmic Shoreline', (40, 0.01), fontsize=20,
                  rotation=90, color=vplot.colors.pale_blue)
 
 

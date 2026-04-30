@@ -26,8 +26,8 @@ SA_PLANET_NAMES = [
 ]
 
 SA_PLANET_LABELS = [
-    ('Mercury', 1.6, 9), ('Venus', 10.2, 2.6),
-    ('Earth', 12.5, 0.5), ('Mars', 5, 0.15),
+    ('Mercury', 2.65, 6), ('Venus', 10.2, 2),
+    ('Earth', 11.5, 0.7), ('Mars', 5, 0.25),
     ('Jupiter', 30, 0.05), ('Saturn', 38, 0.0075),
     ('Uranus', 23, 0.002), ('Neptune', 26, 0.0007),
 ]
@@ -69,21 +69,25 @@ def fnPlotSolarSystem(daEscVel, daXuv):
     plt.plot(daEscVel, daXuv, 'o', color='k', markersize=I_MARKER_SIZE)
     plt.xscale('log')
     plt.yscale('log')
-    plt.ylim(1e-4, 1e4)
-    plt.xlim(1, 100)
-    plt.xticks(fontsize=I_TICK_FONT_SIZE)
-    plt.yticks(fontsize=I_TICK_FONT_SIZE)
+    plt.ylim(0.1, 1e3)
+    plt.xlim(2, 20)
+    plt.xticks([2, 3, 6, 10, 20], ['2', '3', '6', '10', '20'])
+    plt.gca().xaxis.set_minor_formatter(plt.NullFormatter())
+    plt.tick_params(axis='both', which='both', labelsize=I_TICK_FONT_SIZE)
 
 
 def fnPlotAnnotations():
     """Add planet labels and cosmic shoreline text."""
     for sName, dX, dY in SA_PLANET_LABELS:
         plt.annotate(sName, (dX, dY), fontsize=I_TICK_FONT_SIZE)
-    plt.annotate('GJ 1132 b', (4, 400), fontsize=I_TICK_FONT_SIZE)
-    plt.annotate('Cosmic', (1.5, 0.0011), fontsize=I_FONT_SIZE,
+    plt.annotate('GJ 1132 b', (7, 250), fontsize=I_TICK_FONT_SIZE,
+                 color='k')
+    plt.annotate('Cosmic Shoreline', (5.2, 1), fontsize=I_FONT_SIZE,
                  rotation=45, color=vpl.colors.pale_blue)
-    plt.annotate('Shoreline', (25, 100), fontsize=I_FONT_SIZE,
-                 rotation=45, color=vpl.colors.pale_blue)
+    plt.annotate('Atmospheres Disfavored', (2.1, 550),
+                 fontsize=I_FONT_SIZE-4, color=vpl.colors.red)
+    plt.annotate('Atmospheres More Likely', (5, 0.115),
+                 fontsize=I_FONT_SIZE-4, color=vpl.colors.dark_blue)
 
 
 def fnPlotGJ1132ErrorBars():
