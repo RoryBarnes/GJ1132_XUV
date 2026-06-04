@@ -66,13 +66,13 @@ def ftComputeLogBins(daSamples):
     return daBinCenters, daFractions
 
 
-def ftGatherFluxes(sDirectory):
+def ftGatherFluxes(sConvergedJsonPath):
     """Load, bin, and summarize cumulative XUV flux data.
 
-    Returns (daBinCenters, daFractions, dMean, dLower, dUpper).
+    *sConvergedJsonPath* is the path to a vconverge converged-parameter
+    JSON file. Returns (daBinCenters, daFractions, dMean, dLower, dUpper).
     """
-    sFilePath = sDirectory + '/output/Converged_Param_Dictionary.json'
-    dictData = fdictLoadConvergedJson(sFilePath)
+    dictData = fdictLoadConvergedJson(sConvergedJsonPath)
     daFlux = daExtractFluxValues(dictData)
     dMean, dLower, dUpper = ftComputeStatistics(daFlux)
     daBinCenters, daFractions = ftComputeLogBins(daFlux)
