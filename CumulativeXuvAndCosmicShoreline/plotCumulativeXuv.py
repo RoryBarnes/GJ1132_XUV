@@ -1,3 +1,6 @@
+"""Plot cumulative XUV histograms for the four model variants."""
+
+import argparse
 import os
 import sys
 
@@ -10,7 +13,6 @@ from utils.cumulativeXuv import (D_LOWER_BOUND, D_UPPER_BOUND,
                                   D_SHORELINE_FLUX, ftGatherFluxes)
 
 
-SA_DIRECTORIES = ['Engle', 'EngleBarnes', 'Ribas', 'RibasBarnes']
 SA_LABELS = ["Engle Only", "Engle w/Flares", "Ribas Only", "Ribas w/Flares"]
 SA_COLORS = ['grey', 'k', vplot.colors.orange, vplot.colors.orange]
 DA_ALPHAS = [1.0, 1.0, 0.5, 1.0]
@@ -18,7 +20,7 @@ DA_ALPHAS = [1.0, 1.0, 0.5, 1.0]
 
 def fnPlotHistograms(listData):
     """Plot step histograms for all model variants."""
-    fig = plt.figure(figsize=(6.5, 6))
+    plt.figure(figsize=(6.5, 6))
     plt.axvline(D_SHORELINE_FLUX, color=vplot.colors.pale_blue, linewidth=6)
     for i, (daBins, daFractions, _, _, _) in enumerate(listData):
         plt.step(daBins, daFractions, where='mid', color=SA_COLORS[i],
@@ -48,14 +50,41 @@ def fnPrintStatistics(listData):
               f"95% CI: [{dLower:.2f}, {dUpper:.2f}]")
 
 
+def ftParseArguments():
+    """Parse and return command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Plot cumulative XUV histograms for four model variants."
+    )
+    parser.add_argument("output_path",
+                        help="Destination path for the histogram figure.")
+    parser.add_argument("--engle-converged", required=True,
+                        help="Path to A10 Engle converged JSON.")
+    parser.add_argument("--engle-barnes-converged", required=True,
+                        help="Path to A09 EngleBarnes converged JSON.")
+    parser.add_argument("--ribas-converged", required=True,
+                        help="Path to A10 Ribas converged JSON.")
+    parser.add_argument("--ribas-barnes-converged", required=True,
+                        help="Path to A09 RibasBarnes converged JSON.")
+    return parser.parse_args()
+
+
+def flistLoadAllVariants(args):
+    """Return the list of per-variant gather-flux results."""
+    return [
+        ftGatherFluxes(args.engle_converged),
+        ftGatherFluxes(args.engle_barnes_converged),
+        ftGatherFluxes(args.ribas_converged),
+        ftGatherFluxes(args.ribas_barnes_converged),
+    ]
+
+
 def main():
     """Generate cumulative XUV flux histogram for all model variants."""
-    sOutputPath = (sys.argv[1] if len(sys.argv) > 1
-                   else 'GJ1132b_CumulativeXUV_Multi.png')
-    listData = [ftGatherFluxes(sDir) for sDir in SA_DIRECTORIES]
+    args = ftParseArguments()
+    listData = flistLoadAllVariants(args)
     fnPlotHistograms(listData)
     fnFormatAxes()
-    plt.savefig(sOutputPath, dpi=300)
+    plt.savefig(args.output_path, dpi=300)
     plt.close()
     fnPrintStatistics(listData)
 

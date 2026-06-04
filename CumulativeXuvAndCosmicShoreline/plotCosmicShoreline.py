@@ -1,3 +1,6 @@
+"""Plot the GJ 1132 b cosmic shoreline figure."""
+
+import argparse
 import os
 import pathlib
 import sys
@@ -32,13 +35,10 @@ SA_PLANET_LABELS = [
     ('Uranus', 23, 0.002), ('Neptune', 26, 0.0007),
 ]
 
-SA_CUMXUV_DIR = str(pathlib.Path(__file__).parent)
 
-
-def ftLoadModelStatistics(sModelDirectory):
-    """Load mean and 95% CI from a vconverge output directory."""
-    sFullPath = SA_CUMXUV_DIR + "/" + sModelDirectory
-    _, _, dMean, dLower, dUpper = ftGatherFluxes(sFullPath)
+def ftLoadModelStatistics(sConvergedJsonPath):
+    """Load mean and 95% CI from a vconverge converged-parameter JSON."""
+    _, _, dMean, dLower, dUpper = ftGatherFluxes(sConvergedJsonPath)
     return dMean, dLower, dUpper
 
 
@@ -86,14 +86,16 @@ def fnPlotAnnotations():
                  rotation=45, color=vpl.colors.pale_blue)
 
 
-def fnPlotGJ1132ErrorBars():
+def fnPlotGJ1132ErrorBars(args):
     """Plot GJ 1132 b data points with error bars from vconverge output."""
-    dEngleMean, dEngleLower, dEngleUpper = ftLoadModelStatistics("Engle")
+    dEngleMean, dEngleLower, dEngleUpper = ftLoadModelStatistics(
+        args.engle_converged)
     dEngleDavMean, dEngleDavLower, dEngleDavUpper = ftLoadModelStatistics(
-        "EngleBarnes")
-    dRibasMean, dRibasLower, dRibasUpper = ftLoadModelStatistics("Ribas")
+        args.engle_barnes_converged)
+    dRibasMean, dRibasLower, dRibasUpper = ftLoadModelStatistics(
+        args.ribas_converged)
     dRibasDavMean, dRibasDavLower, dRibasDavUpper = ftLoadModelStatistics(
-        "RibasBarnes")
+        args.ribas_barnes_converged)
 
     dEsc = D_ESCAPE_VELOCITY
     fnPlotErrorBar(dEsc * 1.02, dRibasDavMean,
@@ -106,18 +108,35 @@ def fnPlotGJ1132ErrorBars():
                    dEngleDavLower, dEngleDavUpper, 'k')
 
 
+def ftParseArguments():
+    """Parse and return command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Plot the cosmic shoreline figure for GJ 1132 b."
+    )
+    parser.add_argument("output_path",
+                        help="Destination path for the figure.")
+    parser.add_argument("--engle-converged", required=True,
+                        help="Path to A10 Engle converged JSON.")
+    parser.add_argument("--engle-barnes-converged", required=True,
+                        help="Path to A09 EngleBarnes converged JSON.")
+    parser.add_argument("--ribas-converged", required=True,
+                        help="Path to A10 Ribas converged JSON.")
+    parser.add_argument("--ribas-barnes-converged", required=True,
+                        help="Path to A09 RibasBarnes converged JSON.")
+    return parser.parse_args()
+
+
 def main():
     """Generate the cosmic shoreline figure."""
-    sOutputPath = sys.argv[1] if len(sys.argv) > 1 else str(
-        PATH / "CosmicShoreline.png")
+    args = ftParseArguments()
     output = vplanet.run(infile=str(PATH / "vpl.in"), units=False)
     daXuv, daEscVel = ftExtractPlanetData(output)
 
     fig = plt.figure(figsize=(6.5, 6))
     fnPlotSolarSystem(daEscVel, daXuv)
     fnPlotAnnotations()
-    fnPlotGJ1132ErrorBars()
-    fig.savefig(sOutputPath, bbox_inches="tight", dpi=300)
+    fnPlotGJ1132ErrorBars(args)
+    fig.savefig(args.output_path, bbox_inches="tight", dpi=300)
     plt.close()
 
 
