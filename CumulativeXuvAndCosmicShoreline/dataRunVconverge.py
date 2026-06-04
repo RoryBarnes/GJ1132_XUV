@@ -13,23 +13,27 @@ import subprocess
 import sys
 from pathlib import Path
 
-S_CONVERGED_FILE = "output/Converged_Param_Dictionary.json"
+S_VCONVERGE_OUTPUT = "output/Converged_Param_Dictionary.json"
 S_BACKUP_FILE = ".Converged_Param_Dictionary.json.bak"
+DICT_MODEL_OUTPUT_NAMES = {
+    "Engle": "output/engle_converged.json",
+    "Ribas": "output/ribas_converged.json",
+}
 S_VAIB_PREFIX = "[vaib]"
 
 
-def fnBackupConvergedOutput(sModelDirectory):
+def fnBackupConvergedOutput(sModelDirectory, sFinalName):
     """Backup existing converged output if it exists."""
-    sSource = os.path.join(sModelDirectory, S_CONVERGED_FILE)
+    sSource = os.path.join(sModelDirectory, sFinalName)
     sBackup = os.path.join(sModelDirectory, S_BACKUP_FILE)
     if os.path.exists(sSource):
         shutil.copy2(sSource, sBackup)
 
 
-def fnRestoreConvergedOutput(sModelDirectory):
+def fnRestoreConvergedOutput(sModelDirectory, sFinalName):
     """Restore converged output from backup if available."""
     sBackup = os.path.join(sModelDirectory, S_BACKUP_FILE)
-    sTarget = os.path.join(sModelDirectory, S_CONVERGED_FILE)
+    sTarget = os.path.join(sModelDirectory, sFinalName)
     if os.path.exists(sBackup):
         shutil.copy2(sBackup, sTarget)
 
@@ -51,6 +55,17 @@ def fbRunVconverge(sModelDirectory):
     return result.returncode == 0
 
 
+def fnRenameVconvergeOutput(sModelDirectory, sFinalName):
+    """Rename vconverge's default output to a model-specific stem."""
+    sSource = os.path.join(sModelDirectory, S_VCONVERGE_OUTPUT)
+    sTarget = os.path.join(sModelDirectory, sFinalName)
+    if not os.path.exists(sSource):
+        raise FileNotFoundError(
+            f"vconverge did not produce expected output: {sSource}"
+        )
+    shutil.move(sSource, sTarget)
+
+
 def fnCopyPriorFiles(sModelDirectory, dictPriorFiles):
     """Copy prior files from *dictPriorFiles* into *sModelDirectory*."""
     print(f"{S_VAIB_PREFIX} {sModelDirectory}: copying priors")
@@ -59,17 +74,18 @@ def fnCopyPriorFiles(sModelDirectory, dictPriorFiles):
                      os.path.join(sModelDirectory, sTargetName))
 
 
-def fbProcessModel(sModelDirectory, dictPriorFiles):
+def fbProcessModel(sModelDirectory, sFinalName, dictPriorFiles):
     """Copy priors, run vconverge, and handle backup for one model."""
     fnCopyPriorFiles(sModelDirectory, dictPriorFiles)
-    fnBackupConvergedOutput(sModelDirectory)
+    fnBackupConvergedOutput(sModelDirectory, sFinalName)
     bSuccess = fbRunVconverge(sModelDirectory)
     if bSuccess:
+        fnRenameVconvergeOutput(sModelDirectory, sFinalName)
         fnRemoveBackup(sModelDirectory)
     else:
         print(f"{S_VAIB_PREFIX} {sModelDirectory}: vconverge failed, "
               "restoring backup")
-        fnRestoreConvergedOutput(sModelDirectory)
+        fnRestoreConvergedOutput(sModelDirectory, sFinalName)
     return bSuccess
 
 
@@ -105,7 +121,8 @@ def main():
 
     bAllSucceeded = True
     for sModelDirectory, dictPriorFiles in dictModels.items():
-        bSuccess = fbProcessModel(sModelDirectory, dictPriorFiles)
+        sFinalName = DICT_MODEL_OUTPUT_NAMES[sModelDirectory]
+        bSuccess = fbProcessModel(sModelDirectory, sFinalName, dictPriorFiles)
         if not bSuccess:
             bAllSucceeded = False
 

@@ -545,8 +545,8 @@
         "python dataRunVconverge.py --flare-samples {Step02.flare_mcmc_samples} --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
       ],
       "saDataFiles": [
-        "EngleBarnes/output/Converged_Param_Dictionary.json",
-        "RibasBarnes/output/Converged_Param_Dictionary.json"
+        "EngleBarnes/output/engle_barnes_converged.json",
+        "RibasBarnes/output/ribas_barnes_converged.json"
       ],
       "saPlotCommands": [
         "python plotXuvEvolution.py {sPlotDirectory}/XUVEvol.{sFigureType}"
@@ -612,12 +612,12 @@
         "python dataRunVconverge.py --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
       ],
       "saDataFiles": [
-        "Engle/output/Converged_Param_Dictionary.json",
-        "Ribas/output/Converged_Param_Dictionary.json"
+        "Engle/output/engle_converged.json",
+        "Ribas/output/ribas_converged.json"
       ],
       "saPlotCommands": [
-        "python plotCumulativeXuv.py {sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType}",
-        "python plotCosmicShoreline.py {sPlotDirectory}/CosmicShoreline.{sFigureType}"
+        "python plotCumulativeXuv.py {sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType} --engle-barnes-converged {Step10.engle_barnes_converged} --ribas-barnes-converged {Step10.ribas_barnes_converged}",
+        "python plotCosmicShoreline.py {sPlotDirectory}/CosmicShoreline.{sFigureType} --engle-barnes-converged {Step10.engle_barnes_converged} --ribas-barnes-converged {Step10.ribas_barnes_converged}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType}",
@@ -684,13 +684,13 @@
         "python dataRunVconverge.py --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
       ],
       "saDataFiles": [
-        "EngleModelErrorsOnly/output/Converged_Param_Dictionary.json",
-        "EngleStellarErrorsOnly/output/Converged_Param_Dictionary.json",
-        "RibasModelErrorsOnly/output/Converged_Param_Dictionary.json",
-        "RibasStellarErrorsOnly/output/Converged_Param_Dictionary.json"
+        "EngleModelErrorsOnly/output/engle_model_errors_only_converged.json",
+        "EngleStellarErrorsOnly/output/engle_stellar_errors_only_converged.json",
+        "RibasModelErrorsOnly/output/ribas_model_errors_only_converged.json",
+        "RibasStellarErrorsOnly/output/ribas_stellar_errors_only_converged.json"
       ],
       "saPlotCommands": [
-        "python plotErrorSourceComparison.py {sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType}"
+        "python plotErrorSourceComparison.py {sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType} --engle-converged {Step11.engle_converged} --ribas-converged {Step11.ribas_converged}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType}"
