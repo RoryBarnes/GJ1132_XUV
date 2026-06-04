@@ -35,6 +35,9 @@ SA_PLANET_LABELS = [
     ('Uranus', 23, 0.002), ('Neptune', 26, 0.0007),
 ]
 
+S_OWN_ENGLE_CONVERGED = "Engle/output/engle_converged.json"
+S_OWN_RIBAS_CONVERGED = "Ribas/output/ribas_converged.json"
+
 
 def ftLoadModelStatistics(sConvergedJsonPath):
     """Load mean and 95% CI from a vconverge converged-parameter JSON."""
@@ -86,14 +89,14 @@ def fnPlotAnnotations():
                  rotation=45, color=vpl.colors.pale_blue)
 
 
-def fnPlotGJ1132ErrorBars(args):
+def fnPlotGJ1132ErrorBars(args, sScriptDirectory):
     """Plot GJ 1132 b data points with error bars from vconverge output."""
     dEngleMean, dEngleLower, dEngleUpper = ftLoadModelStatistics(
-        args.engle_converged)
+        os.path.join(sScriptDirectory, S_OWN_ENGLE_CONVERGED))
     dEngleDavMean, dEngleDavLower, dEngleDavUpper = ftLoadModelStatistics(
         args.engle_barnes_converged)
     dRibasMean, dRibasLower, dRibasUpper = ftLoadModelStatistics(
-        args.ribas_converged)
+        os.path.join(sScriptDirectory, S_OWN_RIBAS_CONVERGED))
     dRibasDavMean, dRibasDavLower, dRibasDavUpper = ftLoadModelStatistics(
         args.ribas_barnes_converged)
 
@@ -115,12 +118,8 @@ def ftParseArguments():
     )
     parser.add_argument("output_path",
                         help="Destination path for the figure.")
-    parser.add_argument("--engle-converged", required=True,
-                        help="Path to A10 Engle converged JSON.")
     parser.add_argument("--engle-barnes-converged", required=True,
                         help="Path to A09 EngleBarnes converged JSON.")
-    parser.add_argument("--ribas-converged", required=True,
-                        help="Path to A10 Ribas converged JSON.")
     parser.add_argument("--ribas-barnes-converged", required=True,
                         help="Path to A09 RibasBarnes converged JSON.")
     return parser.parse_args()
@@ -129,13 +128,14 @@ def ftParseArguments():
 def main():
     """Generate the cosmic shoreline figure."""
     args = ftParseArguments()
+    sScriptDirectory = os.path.dirname(os.path.abspath(__file__))
     output = vplanet.run(infile=str(PATH / "vpl.in"), units=False)
     daXuv, daEscVel = ftExtractPlanetData(output)
 
     fig = plt.figure(figsize=(6.5, 6))
     fnPlotSolarSystem(daEscVel, daXuv)
     fnPlotAnnotations()
-    fnPlotGJ1132ErrorBars(args)
+    fnPlotGJ1132ErrorBars(args, sScriptDirectory)
     fig.savefig(args.output_path, bbox_inches="tight", dpi=300)
     plt.close()
 

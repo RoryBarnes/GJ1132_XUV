@@ -17,6 +17,9 @@ SA_LABELS = ["Engle Only", "Engle w/Flares", "Ribas Only", "Ribas w/Flares"]
 SA_COLORS = ['grey', 'k', vplot.colors.orange, vplot.colors.orange]
 DA_ALPHAS = [1.0, 1.0, 0.5, 1.0]
 
+S_OWN_ENGLE_CONVERGED = "Engle/output/engle_converged.json"
+S_OWN_RIBAS_CONVERGED = "Ribas/output/ribas_converged.json"
+
 
 def fnPlotHistograms(listData):
     """Plot step histograms for all model variants."""
@@ -57,23 +60,19 @@ def ftParseArguments():
     )
     parser.add_argument("output_path",
                         help="Destination path for the histogram figure.")
-    parser.add_argument("--engle-converged", required=True,
-                        help="Path to A10 Engle converged JSON.")
     parser.add_argument("--engle-barnes-converged", required=True,
                         help="Path to A09 EngleBarnes converged JSON.")
-    parser.add_argument("--ribas-converged", required=True,
-                        help="Path to A10 Ribas converged JSON.")
     parser.add_argument("--ribas-barnes-converged", required=True,
                         help="Path to A09 RibasBarnes converged JSON.")
     return parser.parse_args()
 
 
-def flistLoadAllVariants(args):
+def flistLoadAllVariants(args, sScriptDirectory):
     """Return the list of per-variant gather-flux results."""
     return [
-        ftGatherFluxes(args.engle_converged),
+        ftGatherFluxes(os.path.join(sScriptDirectory, S_OWN_ENGLE_CONVERGED)),
         ftGatherFluxes(args.engle_barnes_converged),
-        ftGatherFluxes(args.ribas_converged),
+        ftGatherFluxes(os.path.join(sScriptDirectory, S_OWN_RIBAS_CONVERGED)),
         ftGatherFluxes(args.ribas_barnes_converged),
     ]
 
@@ -81,7 +80,8 @@ def flistLoadAllVariants(args):
 def main():
     """Generate cumulative XUV flux histogram for all model variants."""
     args = ftParseArguments()
-    listData = flistLoadAllVariants(args)
+    sScriptDirectory = os.path.dirname(os.path.abspath(__file__))
+    listData = flistLoadAllVariants(args, sScriptDirectory)
     fnPlotHistograms(listData)
     fnFormatAxes()
     plt.savefig(args.output_path, dpi=300)
