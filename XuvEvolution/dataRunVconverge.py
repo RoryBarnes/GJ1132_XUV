@@ -16,8 +16,8 @@ from pathlib import Path
 S_VCONVERGE_OUTPUT = "output/Converged_Param_Dictionary.json"
 S_BACKUP_FILE = ".Converged_Param_Dictionary.json.bak"
 DICT_MODEL_OUTPUT_NAMES = {
-    "EngleBarnes": "output/converged_engle_barnes.json",
-    "RibasBarnes": "output/converged_ribas_barnes.json",
+    "EngleBarnes": "output/engle_barnes_converged.json",
+    "RibasBarnes": "output/ribas_barnes_converged.json",
 }
 S_VAIB_PREFIX = "[vaib]"
 

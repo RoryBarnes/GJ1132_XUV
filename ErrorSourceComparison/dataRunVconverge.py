@@ -23,13 +23,13 @@ S_VCONVERGE_OUTPUT = "output/Converged_Param_Dictionary.json"
 S_BACKUP_FILE = ".Converged_Param_Dictionary.json.bak"
 DICT_MODEL_OUTPUT_NAMES = {
     "EngleModelErrorsOnly":
-        "output/converged_engle_model_errors_only.json",
+        "output/engle_model_errors_only_converged.json",
     "EngleStellarErrorsOnly":
-        "output/converged_engle_stellar_errors_only.json",
+        "output/engle_stellar_errors_only_converged.json",
     "RibasModelErrorsOnly":
-        "output/converged_ribas_model_errors_only.json",
+        "output/ribas_model_errors_only_converged.json",
     "RibasStellarErrorsOnly":
-        "output/converged_ribas_stellar_errors_only.json",
+        "output/ribas_stellar_errors_only_converged.json",
 }
 S_VAIB_PREFIX = "[vaib]"
 
