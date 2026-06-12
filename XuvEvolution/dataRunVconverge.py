@@ -15,10 +15,7 @@ from pathlib import Path
 
 S_VCONVERGE_OUTPUT = "output/Converged_Param_Dictionary.json"
 S_BACKUP_FILE = ".Converged_Param_Dictionary.json.bak"
-DICT_MODEL_OUTPUT_NAMES = {
-    "EngleBarnes": "output/engle_barnes_converged.json",
-    "RibasBarnes": "output/ribas_barnes_converged.json",
-}
+LIST_MODEL_DIRECTORIES = ["EngleBarnes", "RibasBarnes"]
 S_VAIB_PREFIX = "[vaib]"
 
 
@@ -67,31 +64,35 @@ def fbRunVconverge(sModelDirectory):
     return result.returncode == 0
 
 
-def fnRenameVconvergeOutput(sModelDirectory, sFinalName):
-    """Rename vconverge's default output to a model-specific stem."""
+def fnRequireVconvergeOutput(sModelDirectory):
+    """Verify vconverge produced its standard output file.
+
+    The standard name (Converged_Param_Dictionary.json) is kept in
+    place — output filenames are public API and the quantitative
+    benchmarks bind to them; downstream steps reference the colliding
+    basenames via qualified vaibify tokens.
+    """
     sSource = os.path.join(sModelDirectory, S_VCONVERGE_OUTPUT)
-    sTarget = os.path.join(sModelDirectory, sFinalName)
     if not os.path.exists(sSource):
         raise FileNotFoundError(
             f"vconverge did not produce expected output: {sSource}"
         )
-    shutil.move(sSource, sTarget)
 
 
-def fbProcessModel(sModelDirectory, sFinalName, sFlareSource, sAgeSource,
+def fbProcessModel(sModelDirectory, sFlareSource, sAgeSource,
                    sDynestySource):
     """Copy priors, run vconverge, and handle backup for one model."""
     fnCopyUpstreamPriors(sModelDirectory, sFlareSource, sAgeSource,
                          sDynestySource)
-    fnBackupConvergedOutput(sModelDirectory, sFinalName)
+    fnBackupConvergedOutput(sModelDirectory, S_VCONVERGE_OUTPUT)
     bSuccess = fbRunVconverge(sModelDirectory)
     if bSuccess:
-        fnRenameVconvergeOutput(sModelDirectory, sFinalName)
+        fnRequireVconvergeOutput(sModelDirectory)
         fnRemoveBackup(sModelDirectory)
     else:
         print(f"{S_VAIB_PREFIX} {sModelDirectory}: vconverge failed, "
               "restoring backup")
-        fnRestoreConvergedOutput(sModelDirectory, sFinalName)
+        fnRestoreConvergedOutput(sModelDirectory, S_VCONVERGE_OUTPUT)
     return bSuccess
 
 
@@ -116,10 +117,9 @@ def main():
     os.chdir(sScriptDirectory)
 
     bAllSucceeded = True
-    for sModelDirectory, sFinalName in DICT_MODEL_OUTPUT_NAMES.items():
+    for sModelDirectory in LIST_MODEL_DIRECTORIES:
         bSuccess = fbProcessModel(
             sModelDirectory,
-            sFinalName,
             args.flare_samples,
             args.age_samples,
             args.dynesty_samples,
