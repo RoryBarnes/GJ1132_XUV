@@ -14,10 +14,10 @@ from utils.cumulativeXuv import (D_LOWER_BOUND, D_UPPER_BOUND,
 
 S_OWN_OUTPUT_RELATIVE = "output/{stem}.json"
 DICT_OWN_OUTPUT_STEMS = {
-    "EngleModelErrorsOnly": "engle_model_errors_only_converged",
-    "EngleStellarErrorsOnly": "engle_stellar_errors_only_converged",
-    "RibasModelErrorsOnly": "ribas_model_errors_only_converged",
-    "RibasStellarErrorsOnly": "ribas_stellar_errors_only_converged",
+    "EngleModelErrorsOnly": "Converged_Param_Dictionary",
+    "EngleStellarErrorsOnly": "Converged_Param_Dictionary",
+    "RibasModelErrorsOnly": "Converged_Param_Dictionary",
+    "RibasStellarErrorsOnly": "Converged_Param_Dictionary",
 }
 
 

@@ -35,8 +35,8 @@ SA_PLANET_LABELS = [
     ('Uranus', 23, 0.002), ('Neptune', 26, 0.0007),
 ]
 
-S_OWN_ENGLE_CONVERGED = "Engle/output/engle_converged.json"
-S_OWN_RIBAS_CONVERGED = "Ribas/output/ribas_converged.json"
+S_OWN_ENGLE_CONVERGED = "Engle/output/Converged_Param_Dictionary.json"
+S_OWN_RIBAS_CONVERGED = "Ribas/output/Converged_Param_Dictionary.json"
 
 
 def ftLoadModelStatistics(sConvergedJsonPath):
@@ -82,11 +82,14 @@ def fnPlotAnnotations():
     """Add planet labels and cosmic shoreline text."""
     for sName, dX, dY in SA_PLANET_LABELS:
         plt.annotate(sName, (dX, dY), fontsize=I_TICK_FONT_SIZE)
-    plt.annotate('GJ 1132 b', (4, 400), fontsize=I_TICK_FONT_SIZE)
-    plt.annotate('Cosmic', (1.5, 0.0011), fontsize=I_FONT_SIZE,
+    plt.annotate('GJ 1132 b', (7, 250), fontsize=I_TICK_FONT_SIZE,
+                 color='k')
+    plt.annotate('Cosmic Shoreline', (5.2, 1), fontsize=I_FONT_SIZE,
                  rotation=45, color=vpl.colors.pale_blue)
-    plt.annotate('Shoreline', (25, 100), fontsize=I_FONT_SIZE,
-                 rotation=45, color=vpl.colors.pale_blue)
+    plt.annotate('Atmospheres Disfavored', (2.1, 550),
+                 fontsize=I_FONT_SIZE-4, color=vpl.colors.red)
+    plt.annotate('Atmospheres More Likely', (5, 0.115),
+                 fontsize=I_FONT_SIZE-4, color=vpl.colors.dark_blue)
 
 
 def fnPlotGJ1132ErrorBars(args, sScriptDirectory):
