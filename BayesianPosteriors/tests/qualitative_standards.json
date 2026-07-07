@@ -1,0 +1,42 @@
+{
+    "listStandards": [
+        {
+            "sFileName": "output/emcee_samples.npz",
+            "sFormat": "npz",
+            "listExpectedColumns": [
+                "samples"
+            ],
+            "listExpectedJsonKeys": []
+        },
+        {
+            "sFileName": "output/dynesty_samples.npz",
+            "sFormat": "npz",
+            "listExpectedColumns": [
+                "samples"
+            ],
+            "listExpectedJsonKeys": []
+        },
+        {
+            "sFileName": "output/multinest_samples.npz",
+            "sFormat": "npz",
+            "listExpectedColumns": [
+                "samples",
+                "weights",
+                "logz",
+                "logz_err"
+            ],
+            "listExpectedJsonKeys": []
+        },
+        {
+            "sFileName": "output/ultranest_samples.npz",
+            "sFormat": "npz",
+            "listExpectedColumns": [
+                "samples",
+                "weights",
+                "logz",
+                "logz_err"
+            ],
+            "listExpectedJsonKeys": []
+        }
+    ]
+}
