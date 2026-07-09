@@ -1,0 +1,13 @@
+sVspaceFile vspace.in
+iStepSize 100
+iMaxSteps 200
+sConvergenceMethod KS_statistic
+fConvergenceCondition 0.004
+iNumberOfConvergences 3
+
+sObjectFile b.in
+
+saConverge final CumulativeXUVFlux
+
+
+iSeed 42
