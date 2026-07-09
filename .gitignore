@@ -21,6 +21,21 @@ __pycache__/
 # OS
 .DS_Store
 
+# Crash artifacts and editor/tool backups
+**/core
+*.bak
+
+# Superseded / archived working directories
+*.old/
+*_old/
+
+# Vaibify host-managed runtime state (not canonical, regenerated per session)
+.vaibify/container_mtime_cache.json
+.vaibify/syncStatus.json
+
+# vconverge scratch space
+**/.vconverge_tmp/
+
 # Vaibify canonical outputs — manifest-pinned; the AICS L2 GitHub mirror requires them in git
 !Plot/CornerVariableSlope.pdf
 !Plot/ffd_comp.pdf
