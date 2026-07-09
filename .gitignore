@@ -36,6 +36,26 @@ __pycache__/
 # vconverge scratch space
 **/.vconverge_tmp/
 
+# Regenerable model outputs (not source): maxlev rewrites *_maxlev.in with the
+# best-fit parameters each run; vplanet writes *.forward; vconverge writes the
+# prior-index byproduct.
+*_maxlev.in
+*.forward
+xuv_PriorIndicies.json
+
+# vspace sweep-template inputs — regenerable sweep definitions, not tracked as
+# source (the sweep outputs are treated as archived data). See note to researcher.
+vspace.in
+
+# Stray / non-canonical plot artifacts (no figure-compare standard references them)
+Plot/*_standard.png
+Plot/test_aspect.png
+FfdAgeComparison/--samples.png
+
+# Redundant text dumps of the flare MCMC samples (canonical form is the .npy)
+KeplerFfdCorner/flare_mcmc_samples.txt
+KeplerFfdCorner/flare_mcmc_samples_param_names.txt
+
 # Vaibify canonical outputs — manifest-pinned; the AICS L2 GitHub mirror requires them in git
 !Plot/CornerVariableSlope.pdf
 !Plot/ffd_comp.pdf
