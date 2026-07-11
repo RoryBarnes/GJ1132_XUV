@@ -1,0 +1,502 @@
+{
+  "listNodes": [
+    {
+      "sId": "h_mass",
+      "sLabel": "$m\\sim\\mathcal{N}$",
+      "sCategory": "constant",
+      "fX": 25.278,
+      "fY": 42.896,
+      "sNote": ""
+    },
+    {
+      "sId": "h_fsat",
+      "sLabel": "$f_{sat}\\sim\\mathcal{N}$",
+      "sCategory": "constant",
+      "fX": 32.172000000000004,
+      "fY": 42.896,
+      "sNote": ""
+    },
+    {
+      "sId": "h_tsat",
+      "sLabel": "$t_{sat}\\sim\\mathcal{U}$",
+      "sCategory": "constant",
+      "fX": 39.065999999999995,
+      "fY": 42.896,
+      "sNote": ""
+    },
+    {
+      "sId": "h_beta",
+      "sLabel": "$\\beta\\sim\\mathcal{N}$",
+      "sCategory": "constant",
+      "fX": 45.96,
+      "fY": 42.896,
+      "sNote": ""
+    },
+    {
+      "sId": "h_flare",
+      "sLabel": "$E_{min},E_{max}$",
+      "sCategory": "constant",
+      "fX": 72.004,
+      "fY": 24.512,
+      "sNote": "Osten-Wolk fractions, 5-1700A band"
+    },
+    {
+      "sId": "h_sanz",
+      "sLabel": "Sanz-\nForcada",
+      "sCategory": "constant",
+      "fX": 16.852,
+      "fY": 8.426,
+      "sNote": "X->XUV scaling coeffs"
+    },
+    {
+      "sId": "h_metal",
+      "sLabel": "[Fe/H]",
+      "sCategory": "constant",
+      "fX": 18.384,
+      "fY": 33.704,
+      "sNote": "solar Baraffe track"
+    },
+    {
+      "sId": "th_rot",
+      "sLabel": "$\\theta_{rot}$",
+      "sCategory": "stochastic",
+      "fX": 5.362,
+      "fY": 36.002,
+      "sNote": "(a,b,c,d)_rot + sigma_int"
+    },
+    {
+      "sId": "th_xuv",
+      "sLabel": "$\\theta_{xuv}$",
+      "sCategory": "stochastic",
+      "fX": 14.937,
+      "fY": 36.002,
+      "sNote": "(a,b,c,d)_xuv + sigma_int"
+    },
+    {
+      "sId": "tau",
+      "sLabel": "$\\tau$",
+      "sCategory": "stochastic",
+      "fX": 18.384,
+      "fY": 27.576,
+      "sNote": "GJ 1132 latent log age"
+    },
+    {
+      "sId": "m",
+      "sLabel": "$m_\\star$",
+      "sCategory": "stochastic",
+      "fX": 25.278,
+      "fY": 36.002,
+      "sNote": ""
+    },
+    {
+      "sId": "fsat",
+      "sLabel": "$f_{sat}$",
+      "sCategory": "stochastic",
+      "fX": 32.172000000000004,
+      "fY": 36.002,
+      "sNote": ""
+    },
+    {
+      "sId": "tsat",
+      "sLabel": "$t_{sat}$",
+      "sCategory": "stochastic",
+      "fX": 39.065999999999995,
+      "fY": 36.002,
+      "sNote": ""
+    },
+    {
+      "sId": "beta",
+      "sLabel": "$\\beta$",
+      "sCategory": "stochastic",
+      "fX": 45.96,
+      "fY": 36.002,
+      "sNote": "beta_XUV"
+    },
+    {
+      "sId": "th_ffd",
+      "sLabel": "$\\theta_{FFD}$",
+      "sCategory": "stochastic",
+      "fX": 65.11,
+      "fY": 39.832,
+      "sNote": "a1,a2,a3,b1,b2,b3"
+    },
+    {
+      "sId": "alpha_k",
+      "sLabel": "$\\alpha_k$",
+      "sCategory": "stochastic",
+      "fX": 3.447,
+      "fY": 29.108,
+      "sNote": "per-star latent log-age"
+    },
+    {
+      "sId": "lbol",
+      "sLabel": "$L_{bol}$",
+      "sCategory": "deterministic",
+      "fX": 25.278,
+      "fY": 28.342000000000002,
+      "sNote": "L_bol(t), Baraffe"
+    },
+    {
+      "sId": "q_emd",
+      "sLabel": "$q_{\\rm E}$",
+      "sCategory": "deterministic",
+      "fX": 12.256,
+      "fY": 19.916,
+      "sNote": "EMD L_XUV^quiesc/L_bol"
+    },
+    {
+      "sId": "q_ribas",
+      "sLabel": "$q_{\\rm R}$",
+      "sCategory": "deterministic",
+      "fX": 35.236,
+      "fY": 26.810000000000002,
+      "sNote": "Ribas L_XUV^quiesc/L_bol"
+    },
+    {
+      "sId": "ffd_ab",
+      "sLabel": "$a,b(t)$",
+      "sCategory": "deterministic",
+      "fX": 65.11,
+      "fY": 28.342000000000002,
+      "sNote": "FFD slope/intercept"
+    },
+    {
+      "sId": "flare",
+      "sLabel": "$L^{fl}_{XUV}$",
+      "sCategory": "deterministic",
+      "fX": 65.11,
+      "fY": 21.448,
+      "sNote": "flare XUV luminosity"
+    },
+    {
+      "sId": "total",
+      "sLabel": "$L^{tot}_{XUV}$",
+      "sCategory": "deterministic",
+      "fX": 48.258,
+      "fY": 16.852,
+      "sNote": "quiescent + flare"
+    },
+    {
+      "sId": "semimajor",
+      "sLabel": "$a_{orb}$",
+      "sCategory": "deterministic",
+      "fX": 37.534000000000006,
+      "fY": 16.852,
+      "sNote": "semi-major axis"
+    },
+    {
+      "sId": "xuv_t",
+      "sLabel": "$F_{XUV}(t)$",
+      "sCategory": "deterministic",
+      "fX": 43.662,
+      "fY": 11.107,
+      "sNote": ""
+    },
+    {
+      "sId": "cumflux",
+      "sLabel": "$F^{cum}_{XUV}$",
+      "sCategory": "deterministic",
+      "fX": 39.832,
+      "fY": 4.596,
+      "sNote": "cumulative XUV flux (target)"
+    },
+    {
+      "sId": "d_rot",
+      "sLabel": "$d^{rot}_k$",
+      "sCategory": "observed",
+      "fX": 7.66,
+      "fY": 29.108,
+      "sNote": "Engle rotation calibrators (P_rot, age)"
+    },
+    {
+      "sId": "d_xuv",
+      "sLabel": "$d^{xuv}_k$",
+      "sCategory": "observed",
+      "fX": 14.937,
+      "fY": 29.108,
+      "sNote": "Engle X-ray calibrators (logLx, age)"
+    },
+    {
+      "sId": "d_kepler",
+      "sLabel": "$d^{K}_j$",
+      "sCategory": "observed",
+      "fX": 65.11,
+      "fY": 33.704,
+      "sNote": "Kepler flare data"
+    },
+    {
+      "sId": "o_prot",
+      "sLabel": "$P^{obs}_{rot}$",
+      "sCategory": "observed",
+      "fX": 15.703,
+      "fY": 19.15,
+      "sNote": "122.3 d, Bonfils18"
+    },
+    {
+      "sId": "o_lxuv",
+      "sLabel": "$q_{\\rm obs}$",
+      "sCategory": "observed",
+      "fX": 24.512,
+      "fY": 9.958,
+      "sNote": "log(LXUV/Lbol)=-4.26, via Sanz-Forcada"
+    },
+    {
+      "sId": "o_lbol",
+      "sLabel": "$L^{obs}_{bol}$",
+      "sCategory": "observed",
+      "fX": 24.512,
+      "fY": 22.597,
+      "sNote": "Xue24"
+    },
+    {
+      "sId": "o_tess",
+      "sLabel": "$d_{\\rm TESS}$",
+      "sCategory": "observed",
+      "fX": 72.004,
+      "fY": 30.64,
+      "sNote": "current-rate posterior-predictive check"
+    }
+  ],
+  "listEdges": [
+    {
+      "sSrc": "h_mass",
+      "sDst": "m"
+    },
+    {
+      "sSrc": "h_fsat",
+      "sDst": "fsat"
+    },
+    {
+      "sSrc": "h_tsat",
+      "sDst": "tsat"
+    },
+    {
+      "sSrc": "h_beta",
+      "sDst": "beta"
+    },
+    {
+      "sSrc": "h_metal",
+      "sDst": "lbol"
+    },
+    {
+      "sSrc": "h_flare",
+      "sDst": "flare"
+    },
+    {
+      "sSrc": "h_sanz",
+      "sDst": "o_lxuv"
+    },
+    {
+      "sSrc": "th_rot",
+      "sDst": "d_rot"
+    },
+    {
+      "sSrc": "alpha_k",
+      "sDst": "d_rot"
+    },
+    {
+      "sSrc": "th_xuv",
+      "sDst": "d_xuv"
+    },
+    {
+      "sSrc": "th_rot",
+      "sDst": "o_prot"
+    },
+    {
+      "sSrc": "tau",
+      "sDst": "o_prot"
+    },
+    {
+      "sSrc": "th_xuv",
+      "sDst": "q_emd"
+    },
+    {
+      "sSrc": "tau",
+      "sDst": "q_emd"
+    },
+    {
+      "sSrc": "q_emd",
+      "sDst": "o_lxuv"
+    },
+    {
+      "sSrc": "tau",
+      "sDst": "m"
+    },
+    {
+      "sSrc": "tau",
+      "sDst": "q_ribas"
+    },
+    {
+      "sSrc": "m",
+      "sDst": "q_ribas"
+    },
+    {
+      "sSrc": "fsat",
+      "sDst": "q_ribas"
+    },
+    {
+      "sSrc": "tsat",
+      "sDst": "q_ribas"
+    },
+    {
+      "sSrc": "beta",
+      "sDst": "q_ribas"
+    },
+    {
+      "sSrc": "m",
+      "sDst": "lbol"
+    },
+    {
+      "sSrc": "q_ribas",
+      "sDst": "o_lxuv"
+    },
+    {
+      "sSrc": "lbol",
+      "sDst": "o_lbol"
+    },
+    {
+      "sSrc": "th_ffd",
+      "sDst": "d_kepler"
+    },
+    {
+      "sSrc": "th_ffd",
+      "sDst": "ffd_ab"
+    },
+    {
+      "sSrc": "tau",
+      "sDst": "ffd_ab"
+    },
+    {
+      "sSrc": "m",
+      "sDst": "ffd_ab"
+    },
+    {
+      "sSrc": "ffd_ab",
+      "sDst": "flare"
+    },
+    {
+      "sSrc": "ffd_ab",
+      "sDst": "o_tess"
+    },
+    {
+      "sSrc": "q_ribas",
+      "sDst": "total"
+    },
+    {
+      "sSrc": "lbol",
+      "sDst": "total"
+    },
+    {
+      "sSrc": "flare",
+      "sDst": "total"
+    },
+    {
+      "sSrc": "m",
+      "sDst": "semimajor"
+    },
+    {
+      "sSrc": "total",
+      "sDst": "xuv_t"
+    },
+    {
+      "sSrc": "semimajor",
+      "sDst": "xuv_t"
+    },
+    {
+      "sSrc": "xuv_t",
+      "sDst": "cumflux"
+    }
+  ],
+  "listPlates": [
+    {
+      "sLabel": "rot. cal. $k$",
+      "listNodes": [
+        "alpha_k",
+        "d_rot"
+      ],
+      "fX": 0.766,
+      "fY": 26.044,
+      "fWidth": 9.575,
+      "fHeight": 6.128,
+      "sPosition": "bottom left"
+    },
+    {
+      "sLabel": "xuv cal. $k$",
+      "listNodes": [
+        "d_xuv"
+      ],
+      "fX": 13.213500000000002,
+      "fY": 26.427000000000003,
+      "fWidth": 4.213,
+      "fHeight": 5.362,
+      "sPosition": "bottom right"
+    },
+    {
+      "sLabel": "Kepler $j$",
+      "listNodes": [
+        "d_kepler"
+      ],
+      "fX": 62.429,
+      "fY": 31.023,
+      "fWidth": 5.745,
+      "fHeight": 5.745,
+      "sPosition": "top right"
+    },
+    {
+      "sLabel": "posterior draws / vplanet runs s",
+      "listNodes": [
+        "total",
+        "semimajor",
+        "xuv_t",
+        "cumflux"
+      ],
+      "fX": 34.087,
+      "fY": 1.532,
+      "fWidth": 18.767000000000003,
+      "fHeight": 18.767000000000003,
+      "sPosition": "bottom right"
+    }
+  ],
+  "listCategorization": [
+    {
+      "sParameter": "L_X, P_rot, L_bol, Kepler FFD, TESS flares, Engle calibrators",
+      "sCategory": "observed",
+      "sRationale": "measured data / literature values clamped in the likelihood"
+    },
+    {
+      "sParameter": "theta_rot, theta_xuv (Engle a,b,c,d + sigma_int)",
+      "sCategory": "stochastic",
+      "sRationale": "refit hierarchically with posteriors + covariance, not fixed constants"
+    },
+    {
+      "sParameter": "alpha_k per-star log-age",
+      "sCategory": "stochastic",
+      "sRationale": "latent nuisance in the rotation calibrator hierarchy (asym. errors)"
+    },
+    {
+      "sParameter": "tau (GJ 1132 age)",
+      "sCategory": "stochastic",
+      "sRationale": "inferred from P_rot; becomes the empirical age prior for Ribas"
+    },
+    {
+      "sParameter": "m_star, f_sat, t_sat, beta_XUV",
+      "sCategory": "stochastic",
+      "sRationale": "Ribas parameters inferred by alabi/MCMC under informative priors"
+    },
+    {
+      "sParameter": "theta_FFD (a1..b3)",
+      "sCategory": "stochastic",
+      "sRationale": "Davenport FFD coefficients from the emcee Kepler fit"
+    },
+    {
+      "sParameter": "L_XUV/L_bol (EMD & Ribas), a(t)/b(t), L_XUV_flare, L_XUV_tot, F_XUV(t), a_orb, F_XUV_cum",
+      "sCategory": "deterministic",
+      "sRationale": "algebraic / vplanet functions of the parameters above"
+    },
+    {
+      "sParameter": "prior hyper-params, E_min/E_max, Osten-Wolk fractions, bandpass, Sanz-Forcada coeffs, [Fe/H]",
+      "sCategory": "constant",
+      "sRationale": "fixed inputs; not inferred"
+    }
+  ]
+}
