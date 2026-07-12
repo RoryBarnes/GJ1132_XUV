@@ -1,78 +1,101 @@
+#!/usr/bin/env python3
 """
-Compute Engle gyrochronology age distribution for GJ 1132 via Monte Carlo.
+Compute GJ 1132's rotation-only gyrochronology age distribution.
 
-Samples the calibration coefficients and rotation period with uncertainties,
-filters unphysical ages, and saves the resulting age distribution.
+Draws from the Stage-1 hierarchical refit posterior of the Engle & Guinan
+rotation relation (coefficient samples carry the full covariance), folds in the
+rotation relation's intrinsic scatter and the asymmetric P_rot measurement
+error, and saves the resulting age distribution. Rotation period ONLY: the
+observed L_XUV/L_bol is deliberately NOT used here so this age can serve as the
+Ribas branch's age prior without double-counting L_XUV.
+
+Reference: Kelly (2007) ApJ 665, 1489 for the measurement-error framework.
 """
+
+import argparse
 
 import numpy as np
-from scipy import stats
 
-D_MAX_LOG_AGE = np.log10(13)
-
-
-def ftComputeAgeDistribution(daA, daB, daC, daD, daRotationPeriod,
-                              iNumSamples=100000):
-    """Return (daLogAge, dMean, dStdDev, daConfidenceInterval)."""
-    daASamples = np.random.normal(daA[0], daA[1], iNumSamples)
-    daBSamples = np.random.normal(daB[0], daB[1], iNumSamples)
-    daCSamples = np.random.normal(daC[0], daC[1], iNumSamples)
-    daDSamples = np.random.normal(daD[0], daD[1], iNumSamples)
-    daRotSamples = np.random.normal(
-        daRotationPeriod[0], daRotationPeriod[1], iNumSamples)
-
-    daLogAge = (daASamples * daRotSamples + daBSamples
-                + daCSamples * (daRotSamples - daDSamples))
-    daLogAge = daLogAge[daLogAge <= D_MAX_LOG_AGE]
-
-    print(f"Samples after filtering: {len(daLogAge):,} "
-          f"out of {iNumSamples:,} ({100 * len(daLogAge) / iNumSamples:.1f}%)")
-
-    dMean = np.mean(daLogAge)
-    dStdDev = np.std(daLogAge)
-    daCI = np.percentile(daLogAge, [2.5, 97.5])
-    return daLogAge, dMean, dStdDev, daCI
+I_SEED = 42
+I_NUM_SAMPLES = 100000
+D_PROT_MEAN = 122.3
+D_PROT_PLUS = 6.0
+D_PROT_MINUS = 5.0
+D_MAX_LOG_AGE = np.log10(13.0)
 
 
-def fdComputeAnalyticalMeanAge(daA, daB, daC, daD, daRotationPeriod):
-    """Return the analytical mean log(age) for comparison."""
-    return ((daA[0] + daC[0]) * daRotationPeriod[0]
-            + daB[0] - daC[0] * daD[0])
+def fdaSampleSplitNormal(dMean, dSigmaPlus, dSigmaMinus, iCount):
+    """Draw samples from a split-normal (asymmetric Gaussian) distribution."""
+    daUniform = np.random.uniform(0, 1, iCount)
+    baUpper = daUniform > 0.5
+    daSamples = np.empty(iCount)
+    daSamples[baUpper] = dMean + np.abs(
+        np.random.normal(0, dSigmaPlus, int(np.sum(baUpper))))
+    daSamples[~baUpper] = dMean - np.abs(
+        np.random.normal(0, dSigmaMinus, int(np.sum(~baUpper))))
+    return daSamples
 
 
-def fnPrintStatistics(daLogAge, dMean, dStdDev, daCI, dAnalytical):
-    """Print Monte Carlo and analytical results."""
-    print(f"\nMonte Carlo Results ({len(daLogAge):,} samples):")
-    print(f"Best fit (mean): {dMean:.4f}")
-    print(f"Uncertainty (std): {dStdDev:.4f}")
-    print(f"95% CI: [{daCI[0]:.4f}, {daCI[1]:.4f}]")
-    print(f"Analytical mean: {dAnalytical:.4f}")
-    print(f"MC-Analytical difference: {abs(dMean - dAnalytical):.6f}")
-    print(f"Median: {np.median(daLogAge):.4f}")
-    print(f"Skewness: {stats.skew(daLogAge):.4f}")
-    print(f"Kurtosis: {stats.kurtosis(daLogAge):.4f}")
+def fdaDrawChainRows(daChain, iCount):
+    """Return iCount rows drawn with replacement from a coefficient chain."""
+    daIndices = np.random.randint(0, len(daChain), iCount)
+    return daChain[daIndices]
+
+
+def fdaEvaluateHinge(daCoefficientRows, daX):
+    """Evaluate the continuous two-segment hinge, one coefficient row per point."""
+    dA, dB = daCoefficientRows[:, 0], daCoefficientRows[:, 1]
+    dC, dD = daCoefficientRows[:, 2], daCoefficientRows[:, 3]
+    return dA * daX + dB + dC * np.where(daX >= dD, daX - dD, 0.0)
+
+
+def fdaComputeRotationOnlyAges(daRotChain):
+    """Return rotation-only log-age draws, folding covariance, sigma_int, P_rot."""
+    daRows = fdaDrawChainRows(daRotChain, I_NUM_SAMPLES)
+    daProt = fdaSampleSplitNormal(D_PROT_MEAN, D_PROT_PLUS, D_PROT_MINUS,
+                                  I_NUM_SAMPLES)
+    daModelTau = fdaEvaluateHinge(daRows[:, :4], daProt)
+    daSigmaOld = np.exp(daRows[:, 5])
+    daTau = daModelTau + np.random.normal(0, daSigmaOld)
+    return daTau[daTau <= D_MAX_LOG_AGE]
 
 
 def fnSaveAgeSamples(daLogAge, sOutputFile):
     """Convert log-age to years and save to file."""
-    daAge = 10**daLogAge * 1e9
+    daAge = 10 ** daLogAge * 1e9
     np.savetxt(sOutputFile, daAge)
-    print(f"\nSaved to '{sOutputFile}' "
+    print(f"Saved {len(daAge):,} samples to '{sOutputFile}' "
           f"({np.min(daAge) / 1e9:.2f} - {np.max(daAge) / 1e9:.2f} Gyr)")
 
 
+def fnPrintStatistics(daLogAge):
+    """Print summary statistics of the rotation-only age distribution."""
+    daAgeGyr = 10 ** daLogAge
+    print(f"Rotation-only age: mean {np.mean(daAgeGyr):.2f} Gyr, "
+          f"median {np.median(daAgeGyr):.2f} Gyr")
+    print(f"mean log-age {np.mean(daLogAge):.4f} +/- {np.std(daLogAge):.4f}")
+    print(f"95% CI [{np.percentile(daAgeGyr, 2.5):.2f}, "
+          f"{np.percentile(daAgeGyr, 97.5):.2f}] Gyr")
+
+
+def ftParseArguments():
+    """Parse and return command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Compute GJ 1132 rotation-only gyrochronology age.")
+    parser.add_argument("--rotation-samples", required=True,
+                        help="Stage-1 rotation coefficient samples (.npy).")
+    return parser.parse_args()
+
+
+def main():
+    """Compute and save the rotation-only age distribution."""
+    np.random.seed(I_SEED)
+    args = ftParseArguments()
+    daRotChain = np.load(args.rotation_samples)
+    daLogAge = fdaComputeRotationOnlyAges(daRotChain)
+    fnPrintStatistics(daLogAge)
+    fnSaveAgeSamples(daLogAge, "age_samples.txt")
+
+
 if __name__ == "__main__":
-    np.random.seed(42)
-
-    daA = (0.0251, 0.0018)
-    daB = (-0.1615, 0.0303)
-    daC = (-0.0212, 0.0018)
-    daD = (25.45, 1.9079)
-    daRotationPeriod = (122, 5.5)
-
-    daLogAge, dMean, dStdDev, daCI = ftComputeAgeDistribution(
-        daA, daB, daC, daD, daRotationPeriod)
-    dAnalytical = fdComputeAnalyticalMeanAge(daA, daB, daC, daD, daRotationPeriod)
-
-    fnPrintStatistics(daLogAge, dMean, dStdDev, daCI, dAnalytical)
-    fnSaveAgeSamples(daLogAge, 'age_samples.txt')
+    main()

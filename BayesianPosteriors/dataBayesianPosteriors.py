@@ -802,6 +802,11 @@ def ftParseArguments():
     parser.add_argument(
         '--lxuv-constraints', default=None, metavar='PATH',
         help="Path to lxuv_constraints.json.")
+    parser.add_argument(
+        '--age-samples', default=None, metavar='PATH',
+        help="Path to the ROTATION-ONLY age samples used as the empirical "
+             "age prior (Engle Age Distribution step). Must NOT be the "
+             "L_XUV-informed age, which would double-use L_XUV.")
     return parser.parse_args()
 
 
@@ -815,8 +820,11 @@ def fnMain():
     sSaveDir = "output/"
     sMaxLevResultsPath = str(
         Path(sInpath).parent / "MaximumLikelihood" / "maxlike_results.txt")
-    sAgeSamplesPath = str(
-        Path(sInpath).parent / "EngleAgeDistribution" / "age_samples.txt")
+    if args.age_samples:
+        sAgeSamplesPath = args.age_samples
+    else:
+        sAgeSamplesPath = str(
+            Path(sInpath).parent / "EngleAgeDistribution" / "age_samples.txt")
 
     if args.lxuv_constraints:
         sLxuvConstraintsPath = args.lxuv_constraints

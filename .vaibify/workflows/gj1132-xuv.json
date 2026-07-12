@@ -211,7 +211,7 @@
           "saCommands": [
             "pytest tests/test_qualitative.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvLuminosityDistribution\ncollected 1 item\n\ntests/test_qualitative.py .                                              [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvLuminosityDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 1 item\n\ntests/test_qualitative.py .                                              [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
         },
         "dictQuantitative": {
           "sFilePath": "XuvLuminosityDistribution/tests/test_quantitative.py",
@@ -221,7 +221,7 @@
           "saCommands": [
             "pytest tests/test_quantitative.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvLuminosityDistribution\ncollected 17 items\n\ntests/test_quantitative.py .................                             [100%]\n\n============================== 17 passed in 0.40s ==============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvLuminosityDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 17 items\n\ntests/test_quantitative.py .................                             [100%]\n\n============================== 17 passed in 0.15s ==============================\n"
         },
         "dictIntegrity": {
           "sFilePath": "XuvLuminosityDistribution/tests/test_integrity.py",
@@ -229,7 +229,7 @@
           "saCommands": [
             "pytest tests/test_integrity.py"
           ],
-          "sLastOutput": "$ pytest tests/test_integrity.py\n============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvLuminosityDistribution\ncollected 11 items\n\ntests/test_integrity.py ...........                                      [100%]\n\n============================== 11 passed in 0.15s =============================="
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvLuminosityDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 11 items\n\ntests/test_integrity.py ...........                                      [100%]\n\n============================== 11 passed in 0.16s ==============================\n"
         },
         "listUserTests": []
       },
@@ -241,12 +241,61 @@
       "bRunEnabled": false
     },
     {
+      "sName": "Engle Hierarchical Refit",
+      "sDirectory": "EngleHierarchicalRefit",
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python dataRefitEngleRelations.py"
+      ],
+      "saDataFiles": [
+        "rotationCoefficientSamples.npy",
+        "xuvCoefficientSamples.npy",
+        "rotationCovariance.npy",
+        "xuvCovariance.npy",
+        "refitSummary.json"
+      ],
+      "saPlotCommands": [
+        "python plotRefitEngleRelations.py {sPlotDirectory}/RefitEngleRelations.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/RefitEngleRelations.{sFigureType}"
+      ],
+      "dictTests": {
+        "dictQualitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictQuantitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictIntegrity": {
+          "sFilePath": "EngleHierarchicalRefit/tests/test_integrity.py",
+          "sContent": "\"\"\"Integrity checks for the Engle hierarchical refit outputs.\"\"\"\n\nimport json\nimport os\n\nimport numpy as np\n\nS_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n\n\ndef fdaLoad(sName):\n    \"\"\"Load a saved numpy array from the step directory.\"\"\"\n    return np.load(os.path.join(S_DIRECTORY, sName))\n\n\ndef test_coefficient_samples_shape_and_finite():\n    \"\"\"Both coefficient chains have six columns and are finite.\"\"\"\n    for sName in [\"rotationCoefficientSamples.npy\", \"xuvCoefficientSamples.npy\"]:\n        daChain = fdaLoad(sName)\n        assert daChain.ndim == 2 and daChain.shape[1] == 6\n        assert daChain.shape[0] > 1000\n        assert np.all(np.isfinite(daChain))\n\n\ndef test_intrinsic_scatter_positive():\n    \"\"\"Inferred segment intrinsic scatters are strictly positive.\"\"\"\n    for sName in [\"rotationCoefficientSamples.npy\", \"xuvCoefficientSamples.npy\"]:\n        daChain = fdaLoad(sName)\n        assert np.all(np.exp(daChain[:, 4]) > 0)\n        assert np.all(np.exp(daChain[:, 5]) > 0)\n\n\ndef test_covariance_matrices():\n    \"\"\"Both coefficient covariance matrices are 4x4 and symmetric.\"\"\"\n    for sName in [\"rotationCovariance.npy\", \"xuvCovariance.npy\"]:\n        daCovariance = fdaLoad(sName)\n        assert daCovariance.shape == (4, 4)\n        assert np.allclose(daCovariance, daCovariance.T)\n\n\ndef test_summary_reports_scatter():\n    \"\"\"The refit summary records a positive old-track scatter per relation.\"\"\"\n    with open(os.path.join(S_DIRECTORY, \"refitSummary.json\")) as fileHandle:\n        dictSummary = json.load(fileHandle)\n    for sRelation in [\"rotation\", \"xuv\"]:\n        assert dictSummary[sRelation][\"sigma_int_old\"][\"mean\"] > 0\n",
+          "saCommands": [
+            "pytest tests/test_integrity.py"
+          ],
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleHierarchicalRefit\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 4 items\n\ntests/test_integrity.py ....                                             [100%]\n\n============================== 4 passed in 0.19s ===============================\n"
+        },
+        "listUserTests": []
+      },
+      "saTestCommands": [
+        "pytest tests/test_integrity.py"
+      ],
+      "bRunEnabled": true
+    },
+    {
       "sName": "Engle Age Distribution",
       "sDirectory": "EngleAgeDistribution",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataAge.py"
+        "python dataAge.py --rotation-samples {Step07.rotationCoefficientSamples}"
       ],
       "saDataFiles": [
         "age_samples.txt"
@@ -264,7 +313,7 @@
           "saCommands": [
             "pytest tests/test_qualitative.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\ncollected 1 item\n\ntests/test_qualitative.py .                                              [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 1 item\n\ntests/test_qualitative.py .                                              [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
         },
         "dictQuantitative": {
           "sFilePath": "EngleAgeDistribution/tests/test_quantitative.py",
@@ -274,7 +323,7 @@
           "saCommands": [
             "pytest tests/test_quantitative.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\ncollected 5 items\n\ntests/test_quantitative.py .....                                         [100%]\n\n============================== 5 passed in 0.28s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 5 items\n\ntests/test_quantitative.py .....                                         [100%]\n\n============================== 5 passed in 0.31s ===============================\n"
         },
         "dictIntegrity": {
           "sFilePath": "EngleAgeDistribution/tests/test_integrity.py",
@@ -282,7 +331,7 @@
           "saCommands": [
             "pytest tests/test_integrity.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\ncollected 3 items\n\ntests/test_integrity.py ...                                              [100%]\n\n============================== 3 passed in 0.22s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 3 items\n\ntests/test_integrity.py ...                                              [100%]\n\n============================== 3 passed in 0.24s ===============================\n"
         },
         "listUserTests": []
       },
@@ -292,6 +341,53 @@
         "pytest tests/test_integrity.py"
       ],
       "bRunEnabled": false
+    },
+    {
+      "sName": "L_XUV-Informed Age",
+      "sDirectory": "LxuvInformedAge",
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python dataInferLxuvInformedAge.py --rotation-only-ages {Step08.age_samples} --xuv-samples {Step07.xuvCoefficientSamples}"
+      ],
+      "saDataFiles": [
+        "lxuvInformedAgeSamples.txt",
+        "rotationOnlyAgeSamples.txt",
+        "ageInferenceStats.json"
+      ],
+      "saPlotCommands": [
+        "python plotLxuvInformedAge.py {sPlotDirectory}/LxuvInformedAge.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/LxuvInformedAge.{sFigureType}"
+      ],
+      "dictTests": {
+        "dictQualitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictQuantitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictIntegrity": {
+          "sFilePath": "LxuvInformedAge/tests/test_integrity.py",
+          "sContent": "\"\"\"Integrity checks for the L_XUV-informed age inference outputs.\"\"\"\n\nimport json\nimport os\n\nimport numpy as np\n\nS_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nD_MAX_AGE_GYR = 13.0\n\n\ndef fdaLoadAgesGyr(sName):\n    \"\"\"Load an age-sample file and return the ages in Gyr.\"\"\"\n    return np.loadtxt(os.path.join(S_DIRECTORY, sName)) / 1e9\n\n\ndef test_age_samples_within_physical_bounds():\n    \"\"\"Both age posteriors are positive and truncated at 13 Gyr.\"\"\"\n    for sName in [\"lxuvInformedAgeSamples.txt\", \"rotationOnlyAgeSamples.txt\"]:\n        daAge = fdaLoadAgesGyr(sName)\n        assert daAge.size > 1000\n        assert np.all(np.isfinite(daAge))\n        assert np.all(daAge > 0)\n        assert np.all(daAge <= D_MAX_AGE_GYR + 1e-3)\n\n\ndef test_stats_present_and_consistent():\n    \"\"\"The stats file reports finite ages and a non-negative tension.\"\"\"\n    with open(os.path.join(S_DIRECTORY, \"ageInferenceStats.json\")) as fileHandle:\n        dictStats = json.load(fileHandle)\n    assert dictStats[\"tension_sigma\"] >= 0\n    for sKey in [\"rotation_only\", \"lxuv_informed\", \"xuv_only\"]:\n        dLower, dUpper = dictStats[sKey][\"ci95_age_gyr\"]\n        assert 0 < dLower < dUpper <= D_MAX_AGE_GYR + 1e-3\n",
+          "saCommands": [
+            "pytest tests/test_integrity.py"
+          ],
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/LxuvInformedAge\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 2 items\n\ntests/test_integrity.py ..                                               [100%]\n\n============================== 2 passed in 0.11s ===============================\n"
+        },
+        "listUserTests": []
+      },
+      "saTestCommands": [
+        "pytest tests/test_integrity.py"
+      ],
+      "bRunEnabled": true
     },
     {
       "sName": "Maximum Likelihood",
@@ -348,7 +444,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataBayesianPosteriors.py --lxuv-constraints {Step06.lxuv_constraints}"
+        "python dataBayesianPosteriors.py --lxuv-constraints {Step06.lxuv_constraints} --age-samples {Step08.age_samples}"
       ],
       "saDataFiles": [
         "output/dynesty_transform_final.npy",
@@ -413,7 +509,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataRunVconverge.py --flare-samples {Step02.flare_mcmc_samples} --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
+        "python dataRunVconverge.py --flare-samples {Step02.flare_mcmc_samples} --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
       ],
       "saDataFiles": [
         "EngleBarnes/output/Converged_Param_Dictionary.json",
@@ -432,7 +528,7 @@
           ],
           "sFilePath": "XuvEvolution/tests/test_qualitative.py",
           "sStandardsPath": "XuvEvolution/tests/qualitative_standards.json",
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvEvolution\ncollected 1 item\n\ntests/test_qualitative.py .                                              [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvEvolution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 1 item\n\ntests/test_qualitative.py .                                              [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
         },
         "dictQuantitative": {
           "saCommands": [
@@ -440,7 +536,7 @@
           ],
           "sFilePath": "XuvEvolution/tests/test_quantitative.py",
           "sStandardsPath": "XuvEvolution/tests/quantitative_standards.json",
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvEvolution\ncollected 10 items\n\ntests/test_quantitative.py ..........                                    [100%]\n\n============================== 10 passed in 0.08s ==============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvEvolution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 10 items\n\ntests/test_quantitative.py ..........                                    [100%]\n\n============================== 10 passed in 0.06s ==============================\n"
         },
         "dictIntegrity": {
           "saCommands": [
@@ -448,7 +544,7 @@
           ],
           "sFilePath": "XuvEvolution/tests/test_integrity.py",
           "sStandardsPath": "XuvEvolution/tests/integrity_standards.json",
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvEvolution\ncollected 2 items\n\ntests/test_integrity.py ..                                               [100%]\n\n============================== 2 passed in 0.25s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/XuvEvolution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 2 items\n\ntests/test_integrity.py ..                                               [100%]\n\n============================== 2 passed in 0.10s ===============================\n"
         },
         "listUserTests": []
       },
@@ -465,15 +561,15 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataRunVconverge.py --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
+        "python dataRunVconverge.py --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
       ],
       "saDataFiles": [
         "Engle/output/Converged_Param_Dictionary.json",
         "Ribas/output/Converged_Param_Dictionary.json"
       ],
       "saPlotCommands": [
-        "python plotCumulativeXuv.py {sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType} --engle-barnes-converged {Step10.EngleBarnes_Converged_Param_Dictionary} --ribas-barnes-converged {Step10.RibasBarnes_Converged_Param_Dictionary}",
-        "python plotCosmicShoreline.py {sPlotDirectory}/CosmicShoreline.{sFigureType} --engle-barnes-converged {Step10.EngleBarnes_Converged_Param_Dictionary} --ribas-barnes-converged {Step10.RibasBarnes_Converged_Param_Dictionary}"
+        "python plotCumulativeXuv.py {sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType} --engle-barnes-converged {Step12.EngleBarnes_Converged_Param_Dictionary} --ribas-barnes-converged {Step12.RibasBarnes_Converged_Param_Dictionary}",
+        "python plotCosmicShoreline.py {sPlotDirectory}/CosmicShoreline.{sFigureType} --engle-barnes-converged {Step12.EngleBarnes_Converged_Param_Dictionary} --ribas-barnes-converged {Step12.RibasBarnes_Converged_Param_Dictionary}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType}",
@@ -522,7 +618,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataRunVconverge.py --age-samples {Step07.age_samples} --dynesty-samples {Step09.dynesty_transform_final}"
+        "python dataRunVconverge.py --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
       ],
       "saDataFiles": [
         "EngleModelErrorsOnly/output/Converged_Param_Dictionary.json",
@@ -531,7 +627,7 @@
         "RibasStellarErrorsOnly/output/Converged_Param_Dictionary.json"
       ],
       "saPlotCommands": [
-        "python plotErrorSourceComparison.py {sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType} --engle-converged {Step11.Engle_Converged_Param_Dictionary} --ribas-converged {Step11.Ribas_Converged_Param_Dictionary}"
+        "python plotErrorSourceComparison.py {sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType} --engle-converged {Step13.Engle_Converged_Param_Dictionary} --ribas-converged {Step13.Ribas_Converged_Param_Dictionary}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType}"
@@ -551,7 +647,7 @@
           ],
           "sFilePath": "ErrorSourceComparison/tests/test_quantitative.py",
           "sStandardsPath": "ErrorSourceComparison/tests/quantitative_standards.json",
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/ErrorSourceComparison\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 20 items\n\ntests/test_quantitative.py ....................                          [100%]\n\n============================== 20 passed in 0.08s ==============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/ErrorSourceComparison\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 20 items\n\ntests/test_quantitative.py ....................                          [100%]\n\n============================== 20 passed in 0.07s ==============================\n"
         },
         "dictIntegrity": {
           "saCommands": [
@@ -559,13 +655,62 @@
           ],
           "sFilePath": "ErrorSourceComparison/tests/test_integrity.py",
           "sStandardsPath": "ErrorSourceComparison/tests/integrity_standards.json",
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/ErrorSourceComparison\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 4 items\n\ntests/test_integrity.py ....                                             [100%]\n\n============================== 4 passed in 0.10s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/ErrorSourceComparison\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 4 items\n\ntests/test_integrity.py ....                                             [100%]\n\n============================== 4 passed in 0.09s ===============================\n"
         },
         "listUserTests": []
       },
       "saTestCommands": [
         "pytest tests/test_qualitative.py",
         "pytest tests/test_quantitative.py",
+        "pytest tests/test_integrity.py"
+      ],
+      "bRunEnabled": true
+    },
+    {
+      "sName": "L_XUV-Informed Cumulative XUV",
+      "sDirectory": "LxuvInformedCumulativeXuv",
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python dataRunLxuvInformedVconverge.py --lxuv-informed-ages {Step09.lxuvInformedAgeSamples} --rotation-only-ages {Step09.rotationOnlyAgeSamples}"
+      ],
+      "saDataFiles": [
+        "cumulativeXuvFluxSamplesInformed.txt",
+        "cumulativeXuvFluxSamplesRotationOnly.txt",
+        "cumulativeXuvFluxSamplesFlaresInformed.txt",
+        "cumulativeXuvFluxSamplesFlaresRotationOnly.txt",
+        "cumulativeXuvStats.json"
+      ],
+      "saPlotCommands": [
+        "python plotLxuvInformedCumulativeXuv.py {sPlotDirectory}/LxuvInformedCumulativeXuv.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/LxuvInformedCumulativeXuv.{sFigureType}"
+      ],
+      "dictTests": {
+        "dictQualitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictQuantitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictIntegrity": {
+          "sFilePath": "LxuvInformedCumulativeXuv/tests/test_integrity.py",
+          "sContent": "\"\"\"Integrity checks for the L_XUV-informed cumulative XUV flux outputs.\"\"\"\n\nimport json\nimport os\n\nimport numpy as np\n\nS_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n\n\ndef fdaLoadFlux(sName):\n    \"\"\"Load a cumulative-XUV-flux sample file from the step directory.\"\"\"\n    return np.loadtxt(os.path.join(S_DIRECTORY, sName))\n\n\ndef test_flux_samples_positive_and_finite():\n    \"\"\"Both propagated flux distributions are positive and finite.\"\"\"\n    for sName in [\"cumulativeXuvFluxSamplesInformed.txt\",\n                  \"cumulativeXuvFluxSamplesRotationOnly.txt\"]:\n        daFlux = fdaLoadFlux(sName)\n        assert daFlux.size > 100\n        assert np.all(np.isfinite(daFlux))\n        assert np.all(daFlux > 0)\n\n\ndef test_stats_report_bounded_means():\n    \"\"\"The stats file reports ordered CIs bracketing the mean for each model.\"\"\"\n    with open(os.path.join(S_DIRECTORY, \"cumulativeXuvStats.json\")) as fileHandle:\n        dictStats = json.load(fileHandle)\n    for sKey in [\"EngleLxuvInformed\", \"EngleRotationOnly\"]:\n        dLower, dUpper = dictStats[sKey][\"ci95\"]\n        assert dLower < dictStats[sKey][\"mean\"] < dUpper\n",
+          "saCommands": [
+            "pytest tests/test_integrity.py"
+          ],
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/LxuvInformedCumulativeXuv\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 2 items\n\ntests/test_integrity.py ..                                               [100%]\n\n============================== 2 passed in 0.06s ===============================\n"
+        },
+        "listUserTests": []
+      },
+      "saTestCommands": [
         "pytest tests/test_integrity.py"
       ],
       "bRunEnabled": true
@@ -633,51 +778,6 @@
       "saTestCommands": [],
       "saPlotCommands": [],
       "saPlotFiles": []
-    },
-    {
-      "sName": "Model Graph Figures",
-      "sDirectory": "modelGraphFigures",
-      "bRunEnabled": true,
-      "bPlotOnly": false,
-      "bInteractive": false,
-      "saDataCommands": [
-        "python dataModelGraph.py"
-      ],
-      "saDataFiles": [
-        "probabilisticGraphicalModelStructure.json"
-      ],
-      "saPlotCommands": [
-        "python plotProbabilisticGraphicalModel.py {sPlotDirectory}/ProbabilisticGraphicalModel.{sFigureType}"
-      ],
-      "saPlotFiles": [
-        "{sPlotDirectory}/ProbabilisticGraphicalModel.{sFigureType}"
-      ],
-      "saTestCommands": [
-        "pytest tests/test_integrity.py"
-      ],
-      "dictTests": {
-        "dictQualitative": {
-          "sFilePath": "",
-          "sContent": "",
-          "saCommands": [],
-          "sLastOutput": ""
-        },
-        "dictQuantitative": {
-          "sFilePath": "",
-          "sContent": "",
-          "saCommands": [],
-          "sLastOutput": ""
-        },
-        "dictIntegrity": {
-          "sFilePath": "modelGraphFigures/tests/test_integrity.py",
-          "sContent": "\"\"\"Integrity checks for the GJ 1132 probabilistic graphical model figure.\n\nConfirms that the PGM structure JSON is internally consistent and that the\nrendered figure exists as a valid, non-trivial PDF document. The renderer\nwrites figures to the workflow plot directory (repo-root ``Plot``); when run\nin isolation they land in the step-local ``Plot``. Both locations are checked.\n\"\"\"\n\nimport json\nimport os\n\nS_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nS_REPO_ROOT = os.path.dirname(S_DIRECTORY)\nSET_CATEGORIES = {\"observed\", \"stochastic\", \"deterministic\", \"constant\"}\n\n\ndef fdictLoad(sName):\n    \"\"\"Load a JSON structure file from the step directory.\"\"\"\n    with open(os.path.join(S_DIRECTORY, sName)) as fileHandle:\n        return json.load(fileHandle)\n\n\ndef fsFindFigure(sName):\n    \"\"\"Return the first existing path for a figure across candidate dirs.\"\"\"\n    for sBase in (os.path.join(S_REPO_ROOT, \"Plot\"),\n                  os.path.join(S_DIRECTORY, \"Plot\")):\n        sPath = os.path.join(sBase, sName)\n        if os.path.exists(sPath):\n            return sPath\n    return None\n\n\ndef fnAssertValidPdf(sName):\n    \"\"\"Assert a figure exists, is a PDF, and is not a stub.\"\"\"\n    sPath = fsFindFigure(sName)\n    assert sPath is not None, f\"missing figure {sName}\"\n    with open(sPath, \"rb\") as fileHandle:\n        baHead = fileHandle.read(5)\n    assert baHead == b\"%PDF-\", f\"{sName} is not a valid PDF\"\n    assert os.path.getsize(sPath) > 3000, f\"{sName} is suspiciously small\"\n\n\ndef test_pgm_pdf_valid():\n    \"\"\"The probabilistic graphical model renders to a valid PDF.\"\"\"\n    fnAssertValidPdf(\"ProbabilisticGraphicalModel.pdf\")\n\n\ndef test_pgm_structure_consistent():\n    \"\"\"PGM edges reference declared nodes and use valid categories.\"\"\"\n    dictPgm = fdictLoad(\"probabilisticGraphicalModelStructure.json\")\n    setIds = {dictNode[\"sId\"] for dictNode in dictPgm[\"listNodes\"]}\n    for dictNode in dictPgm[\"listNodes\"]:\n        assert dictNode[\"sCategory\"] in SET_CATEGORIES\n    for dictEdge in dictPgm[\"listEdges\"]:\n        assert dictEdge[\"sSrc\"] in setIds and dictEdge[\"sDst\"] in setIds\n\n\ndef test_pgm_has_every_category():\n    \"\"\"The PGM exercises all four RevBayes node categories.\"\"\"\n    dictPgm = fdictLoad(\"probabilisticGraphicalModelStructure.json\")\n    setPresent = {dictNode[\"sCategory\"] for dictNode in dictPgm[\"listNodes\"]}\n    assert setPresent == SET_CATEGORIES\n\n\ndef test_pgm_categorization_table_present():\n    \"\"\"A parameter-categorization record accompanies the PGM structure.\"\"\"\n    dictPgm = fdictLoad(\"probabilisticGraphicalModelStructure.json\")\n    assert len(dictPgm[\"listCategorization\"]) >= 4\n    for dictRow in dictPgm[\"listCategorization\"]:\n        assert dictRow[\"sCategory\"] in SET_CATEGORIES\n        assert dictRow[\"sRationale\"]\n",
-          "saCommands": [
-            "pytest tests/test_integrity.py"
-          ],
-          "sLastOutput": ""
-        },
-        "listUserTests": []
-      }
     }
   ],
   "sOverleafProjectId": "68656ed576acad848ef2ee0c",
@@ -1025,7 +1125,7 @@
     },
     "Plot/CornerVariableSlope.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
       "sOverleafLastPushedDigest": "122cad016c7c9deac260182c264aef5bef65c971",
       "bGithub": false,
       "sGithubTimestamp": "",
@@ -1035,7 +1135,7 @@
     },
     "Plot/ffd_comp.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
       "sOverleafLastPushedDigest": "42dc78992d7c73274cf45d7ee587d34ebad2c42d",
       "bGithub": false,
       "sGithubTimestamp": "",
@@ -1045,7 +1145,7 @@
     },
     "Plot/GJ1132_flares.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
       "sOverleafLastPushedDigest": "04e84402cce53c1758672a67ed56e3770e33db48",
       "bGithub": false,
       "sGithubTimestamp": "",
@@ -1055,7 +1155,7 @@
     },
     "Plot/GJ1132_FFD_comp2.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
       "sOverleafLastPushedDigest": "6569fa3db41a06ed4a61dca211deafa45ef90469",
       "bGithub": false,
       "sGithubTimestamp": "",
@@ -1065,7 +1165,7 @@
     },
     "Plot/lxuv_hist.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
       "sOverleafLastPushedDigest": "fc4b600fde30e4117c40c034bd959fad022a4d47",
       "bGithub": false,
       "sGithubTimestamp": "",
@@ -1075,7 +1175,7 @@
     },
     "Plot/log_lxuv_lbol_hist.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
       "sOverleafLastPushedDigest": "ac0d42fd4e860ed18a15e241fc7f7a1989608cb7",
       "bGithub": false,
       "sGithubTimestamp": "",
@@ -1085,7 +1185,7 @@
     },
     "Plot/EngleAgeHist.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
       "sOverleafLastPushedDigest": "9beefbb4bba4d050862c4f4aaf0fbd9c8d210869",
       "bGithub": false,
       "sGithubTimestamp": "",
@@ -1095,8 +1195,8 @@
     },
     "Plot/sampler_comparison.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
-      "sOverleafLastPushedDigest": "2ce411254fbc071d813fed6b340271dcf203a4ad",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
+      "sOverleafLastPushedDigest": "0d5de25f7b04d5485a57121519ef17d8b9d68a43",
       "bGithub": false,
       "sGithubTimestamp": "",
       "bZenodo": true,
@@ -1105,8 +1205,8 @@
     },
     "Plot/XUVEvol.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
-      "sOverleafLastPushedDigest": "bd86007e2c992a2d2e6c5cbcaebbba6379648fe2",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
+      "sOverleafLastPushedDigest": "c269272832dea89c9ee81be821571d771a3e127b",
       "bGithub": false,
       "sGithubTimestamp": "",
       "bZenodo": true,
@@ -1115,8 +1215,8 @@
     },
     "Plot/GJ1132b_CumulativeXUV_Multi.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
-      "sOverleafLastPushedDigest": "129ef170d7f3322d39a58e4738adfca7a095ff32",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
+      "sOverleafLastPushedDigest": "eff3f84a72d9d22eb5a002e414ed7b8056d8d904",
       "bGithub": false,
       "sGithubTimestamp": "",
       "bZenodo": true,
@@ -1125,8 +1225,8 @@
     },
     "Plot/CosmicShoreline.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:12:11Z",
-      "sOverleafLastPushedDigest": "78c06db7445d1785bc4aff0de5695048889bd0ac",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
+      "sOverleafLastPushedDigest": "269cb2684764b612f3a3f7dcfa08d7d090f16d8c",
       "bGithub": false,
       "sGithubTimestamp": "",
       "bZenodo": true,
@@ -1135,8 +1235,8 @@
     },
     "Plot/GJ1132b_ErrorSourceComparison.pdf": {
       "bOverleaf": true,
-      "sOverleafTimestamp": "2026-04-28T17:07:16Z",
-      "sOverleafLastPushedDigest": "f1ab918836f3af69dfd67c96fc408cf211407fa2",
+      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
+      "sOverleafLastPushedDigest": "bf2118036cacfc33bcc942891d70d06e95413ed2",
       "bGithub": false,
       "sGithubTimestamp": "",
       "bZenodo": true,
@@ -1180,15 +1280,13 @@
   "iWorkflowSchemaVersion": 5,
   "dictRemotes": {
     "overleaf": {
-      "sProjectId": "68656ed576acad848ef2ee0c"
+      "sProjectId": "68656ed576acad848ef2ee0c",
+      "sLastPushCommit": "dd8fa2db246639bfe375ef79510b204303195569"
     },
     "zenodo": {
       "sRecordId": "491709",
       "sDoi": "10.5072/zenodo.491709",
       "sService": "sandbox"
-    },
-    "arxiv": {
-      "sArxivId": "2605.03939"
     },
     "github": {
       "sOwner": "RoryBarnes",
