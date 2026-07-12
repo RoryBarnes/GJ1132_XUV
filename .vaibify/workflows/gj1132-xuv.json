@@ -778,6 +778,51 @@
       "saTestCommands": [],
       "saPlotCommands": [],
       "saPlotFiles": []
+    },
+    {
+      "sName": "Model Graph Figures",
+      "sDirectory": "modelGraphFigures",
+      "bRunEnabled": true,
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python dataModelGraph.py"
+      ],
+      "saDataFiles": [
+        "probabilisticGraphicalModelStructure.json"
+      ],
+      "saPlotCommands": [
+        "python plotProbabilisticGraphicalModel.py {sPlotDirectory}/ProbabilisticGraphicalModel.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/ProbabilisticGraphicalModel.{sFigureType}"
+      ],
+      "saTestCommands": [
+        "pytest tests/test_integrity.py"
+      ],
+      "dictTests": {
+        "dictQualitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictQuantitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictIntegrity": {
+          "sFilePath": "modelGraphFigures/tests/test_integrity.py",
+          "sContent": "\"\"\"Integrity checks for the GJ 1132 probabilistic graphical model figure.\n\nConfirms that the PGM structure JSON is internally consistent and that the\nrendered figure exists as a valid, non-trivial PDF document. The renderer\nwrites figures to the workflow plot directory (repo-root ``Plot``); when run\nin isolation they land in the step-local ``Plot``. Both locations are checked.\n\"\"\"\n\nimport json\nimport os\n\nS_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nS_REPO_ROOT = os.path.dirname(S_DIRECTORY)\nSET_CATEGORIES = {\"observed\", \"stochastic\", \"deterministic\", \"constant\"}\n\n\ndef fdictLoad(sName):\n    \"\"\"Load a JSON structure file from the step directory.\"\"\"\n    with open(os.path.join(S_DIRECTORY, sName)) as fileHandle:\n        return json.load(fileHandle)\n\n\ndef fsFindFigure(sName):\n    \"\"\"Return the first existing path for a figure across candidate dirs.\"\"\"\n    for sBase in (os.path.join(S_REPO_ROOT, \"Plot\"),\n                  os.path.join(S_DIRECTORY, \"Plot\")):\n        sPath = os.path.join(sBase, sName)\n        if os.path.exists(sPath):\n            return sPath\n    return None\n\n\ndef fnAssertValidPdf(sName):\n    \"\"\"Assert a figure exists, is a PDF, and is not a stub.\"\"\"\n    sPath = fsFindFigure(sName)\n    assert sPath is not None, f\"missing figure {sName}\"\n    with open(sPath, \"rb\") as fileHandle:\n        baHead = fileHandle.read(5)\n    assert baHead == b\"%PDF-\", f\"{sName} is not a valid PDF\"\n    assert os.path.getsize(sPath) > 3000, f\"{sName} is suspiciously small\"\n\n\ndef test_pgm_pdf_valid():\n    \"\"\"The probabilistic graphical model renders to a valid PDF.\"\"\"\n    fnAssertValidPdf(\"ProbabilisticGraphicalModel.pdf\")\n\n\ndef test_pgm_structure_consistent():\n    \"\"\"PGM edges reference declared nodes and use valid categories.\"\"\"\n    dictPgm = fdictLoad(\"probabilisticGraphicalModelStructure.json\")\n    setIds = {dictNode[\"sId\"] for dictNode in dictPgm[\"listNodes\"]}\n    for dictNode in dictPgm[\"listNodes\"]:\n        assert dictNode[\"sCategory\"] in SET_CATEGORIES\n    for dictEdge in dictPgm[\"listEdges\"]:\n        assert dictEdge[\"sSrc\"] in setIds and dictEdge[\"sDst\"] in setIds\n\n\ndef test_pgm_has_every_category():\n    \"\"\"The PGM exercises all four RevBayes node categories.\"\"\"\n    dictPgm = fdictLoad(\"probabilisticGraphicalModelStructure.json\")\n    setPresent = {dictNode[\"sCategory\"] for dictNode in dictPgm[\"listNodes\"]}\n    assert setPresent == SET_CATEGORIES\n\n\ndef test_pgm_categorization_table_present():\n    \"\"\"A parameter-categorization record accompanies the PGM structure.\"\"\"\n    dictPgm = fdictLoad(\"probabilisticGraphicalModelStructure.json\")\n    assert len(dictPgm[\"listCategorization\"]) >= 4\n    for dictRow in dictPgm[\"listCategorization\"]:\n        assert dictRow[\"sCategory\"] in SET_CATEGORIES\n        assert dictRow[\"sRationale\"]\n",
+          "saCommands": [
+            "pytest tests/test_integrity.py"
+          ],
+          "sLastOutput": ""
+        },
+        "listUserTests": []
+      }
     }
   ],
   "sOverleafProjectId": "68656ed576acad848ef2ee0c",
