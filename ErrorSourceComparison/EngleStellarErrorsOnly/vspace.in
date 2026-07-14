@@ -1,0 +1,21 @@
+srcfolder .
+destfolder output
+trialname xuv_
+samplemode random
+randsize 500
+
+file b.in
+
+dMass [-1.66, 0.023, g, max0] b_mass
+dRadius [-1.13, 0.02, g, max0] b_radius
+dEcc [0.0030547, 0.00412, g, min0, max1] b_ecc
+dOrbPeriod [-1.628931, 0.000027, g, max0] b_orbper
+
+file star.in
+
+dMass [0.1945, 0.0047, g] mass
+dAge [5e6,1e6, g, min1000000] start
+
+file vpl.in
+
+dStopTime [age_samples.txt, txt, p, 1] age

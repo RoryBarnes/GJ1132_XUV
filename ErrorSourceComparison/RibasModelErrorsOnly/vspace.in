@@ -1,0 +1,15 @@
+srcfolder .
+destfolder output
+trialname xuv_
+samplemode random
+randsize 500
+
+file b.in
+
+file star.in
+
+dSatXUVFrac [dynesty_transform_final.npy, npy, p, 2] fsat
+dSatXUVTime [dynesty_transform_final.npy, npy, p, 3] tsat
+dXUVBeta [dynesty_transform_final.npy, npy, p, 5] beta
+
+file vpl.in

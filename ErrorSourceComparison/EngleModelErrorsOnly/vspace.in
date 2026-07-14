@@ -1,0 +1,16 @@
+srcfolder .
+destfolder output
+trialname xuv_
+samplemode random
+randsize 500
+
+file b.in
+
+file star.in
+
+dXUVEngleMidLateA [engle_xuv_priors.txt, txt, p, 1] engle_a
+dXUVEngleMidLateB [engle_xuv_priors.txt, txt, p, 2] engle_b
+dXUVEngleMidLateC [engle_xuv_priors.txt, txt, p, 3] engle_c
+dXUVEngleMidLateD [engle_xuv_priors.txt, txt, p, 4] engle_d
+
+file vpl.in
