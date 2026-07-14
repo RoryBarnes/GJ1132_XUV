@@ -15,6 +15,32 @@ def fdictLoadHistory():
         return json.load(fileHandle)
 
 
+def test_shown_trajectories_are_real_and_span_the_range():
+    """The 25 plotted simulations are complete runs spanning the flux spread."""
+    listShown = fdictLoadHistory()["listShownTrajectories"]
+    assert len(listShown) == 25
+    for dictTrajectory in listShown:
+        daFlux = np.array(dictTrajectory["daFlux"])
+        daAge = np.array(dictTrajectory["daAgeGrid"])
+        assert np.all(np.diff(daFlux) >= -1e-9)
+        assert np.all(np.diff(daAge) > 0)
+        assert abs(daFlux[-1] - dictTrajectory["dFinalFlux"]) < 1e-6
+        assert abs(daAge[-1] - dictTrajectory["dPresentAge"]) < 1e-6
+    daFinal = np.array([d["dFinalFlux"] for d in listShown])
+    assert daFinal[-1] > 3 * daFinal[0], "shown set should span the spread"
+
+
+def test_shown_endpoints_sample_the_age_interval():
+    """The present-day endpoints fall around the age posterior's interval."""
+    dictSummary = fdictLoadHistory()
+    daEndAge = np.array([d["dPresentAge"]
+                         for d in dictSummary["listShownTrajectories"]])
+    dLower, dUpper = dictSummary["dictAgePosterior"]["ci95"]
+    dMedian = dictSummary["dictAgePosterior"]["median"]
+    assert dLower - 1 < np.median(daEndAge) < dUpper + 1
+    assert abs(np.median(daEndAge) - dMedian) < 1.0
+
+
 def test_history_is_monotone_and_bracketed():
     """The median accumulation curve rises monotonically inside its envelope."""
     dictHistory = fdictLoadHistory()["dictHistory"]
