@@ -1,0 +1,23 @@
+srcfolder .
+destfolder output
+trialname xuv_
+samplemode random
+randsize 500
+
+file b.in
+
+dMass [-1.66, 0.023, g, max0] b_mass
+dRadius [-1.13, 0.02, g, max0] b_radius
+dEcc [0.0030547, 0.00412, g, min0, max1] b_ecc
+dOrbPeriod [-1.628931, 0.000027, g, max0] b_orbper
+
+file star.in
+
+dMass [dynesty_transform_final.npy, npy, p, 1] mass
+dSatXUVFrac [dynesty_transform_final.npy, npy, p, 2] fsat
+dSatXUVTime [dynesty_transform_final.npy, npy, p, 3] tsat
+dXUVBeta [dynesty_transform_final.npy, npy, p, 5] beta
+
+file vpl.in
+
+dStopTime [dynesty_transform_final.npy, npy, p, 4] age

@@ -1,0 +1,30 @@
+srcfolder .
+destfolder output
+trialname xuv_
+samplemode random
+randsize 500
+
+file b.in
+
+dMass [-1.66, 0.023, g, max0] b_mass
+dRadius [-1.13, 0.02, g, max0] b_radius
+dEcc [0.0030547, 0.00412, g, min0, max1] b_ecc
+dOrbPeriod [-1.628931, 0.000027, g, max0] b_orbper
+
+file star.in
+
+dMass [dynesty_transform_final.npy, npy, p, 1] mass
+dSatXUVFrac [dynesty_transform_final.npy, npy, p, 2] fsat
+dSatXUVTime [dynesty_transform_final.npy, npy, p, 3] tsat
+dXUVBeta [dynesty_transform_final.npy, npy, p, 5] beta
+dAge [5e6,1e6, g, min1000000] start
+dFlareSlopeA1 [flares_variable_slope.npy, npy, p, 1] dav_a1
+dFlareSlopeA2 [flares_variable_slope.npy, npy, p, 2] dav_a2
+dFlareSlopeA3 [flares_variable_slope.npy, npy, p, 3] dav_a3
+dFlareYIntB1 [flares_variable_slope.npy, npy, p, 4] dav_b1
+dFlareYIntB2 [flares_variable_slope.npy, npy, p, 5] dav_b2
+dFlareYIntB3 [flares_variable_slope.npy, npy, p, 6] dav_b3
+
+file vpl.in
+
+dStopTime [dynesty_transform_final.npy, npy, p, 4] age
