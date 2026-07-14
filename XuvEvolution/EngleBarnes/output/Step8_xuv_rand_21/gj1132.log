@@ -1,7 +1,7 @@
 -------- Log file gj1132.log -------
 
 Executable: /home/vplanet/.local/bin/vplanet
-Version: v1.0.0-10152-g6bccf9cc92a813bfdb457599676b24250ebfa7a1
+Version: Unknown
 System Name: gj1132
 Primary Input File: vpl.in
 Body File #1: star.in
@@ -19,7 +19,7 @@ Number of Digits After Decimal: 6
 Integration Method: Runge-Kutta4
 Direction: Forward
 Time Step: 3.155760e+07
-Stop Time: 1.945679e+17
+Stop Time: 2.256145e+17
 Output Interval: 3.155760e+13
 Use Variable Timestep: Yes
 dEta: 0.010000
@@ -27,84 +27,65 @@ Minimum Value of ecc and obl: 1.000000e-10
 
 
 ---- INITIAL SYSTEM PROPERTIES ----
-(Age) System Age [sec]: 8.984599e+13 
+(Age) System Age [sec]: 1.875651e+14 
 (Time) Simulation Time [sec]: 0.000000 
-(TotAngMom) Total Angular Momentum [kg*m^2/sec]: 2.378610e+42 
-(TotEnergy) Total System Energy [kg*m^2/sec^2]: -9.172334e+39 
-(PotEnergy) Body's non-orbital Potential Energy [kg*m^2/sec^2]: -9.258675e+39 
-(KinEnergy) Body's non-orbital Kinetic Energy [kg*m^2/sec^2]: 8.639757e+37 
+(TotAngMom) Total Angular Momentum [kg*m^2/sec]: 1.279195e+42 
+(TotEnergy) Total System Energy [kg*m^2/sec^2]: -1.146171e+40 
+(PotEnergy) Body's non-orbital Potential Energy [kg*m^2/sec^2]: -1.150808e+40 
+(KinEnergy) Body's non-orbital Kinetic Energy [kg*m^2/sec^2]: 4.642605e+37 
 (DeltaTime) Average Timestep Over Last Output Interval [sec]: 0.000000 
 
 ----- BODY: star ----
 Active Modules: FLARE STELLAR
 Module Bit Sum: 577
 Color: 000000
-(Mass) Mass [kg]: 3.856453e+29 
-(TimeStepVar) Number of variable responsible for setting timestep []: 0.000000 
-(Radius) Radius [m]: 6.432546e+08 
-(RadGyra) Radius of Gyration/Moment of Inertia Constant []: 0.452504 
-(RotAngMom) Rotational Angular Momentum [kg*m^2/sec]: 2.376104e+42 
-(RotVel) Rotational Velocity [m/sec]: 4.677880e+04 
+(Mass) Mass [kg]: 3.702193e+29 
+(Radius) Radius [m]: 4.769479e+08 
+(RadGyra) Radius of Gyration/Moment of Inertia Constant []: 0.456593 
+(RotAngMom) Rotational Angular Momentum [kg*m^2/sec]: 1.276808e+42 
+(RotVel) Rotational Velocity [m/sec]: 3.468463e+04 
 (BodyType) Type of Body (0 == planet) []: 0.000000 
 (RotRate) Rotational Frequency [/sec]: 7.272205e-05 
 (RotPer) Rotational Period [sec]: 8.640000e+04 
-(Density) Average Density [kg/m^3]: 345.900074 
-(HZLimitDryRunaway) Semi-major axis of Dry Runaway HZ Limit [m]: 3.791284e+10 
-(HZLimRecVenus) Recent Venus HZ Limit [m]: 3.398974e+10 
-(HZLimRunaway) Runaway Greenhouse HZ Limit [m]: 4.481252e+10 
-(HZLimMoistGreenhouse) Moist Greenhouse HZ Limit [m]: 4.497402e+10 
-(HZLimMaxGreenhouse) Maximum Greenhouse HZ Limit [m]: 8.559669e+10 
-(HZLimEarlyMars) Early Mars HZ Limit [m]: 9.335227e+10 
+(Density) Average Density [kg/m^3]: 814.624696 
+(HZLimitDryRunaway) Semi-major axis of Dry Runaway HZ Limit [m]: 2.861842e+10 
+(HZLimRecVenus) Recent Venus HZ Limit [m]: 2.564347e+10 
+(HZLimRunaway) Runaway Greenhouse HZ Limit [m]: 3.381706e+10 
+(HZLimMoistGreenhouse) Moist Greenhouse HZ Limit [m]: 3.393053e+10 
+(HZLimMaxGreenhouse) Maximum Greenhouse HZ Limit [m]: 6.450978e+10 
+(HZLimEarlyMars) Early Mars HZ Limit [m]: 7.035486e+10 
 (Instellation) Orbit-averaged INcident STELLar radiATION [kg/sec^3]: -1.000000 
 (CriticalSemiMajorAxis) Holman & Wiegert (1999) P-type Critical Semi-major Axis [m]: -1.000000 
-(LXUVTot) Total XUV Luminosity [LSUN]: 0.000416 
+(LXUVTot) Total XUV Luminosity [LSUN]: 0.000172 
 (LostEnergy) Body's Total Lost Energy [kg*m^2/sec^2]: 5.562685e-309 
 (LostAngMom) Lost Angular Momentum due to Magnetic Braking [kg*m^2/sec]: 5.562685e-309 
-(EscapeVelocity) Escape Velocity [m/sec]: 2.828914e+05 
-(CassiniL) Correia (2015)'s Cassini state angular momnetum invariant []: -1.000000 
-(CassiniG1) Correia (2015)'s Cassini state G1 parameter []: -1.000000 
-(CassiniG2) Correia (2015)'s Cassini state G2 parameter []: -1.000000 
-(CassiniAlpha1) Correia (2015)'s Cassini state alpha1 parameter []: -1.000000 
-(CassiniAlpha2) Correia (2015)'s Cassini state alpha2 parameter []: -1.000000 
-(CassiniGamma) Correia (2015)'s Cassini state gamma parameter []: -1.000000 
+(EscapeVelocity) Escape Velocity [m/sec]: 3.218928e+05 
 ----- STELLAR PARAMETERS (star)------
-(Luminosity) Luminosity [LSUN]: 0.077962 
-(LXUVStellar) Quiescent XUV Luminosity [LSUN]: 0.000400 
-(Temperature) Effective Temperature [K]: 3172.524520 
-(LXUVFrac) Fraction of luminosity in XUV []: 0.005133 
-(RossbyNumber) Rossby Number []: 0.016158 
-(DRotPerDtStellar) Time Rate of Change of Rotation Period in STELLAR []: -1.499388e-10 
-(WindTorque) Stellar Wind Torque []: 1.611137e+28 
+(Luminosity) Luminosity [LSUN]: 0.044422 
+(LXUVStellar) Base X-ray/XUV Luminosity [LSUN]: 0.000161 
+(Temperature) Effective Temperature [K]: 3200.429009 
+(LXUVFrac) Fraction of luminosity in XUV []: 0.003634 
+(RossbyNumber) Rossby Number []: 0.016391 
+(DRotPerDtStellar) Time Rate of Change of Rotation Period in STELLAR []: -1.349970e-10 
+(WindTorque) Stellar Wind Torque []: 3.358056e+27 
 ----- FLARE PARAMETERS (star)------
-(LXUVFlare) XUV Luminosity from flares [LSUN]: 1.620740e-05 
-(FlareFreq1) First value of flare frequency range [/sec]: 9.649215e-07 
-(FlareFreq2) Second value of flare frequency range [/sec]: 7.881214e-07 
-(FlareFreq3) Third value of flare frequency range [/sec]: 6.437160e-07 
-(FlareFreq4) Fourth value of flare frequency range [/sec]: 5.257696e-07 
-(FlareFreqMin) Frequency of the flares with the lowest energy [/sec]: 9.649215e-07 
-(FlareFreqMid) Frequency of the flares with the middle energy in the energy range [/sec]: 1.274981e-07 
-(FlareFreqMax) Frequency of the flares with the highest energy [/sec]: 1.684671e-08 
-(FlareEnergy1) First value of flare energy range [kg*m^2/sec^2]: 1.000000e+26 
-(FlareEnergy2) Second value of flare energy range [kg*m^2/sec^2]: 1.412538e+26 
-(FlareEnergy3) Third value of flare energy range [kg*m^2/sec^2]: 1.995262e+26 
-(FlareEnergy4) Fourth value of flare energy range [kg*m^2/sec^2]: 2.818383e+26 
-(FlareEnergyMin) Minimum flare energy [kg*m^2/sec^2]: 1.000000e+26 
-(FlareEnergyMid) Middle flare energy in the range of energy values [kg*m^2/sec^2]: 3.162278e+27 
-(FlareEnergyMax) Maximum flare energy [kg*m^2/sec^2]: 1.000000e+29 
-(FlareEnergyXUV1) First value of flare energy range in XUV [kg*m^2/sec^2]: 1.875000e+26 
-(FlareEnergyXUV2) Second value of flare energy range in XUV [kg*m^2/sec^2]: 2.648508e+26 
-(FlareEnergyXUV3) Third value of flare energy range in XUV [kg*m^2/sec^2]: 3.741117e+26 
-(FlareEnergyXUV4) Fourth value of flare energy range in XUV [kg*m^2/sec^2]: 5.284468e+26 
-(FlareEnergyXUVMin) Minimum flare energy in the XUV range [kg*m^2/sec^2]: 1.875000e+26 
-(FlareEnergyXUVMid) Middle flare energy in the range of energy values of XUV [kg*m^2/sec^2]: 5.929271e+27 
-(FlareEnergyXUVMax) Maximum flare energy in the XUV range [kg*m^2/sec^2]: 1.875000e+29 
-(FlareYIntOUT) FFD Y-Intercept [/sec]: 18.418727 
-(FlareSlopeOUT) FFD slope [kg*m^2/sec^3]: -0.585992 
-(CMEFluence30MeV) Particle flux of 30 MeV protons due to CMEs at the stellar surface [m^-2 sec^-1]: 1.337849e+21 
-(FlareFreqKepler1) First Kepler-band flare frequency [/sec]: 1.394661e-06 
-(FlareFreqKepler2) Second Kepler-band flare frequency [/sec]: 1.139121e-06 
-(FlareFreqKepler3) Third Kepler-band flare frequency [/sec]: 9.304026e-07 
-(FlareFreqKepler4) Fourth Kepler-band flare frequency [/sec]: 7.599274e-07 
+(LXUVFlare) XUV Luminosity from flares [LSUN]: 1.064913e-05 
+(FlareFreq1) First value of flare frequency range [/sec]: 1.777594e-06 
+(FlareFreq2) Second value of flare frequency range [/sec]: 1.426576e-06 
+(FlareFreq3) Third value of flare frequency range [/sec]: 1.144873e-06 
+(FlareFreq4) Fourth value of flare frequency range [/sec]: 9.187969e-07 
+(FlareFreqMin) Frequency of the flares with the lowest energy [/sec]: 1.777594e-06 
+(FlareFreqMid) Frequency of the flares with the middle energy in the energy range [/sec]: 1.969953e-07 
+(FlareFreqMax) Frequency of the flares with the highest energy [/sec]: 2.183127e-08 
+(FlareEnergy1) First value of flare energy range [kg*m^2/sec^2]: 5.334000e+25 
+(FlareEnergy2) Second value of flare energy range [kg*m^2/sec^2]: 7.534475e+25 
+(FlareEnergy3) Third value of flare energy range [kg*m^2/sec^2]: 1.064273e+26 
+(FlareEnergy4) Fourth value of flare energy range [kg*m^2/sec^2]: 1.503325e+26 
+(FlareEnergyMin) Minimum flare energy [kg*m^2/sec^2]: 5.334000e+25 
+(FlareEnergyMid) Middle flare energy in the range of energy values [kg*m^2/sec^2]: 1.686759e+27 
+(FlareEnergyMax) Maximum flare energy [kg*m^2/sec^2]: 5.334000e+28 
+(FlareYIntOUT) Instantaneous Davenport FFD y-intercept at current age and mass []: 20.030790 
+(FlareSlopeOUT) Instantaneous Davenport FFD slope at current age and mass []: -0.636918 
 
 Output Order: Time[year] Luminosity[LSUN] LXUVStellar[LSUN] LXUVFlare[LSUN] LXUVTot[LSUN]
 Grid Output Order:
@@ -113,73 +94,57 @@ Grid Output Order:
 Active Modules: AtmEsc
 Module Bit Sum: 9
 Color: 000000
-(Mass) Mass [kg]: 1.019873e+25 
-(TimeStepVar) Number of variable responsible for setting timestep []: 0.000000 
-(Radius) Radius [m]: 7.208551e+06 
+(Mass) Mass [kg]: 9.980698e+24 
+(Radius) Radius [m]: 7.190967e+06 
 (RadGyra) Radius of Gyration/Moment of Inertia Constant []: 0.500000 
 (BodyType) Type of Body (0 == planet) []: 0.000000 
-(Density) Average Density [kg/m^3]: 6500.001681 
-(SurfWaterMass) Surface water mass [kg]: 0.000000 
-(HZLimitDryRunaway) Semi-major axis of Dry Runaway HZ Limit [m]: 3.791380e+10 
-(HZLimRecVenus) Recent Venus HZ Limit [m]: 3.398974e+10 
-(HZLimRunaway) Runaway Greenhouse HZ Limit [m]: 4.481252e+10 
-(HZLimMoistGreenhouse) Moist Greenhouse HZ Limit [m]: 4.497402e+10 
-(HZLimMaxGreenhouse) Maximum Greenhouse HZ Limit [m]: 8.559669e+10 
-(HZLimEarlyMars) Early Mars HZ Limit [m]: 9.335227e+10 
-(Instellation) Orbit-averaged INcident STELLar radiATION [kg/sec^3]: 4.334923e+05 
-(MeanMotion) Orbital Mean Motion [/sec]: 4.464462e-05 
-(OrbPeriod) Orbital Period [sec]: 1.407378e+05 
-(SemiMajorAxis) Semi-major Axis [m]: 2.346147e+09 
+(Density) Average Density [kg/m^3]: 6407.822256 
+(HZLimitDryRunaway) Semi-major axis of Dry Runaway HZ Limit [m]: 2.861897e+10 
+(HZLimRecVenus) Recent Venus HZ Limit [m]: 2.564347e+10 
+(HZLimRunaway) Runaway Greenhouse HZ Limit [m]: 3.381706e+10 
+(HZLimMoistGreenhouse) Moist Greenhouse HZ Limit [m]: 3.393053e+10 
+(HZLimMaxGreenhouse) Maximum Greenhouse HZ Limit [m]: 6.450978e+10 
+(HZLimEarlyMars) Early Mars HZ Limit [m]: 7.035486e+10 
+(Instellation) Orbit-averaged INcident STELLar radiATION [kg/sec^3]: 2.538203e+05 
+(MeanMotion) Orbital Mean Motion [/sec]: 4.464537e-05 
+(OrbPeriod) Orbital Period [sec]: 1.407354e+05 
+(SemiMajorAxis) Semi-major Axis [m]: 2.314412e+09 
 (LXUVTot) Total XUV Luminosity [kg/sec^3]: -1.000000 
-(EscapeVelocity) Escape Velocity [m/sec]: 1.374251e+04 
-(CassiniL) Correia (2015)'s Cassini state angular momnetum invariant []: -1.000000 
-(CassiniG1) Correia (2015)'s Cassini state G1 parameter []: -1.000000 
-(CassiniG2) Correia (2015)'s Cassini state G2 parameter []: -1.000000 
-(CassiniAlpha1) Correia (2015)'s Cassini state alpha1 parameter []: -1.000000 
-(CassiniAlpha2) Correia (2015)'s Cassini state alpha2 parameter []: -1.000000 
-(CassiniGamma) Correia (2015)'s Cassini state gamma parameter []: -1.000000 
+(EscapeVelocity) Escape Velocity [m/sec]: 1.361144e+04 
 ----- ATMESC PARAMETERS (b)------
-(OceanMassLost) Ocean Mass Lost [kg]: 0.000000 
-(WaterLossRate) Water Loss Rate [kg/sec]: 5.562685e-309 
+(SurfWaterMass) Surface water mass [kg]: 0.000000 
 (EnvelopeMass) Envelope mass [kg]: 0.000000 
 (OxygenMass) Oxygen mass in the atmosphere [kg]: 0.000000 
-(RGLimit) Runaway greenhouse semi-major axis [m]: 4.292202e+10 
+(RGLimit) Runaway greenhouse semi-major axis [m]: 3.240689e+10 
 (XO) Atomic oxygen mixing ratio in upper atmosphere []: 0.000000 
 (EtaO) Oxygen eta parameter (Luger and Barnes 2015) []: 0.000000 
-(PlanetRadius) Planet radius [m]: 7.208551e+06 
+(PlanetRadius) Planet radius [m]: 7.190967e+06 
 (OxygenMantleMass) Mass of oxygen in mantle [kg]: 0.000000 
 (RadXUV) XUV radius separating hydro. dyn. escape and equilibrium [m]: -1.000000 
 (RadSolid) Radius to the solid surface [m]: -1.000000 
-(PresXUV) Pressure at base of thermosphere [kg/m/sec^2]: 5.000000 
+(PresXUV) Pressure at base of thermosphere [(null)]: 5.000000 
 (ScaleHeight) Scale height in Lehmer & Catling (2016) model [m]: -1.000000 
 (ThermTemp) Isothermal atmospheric temperature [K]: 400.000000 
-(AtmGasConst) Atmospheric gas constant [kg*m^2/sec^2/K/kg]: 1.700738e+04 
-(PresSurf) Surface pressure due to atmosphere [kg/m/sec^2]: -1.000000 
-(DEnvMassDt) Envelope Mass Loss Rate [kg/sec]: 0.000000 
-(FXUV) XUV flux [W/m^2]: 2315.020328 
+(AtmGasConst) Atmospheric gas constant [(null)]: 4124.000000 
+(PresSurf) Surface pressure due to atmosphere [Pa]: -1.000000 
+(DEnvMassDt) Envelope Mass Loss Rate [kg/s]: 0.000000 
+(FXUV) XUV flux [W/m^2]: 983.180452 
 (AtmXAbsEffH2O) XUV atmospheric escape efficiency for H2O []: 0.300000 
-(RocheRadius) Roche Lobe Radius [m]: 4.846565e+07 
-(BondiRadius) Bondi Radius [m]: 3.088818e+08 
+(RocheRadius) Roche Lobe Radius [m]: 4.811727e+07 
+(BondiRadius) Bondi Radius [m]: 3.503623e+08 
 (HEscapeRegime) Integer flag for H envelope escape regime []: 8.000000 
-(RRCriticalFlux) Critical XUV Flux that separates RR and energy-limited escape [W/m^2]: 65.759373 
+(RRCriticalFlux) Critical XUV Flux that separates RR and energy-limited escape [W/m^2]: 63.271004 
 (CrossoverMass) Crossover mass, defines oxygen is escaping if mc > mo [kg]: 0.000000 
 (WaterEscapeRegime) What water escape regime the code is currently in []: 8.000000 
-(FXUVCRITDRAG) Critical Drag XUV flux [W/m^2]: -0.000000 
-(HREFFLUX) The Hydrogen Reference Flux [m^-2 sec^-1]: 1.422271e+21 
+(FXUVCRITDRAG) Critical Drag XUV flux [W/m^2]: 0.519084 
+(HREFFLUX) The Hydrogen Reference Flux (m^-2 s^-1) [m^-2 s^-1]: 6.165490e+20 
 (XO2) Molecular oxygen mixing ratio in atmosphere []: 0.000000 
 (XH2O) Water mixing ratio in upper atmosphere []: 0.000000 
-(HDiffFlux) The Hydrogen Diffusion Flux [m^-2 sec^-1]: -0.000000 
+(HDiffFlux) The Hydrogen Diffusion Flux (m^-2 s^-1) [m^-2 s^-1]: 2.494447e+17 
 (HRefODragMod) Multiply by H ref flux to get flux with drag []: 1.000000 
-(KTide) Mass loss enhancement due to stellar gravity []: 0.778542 
+(KTide) Mass loss enhancement due to stellar gravity []: 0.777499 
 (CumulativeXUVFlux) Cumulative XUV flux [W/m^2]: 0.000000 
-(CMELossHydrogen) Mass of hydrogen lost due to CME stripping [kg]: 0.000000 
-(CMELossWater) Mass of water lost due to CME stripping [kg]: 0.000000 
-(CMELossOxygen) Mass of oxygen lost due to CME stripping [kg]: 0.000000 
-(CMELossCO2) Mass of carbon dioxide lost due to CME stripping [kg]: 0.000000 
-(DEnvMassDtCME) Envelope Mass Loss Rate due to CMEs [kg/sec]: 0.000000 
-(DWaterMassDtCME) Water Mass Loss Rate due to CMEs [kg/sec]: 0.000000 
-(DCO2MassDtCME) CO2 Mass Loss Rate due to CMEs [kg/sec]: 0.000000 
-(DOxygenMassDtCME) Oxygen Mass Loss Rate due to CMEs [kg/sec]: 0.000000 
+(RunawayGreenhouseFlux) Incident flux that triggers runaway greenhouse [kg/sec^3]: 1294.542930 
 (RGDuration) Runaway Greenhouse Duration [years]: 0.00000e+00
 
 Output Order: Time[year] CumulativeXUVFlux[W/m^2]
@@ -188,84 +153,65 @@ Grid Output Order:
 
 
 ---- FINAL SYSTEM PROPERTIES ----
-(Age) System Age [sec]: 1.946740e+17 
-(Time) Simulation Time [sec]: 1.945842e+17 
-(TotAngMom) Total Angular Momentum [kg*m^2/sec]: 2.387352e+42 
-(TotEnergy) Total System Energy [kg*m^2/sec^2]: -9.153359e+39 
-(PotEnergy) Body's non-orbital Potential Energy [kg*m^2/sec^2]: -4.097042e+40 
-(KinEnergy) Body's non-orbital Kinetic Energy [kg*m^2/sec^2]: 7.216869e+32 
+(Age) System Age [sec]: 2.258244e+17 
+(Time) Simulation Time [sec]: 2.256368e+17 
+(TotAngMom) Total Angular Momentum [kg*m^2/sec]: 1.281222e+42 
+(TotEnergy) Total System Energy [kg*m^2/sec^2]: -1.145540e+40 
+(PotEnergy) Body's non-orbital Potential Energy [kg*m^2/sec^2]: -3.891420e+40 
+(KinEnergy) Body's non-orbital Kinetic Energy [kg*m^2/sec^2]: 5.683992e+32 
 (DeltaTime) Average Timestep Over Last Output Interval [sec]: 1.577880e+13 
 
 ----- BODY: star ----
 Active Modules: FLARE STELLAR
 Module Bit Sum: 577
 Color: 000000
-(Mass) Mass [kg]: 3.856453e+29 
-(TimeStepVar) Number of variable responsible for setting timestep []: 1502.000000 
-(Radius) Radius [m]: 1.453655e+08 
-(RadGyra) Radius of Gyration/Moment of Inertia Constant []: 0.460473 
-(RotAngMom) Rotational Angular Momentum [kg*m^2/sec]: 1.579244e+39 
-(RotVel) Rotational Velocity [m/sec]: 132.858999 
+(Mass) Mass [kg]: 3.702193e+29 
+(Radius) Radius [m]: 1.410476e+08 
+(RadGyra) Radius of Gyration/Moment of Inertia Constant []: 0.460652 
+(RotAngMom) Rotational Angular Momentum [kg*m^2/sec]: 1.332939e+39 
+(RotVel) Rotational Velocity [m/sec]: 120.292615 
 (BodyType) Type of Body (0 == planet) []: 0.000000 
-(RotRate) Rotational Frequency [/sec]: 9.139651e-07 
-(RotPer) Rotational Period [sec]: 6.874645e+06 
-(Density) Average Density [kg/m^3]: 2.997198e+04 
-(HZLimitDryRunaway) Semi-major axis of Dry Runaway HZ Limit [m]: 8.994140e+09 
-(HZLimRecVenus) Recent Venus HZ Limit [m]: 8.052448e+09 
-(HZLimRunaway) Runaway Greenhouse HZ Limit [m]: 1.062319e+10 
-(HZLimMoistGreenhouse) Moist Greenhouse HZ Limit [m]: 1.065471e+10 
-(HZLimMaxGreenhouse) Maximum Greenhouse HZ Limit [m]: 2.022377e+10 
-(HZLimEarlyMars) Early Mars HZ Limit [m]: 2.205626e+10 
+(RotRate) Rotational Frequency [/sec]: 8.528512e-07 
+(RotPer) Rotational Period [sec]: 7.367270e+06 
+(Density) Average Density [kg/m^3]: 3.149730e+04 
+(HZLimitDryRunaway) Semi-major axis of Dry Runaway HZ Limit [m]: 8.604537e+09 
+(HZLimRecVenus) Recent Venus HZ Limit [m]: 7.706438e+09 
+(HZLimRunaway) Runaway Greenhouse HZ Limit [m]: 1.016501e+10 
+(HZLimMoistGreenhouse) Moist Greenhouse HZ Limit [m]: 1.019688e+10 
+(HZLimMaxGreenhouse) Maximum Greenhouse HZ Limit [m]: 1.936856e+10 
+(HZLimEarlyMars) Early Mars HZ Limit [m]: 2.112353e+10 
 (Instellation) Orbit-averaged INcident STELLar radiATION [kg/sec^3]: -1.000000 
 (CriticalSemiMajorAxis) Holman & Wiegert (1999) P-type Critical Semi-major Axis [m]: -1.000000 
-(LXUVTot) Total XUV Luminosity [LSUN]: 6.209771e-07 
-(LostEnergy) Body's Total Lost Energy [kg*m^2/sec^2]: 3.181712e+40 
-(LostAngMom) Lost Angular Momentum due to Magnetic Braking [kg*m^2/sec]: 2.383267e+42 
-(EscapeVelocity) Escape Velocity [m/sec]: 5.950871e+05 
-(CassiniL) Correia (2015)'s Cassini state angular momnetum invariant []: -1.000000 
-(CassiniG1) Correia (2015)'s Cassini state G1 parameter []: -1.000000 
-(CassiniG2) Correia (2015)'s Cassini state G2 parameter []: -1.000000 
-(CassiniAlpha1) Correia (2015)'s Cassini state alpha1 parameter []: -1.000000 
-(CassiniAlpha2) Correia (2015)'s Cassini state alpha2 parameter []: -1.000000 
-(CassiniGamma) Correia (2015)'s Cassini state gamma parameter []: -1.000000 
+(LXUVTot) Total XUV Luminosity [LSUN]: 8.503758e-07 
+(LostEnergy) Body's Total Lost Energy [kg*m^2/sec^2]: 2.745885e+40 
+(LostAngMom) Lost Angular Momentum due to Magnetic Braking [kg*m^2/sec]: 1.277502e+42 
+(EscapeVelocity) Escape Velocity [m/sec]: 5.919212e+05 
 ----- STELLAR PARAMETERS (star)------
-(Luminosity) Luminosity [LSUN]: 0.004388 
-(LXUVStellar) Quiescent XUV Luminosity [LSUN]: 2.426037e-07 
-(Temperature) Effective Temperature [K]: 3243.588435 
-(LXUVFrac) Fraction of luminosity in XUV []: 5.529290e-05 
-(RossbyNumber) Rossby Number []: 1.333322 
-(DRotPerDtStellar) Time Rate of Change of Rotation Period in STELLAR []: 1.938358e-11 
-(WindTorque) Stellar Wind Torque []: 4.622892e+21 
+(Luminosity) Luminosity [LSUN]: 0.004016 
+(LXUVStellar) Base X-ray/XUV Luminosity [LSUN]: 5.039158e-07 
+(Temperature) Effective Temperature [K]: 3224.918856 
+(LXUVFrac) Fraction of luminosity in XUV []: 0.000125 
+(RossbyNumber) Rossby Number []: 1.415267 
+(DRotPerDtStellar) Time Rate of Change of Rotation Period in STELLAR []: 1.703385e-11 
+(WindTorque) Stellar Wind Torque []: 2.861593e+21 
 ----- FLARE PARAMETERS (star)------
-(LXUVFlare) XUV Luminosity from flares [LSUN]: 3.783468e-07 
-(FlareFreq1) First value of flare frequency range [/sec]: 1.487690e-07 
-(FlareFreq2) Second value of flare frequency range [/sec]: 1.024418e-07 
-(FlareFreq3) Third value of flare frequency range [/sec]: 7.054101e-08 
-(FlareFreq4) Fourth value of flare frequency range [/sec]: 4.857427e-08 
-(FlareFreqMin) Frequency of the flares with the lowest energy [/sec]: 1.487690e-07 
-(FlareFreqMid) Frequency of the flares with the middle energy in the energy range [/sec]: 3.565811e-09 
-(FlareFreqMax) Frequency of the flares with the highest energy [/sec]: 8.546814e-11 
-(FlareEnergy1) First value of flare energy range [kg*m^2/sec^2]: 1.000000e+26 
-(FlareEnergy2) Second value of flare energy range [kg*m^2/sec^2]: 1.412538e+26 
-(FlareEnergy3) Third value of flare energy range [kg*m^2/sec^2]: 1.995262e+26 
-(FlareEnergy4) Fourth value of flare energy range [kg*m^2/sec^2]: 2.818383e+26 
-(FlareEnergyMin) Minimum flare energy [kg*m^2/sec^2]: 1.000000e+26 
-(FlareEnergyMid) Middle flare energy in the range of energy values [kg*m^2/sec^2]: 3.162278e+27 
-(FlareEnergyMax) Maximum flare energy [kg*m^2/sec^2]: 1.000000e+29 
-(FlareEnergyXUV1) First value of flare energy range in XUV [kg*m^2/sec^2]: 1.875000e+26 
-(FlareEnergyXUV2) Second value of flare energy range in XUV [kg*m^2/sec^2]: 2.648508e+26 
-(FlareEnergyXUV3) Third value of flare energy range in XUV [kg*m^2/sec^2]: 3.741117e+26 
-(FlareEnergyXUV4) Fourth value of flare energy range in XUV [kg*m^2/sec^2]: 5.284468e+26 
-(FlareEnergyXUVMin) Minimum flare energy in the XUV range [kg*m^2/sec^2]: 1.875000e+26 
-(FlareEnergyXUVMid) Middle flare energy in the range of energy values of XUV [kg*m^2/sec^2]: 5.929271e+27 
-(FlareEnergyXUVMax) Maximum flare energy in the XUV range [kg*m^2/sec^2]: 1.875000e+29 
-(FlareYIntOUT) FFD Y-Intercept [/sec]: 34.051723 
-(FlareSlopeOUT) FFD slope [kg*m^2/sec^3]: -1.080236 
-(CMEFluence30MeV) Particle flux of 30 MeV protons due to CMEs at the stellar surface [m^-2 sec^-1]: 6.115859e+20 
-(FlareFreqKepler1) First Kepler-band flare frequency [/sec]: 2.933718e-07 
-(FlareFreqKepler2) Second Kepler-band flare frequency [/sec]: 2.020147e-07 
-(FlareFreqKepler3) Third Kepler-band flare frequency [/sec]: 1.391065e-07 
-(FlareFreqKepler4) Fourth Kepler-band flare frequency [/sec]: 9.578821e-08 
+(LXUVFlare) XUV Luminosity from flares [LSUN]: 3.464392e-07 
+(FlareFreq1) First value of flare frequency range [/sec]: 5.612711e-07 
+(FlareFreq2) Second value of flare frequency range [/sec]: 3.846497e-07 
+(FlareFreq3) Third value of flare frequency range [/sec]: 2.636078e-07 
+(FlareFreq4) Fourth value of flare frequency range [/sec]: 1.806554e-07 
+(FlareFreqMin) Frequency of the flares with the lowest energy [/sec]: 5.612711e-07 
+(FlareFreqMid) Frequency of the flares with the middle energy in the energy range [/sec]: 1.282627e-08 
+(FlareFreqMax) Frequency of the flares with the highest energy [/sec]: 2.931082e-10 
+(FlareEnergy1) First value of flare energy range [kg*m^2/sec^2]: 5.334000e+25 
+(FlareEnergy2) Second value of flare energy range [kg*m^2/sec^2]: 7.534475e+25 
+(FlareEnergy3) Third value of flare energy range [kg*m^2/sec^2]: 1.064273e+26 
+(FlareEnergy4) Fourth value of flare energy range [kg*m^2/sec^2]: 1.503325e+26 
+(FlareEnergyMin) Minimum flare energy [kg*m^2/sec^2]: 5.334000e+25 
+(FlareEnergyMid) Middle flare energy in the range of energy values [kg*m^2/sec^2]: 1.686759e+27 
+(FlareEnergyMax) Maximum flare energy [kg*m^2/sec^2]: 5.334000e+28 
+(FlareYIntOUT) Instantaneous Davenport FFD y-intercept at current age and mass []: 34.490660 
+(FlareSlopeOUT) Instantaneous Davenport FFD slope at current age and mass []: -1.094048 
 
 Output Order: Time[year] Luminosity[LSUN] LXUVStellar[LSUN] LXUVFlare[LSUN] LXUVTot[LSUN]
 Grid Output Order:
@@ -274,73 +220,57 @@ Grid Output Order:
 Active Modules: AtmEsc
 Module Bit Sum: 9
 Color: 000000
-(Mass) Mass [kg]: 1.019873e+25 
-(TimeStepVar) Number of variable responsible for setting timestep []: 1502.000000 
-(Radius) Radius [m]: 7.208551e+06 
+(Mass) Mass [kg]: 9.980698e+24 
+(Radius) Radius [m]: 7.190967e+06 
 (RadGyra) Radius of Gyration/Moment of Inertia Constant []: 0.500000 
 (BodyType) Type of Body (0 == planet) []: 0.000000 
-(Density) Average Density [kg/m^3]: 6500.001681 
-(SurfWaterMass) Surface water mass [kg]: 0.000000 
-(HZLimitDryRunaway) Semi-major axis of Dry Runaway HZ Limit [m]: 8.994369e+09 
-(HZLimRecVenus) Recent Venus HZ Limit [m]: 8.052448e+09 
-(HZLimRunaway) Runaway Greenhouse HZ Limit [m]: 1.062319e+10 
-(HZLimMoistGreenhouse) Moist Greenhouse HZ Limit [m]: 1.065471e+10 
-(HZLimMaxGreenhouse) Maximum Greenhouse HZ Limit [m]: 2.022377e+10 
-(HZLimEarlyMars) Early Mars HZ Limit [m]: 2.205626e+10 
-(Instellation) Orbit-averaged INcident STELLar radiATION [kg/sec^3]: 2.439653e+04 
-(MeanMotion) Orbital Mean Motion [/sec]: 4.464462e-05 
-(OrbPeriod) Orbital Period [sec]: 1.407378e+05 
-(SemiMajorAxis) Semi-major Axis [m]: 2.346147e+09 
+(Density) Average Density [kg/m^3]: 6407.822256 
+(HZLimitDryRunaway) Semi-major axis of Dry Runaway HZ Limit [m]: 8.604701e+09 
+(HZLimRecVenus) Recent Venus HZ Limit [m]: 7.706438e+09 
+(HZLimRunaway) Runaway Greenhouse HZ Limit [m]: 1.016501e+10 
+(HZLimMoistGreenhouse) Moist Greenhouse HZ Limit [m]: 1.019688e+10 
+(HZLimMaxGreenhouse) Maximum Greenhouse HZ Limit [m]: 1.936856e+10 
+(HZLimEarlyMars) Early Mars HZ Limit [m]: 2.112353e+10 
+(Instellation) Orbit-averaged INcident STELLar radiATION [kg/sec^3]: 2.294509e+04 
+(MeanMotion) Orbital Mean Motion [/sec]: 4.464537e-05 
+(OrbPeriod) Orbital Period [sec]: 1.407354e+05 
+(SemiMajorAxis) Semi-major Axis [m]: 2.314412e+09 
 (LXUVTot) Total XUV Luminosity [kg/sec^3]: -1.000000 
-(EscapeVelocity) Escape Velocity [m/sec]: 1.374251e+04 
-(CassiniL) Correia (2015)'s Cassini state angular momnetum invariant []: -1.000000 
-(CassiniG1) Correia (2015)'s Cassini state G1 parameter []: -1.000000 
-(CassiniG2) Correia (2015)'s Cassini state G2 parameter []: -1.000000 
-(CassiniAlpha1) Correia (2015)'s Cassini state alpha1 parameter []: -1.000000 
-(CassiniAlpha2) Correia (2015)'s Cassini state alpha2 parameter []: -1.000000 
-(CassiniGamma) Correia (2015)'s Cassini state gamma parameter []: -1.000000 
+(EscapeVelocity) Escape Velocity [m/sec]: 1.361144e+04 
 ----- ATMESC PARAMETERS (b)------
-(OceanMassLost) Ocean Mass Lost [kg]: 0.000000 
-(WaterLossRate) Water Loss Rate [kg/sec]: 5.562685e-309 
+(SurfWaterMass) Surface water mass [kg]: 0.000000 
 (EnvelopeMass) Envelope mass [kg]: 0.000000 
 (OxygenMass) Oxygen mass in the atmosphere [kg]: 0.000000 
-(RGLimit) Runaway greenhouse semi-major axis [m]: 1.017527e+10 
+(RGLimit) Runaway greenhouse semi-major axis [m]: 9.741213e+09 
 (XO) Atomic oxygen mixing ratio in upper atmosphere []: 0.000000 
 (EtaO) Oxygen eta parameter (Luger and Barnes 2015) []: 0.000000 
-(PlanetRadius) Planet radius [m]: 7.208551e+06 
+(PlanetRadius) Planet radius [m]: 7.190967e+06 
 (OxygenMantleMass) Mass of oxygen in mantle [kg]: 0.000000 
 (RadXUV) XUV radius separating hydro. dyn. escape and equilibrium [m]: -1.000000 
 (RadSolid) Radius to the solid surface [m]: -1.000000 
-(PresXUV) Pressure at base of thermosphere [kg/m/sec^2]: 5.000000 
+(PresXUV) Pressure at base of thermosphere [(null)]: 5.000000 
 (ScaleHeight) Scale height in Lehmer & Catling (2016) model [m]: -1.000000 
 (ThermTemp) Isothermal atmospheric temperature [K]: 400.000000 
-(AtmGasConst) Atmospheric gas constant [kg*m^2/sec^2/K/kg]: 1.700738e+04 
-(PresSurf) Surface pressure due to atmosphere [kg/m/sec^2]: -1.000000 
-(DEnvMassDt) Envelope Mass Loss Rate [kg/sec]: 0.000000 
-(FXUV) XUV flux [W/m^2]: 3.452834 
+(AtmGasConst) Atmospheric gas constant [(null)]: 4124.000000 
+(PresSurf) Surface pressure due to atmosphere [Pa]: -1.000000 
+(DEnvMassDt) Envelope Mass Loss Rate [kg/s]: 0.000000 
+(FXUV) XUV flux [W/m^2]: 4.858890 
 (AtmXAbsEffH2O) XUV atmospheric escape efficiency for H2O []: 0.300000 
-(RocheRadius) Roche Lobe Radius [m]: 4.846565e+07 
-(BondiRadius) Bondi Radius [m]: 6.355246e+08 
+(RocheRadius) Roche Lobe Radius [m]: 4.811727e+07 
+(BondiRadius) Bondi Radius [m]: 6.393805e+08 
 (HEscapeRegime) Integer flag for H envelope escape regime []: 8.000000 
-(RRCriticalFlux) Critical XUV Flux that separates RR and energy-limited escape [W/m^2]: 65.759373 
+(RRCriticalFlux) Critical XUV Flux that separates RR and energy-limited escape [W/m^2]: 63.271004 
 (CrossoverMass) Crossover mass, defines oxygen is escaping if mc > mo [kg]: 0.000000 
 (WaterEscapeRegime) What water escape regime the code is currently in []: 8.000000 
-(FXUVCRITDRAG) Critical Drag XUV flux [W/m^2]: -0.000000 
-(HREFFLUX) The Hydrogen Reference Flux [m^-2 sec^-1]: 2.121306e+18 
+(FXUVCRITDRAG) Critical Drag XUV flux [W/m^2]: 0.519084 
+(HREFFLUX) The Hydrogen Reference Flux (m^-2 s^-1) [m^-2 s^-1]: 3.046993e+18 
 (XO2) Molecular oxygen mixing ratio in atmosphere []: 0.000000 
 (XH2O) Water mixing ratio in upper atmosphere []: 0.000000 
-(HDiffFlux) The Hydrogen Diffusion Flux [m^-2 sec^-1]: -0.000000 
+(HDiffFlux) The Hydrogen Diffusion Flux (m^-2 s^-1) [m^-2 s^-1]: 2.494447e+17 
 (HRefODragMod) Multiply by H ref flux to get flux with drag []: 1.000000 
-(KTide) Mass loss enhancement due to stellar gravity []: 0.778542 
-(CumulativeXUVFlux) Cumulative XUV flux [W/m^2]: 4.083503e+18 
-(CMELossHydrogen) Mass of hydrogen lost due to CME stripping [kg]: 0.000000 
-(CMELossWater) Mass of water lost due to CME stripping [kg]: 0.000000 
-(CMELossOxygen) Mass of oxygen lost due to CME stripping [kg]: 0.000000 
-(CMELossCO2) Mass of carbon dioxide lost due to CME stripping [kg]: 0.000000 
-(DEnvMassDtCME) Envelope Mass Loss Rate due to CMEs [kg/sec]: 0.000000 
-(DWaterMassDtCME) Water Mass Loss Rate due to CMEs [kg/sec]: 0.000000 
-(DCO2MassDtCME) CO2 Mass Loss Rate due to CMEs [kg/sec]: 0.000000 
-(DOxygenMassDtCME) Oxygen Mass Loss Rate due to CMEs [kg/sec]: 0.000000 
+(KTide) Mass loss enhancement due to stellar gravity []: 0.777499 
+(CumulativeXUVFlux) Cumulative XUV flux [W/m^2]: 5.376312e+18 
+(RunawayGreenhouseFlux) Incident flux that triggers runaway greenhouse [kg/sec^3]: 1295.175732 
 (RGDuration) Runaway Greenhouse Duration [years]: 0.00000e+00
 
 Output Order: Time[year] CumulativeXUVFlux[W/m^2]
