@@ -48,9 +48,9 @@ EngleHierarchicalRefit/musclesConversion/seds/
 *.forward
 xuv_PriorIndicies.json
 
-# vspace sweep-template inputs — regenerable sweep definitions, not tracked as
-# source (the sweep outputs are treated as archived data). See note to researcher.
-vspace.in
+# Generated Engle coefficient prior tables (regenerated each run from the
+# canonical joint chains; the vspace.in rules that consume them ARE tracked)
+**/engle_xuv_priors.txt
 
 # Stray / non-canonical plot artifacts (no figure-compare standard references them)
 Plot/*_standard.png
