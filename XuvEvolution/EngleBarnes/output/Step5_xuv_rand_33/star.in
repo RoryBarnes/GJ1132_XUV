@@ -1,0 +1,42 @@
+# Host star parameters
+sName		star                  # Body name
+saModules    	stellar flare             # Active modules
+
+# Physical properties
+dMass 0.19404397832194903
+dRotPeriod      -1.0                  # Rotation period, negative -> days
+dAge 4426569.638721562
+
+# STELLAR parameters
+sStellarModel	  baraffe             # Stellar evolution model
+sXUVModel           Engle24MidLate
+bHaltEndBaraffeGrid 0                 # Don't end sim when we reach end of grid
+
+#Flare parameters
+dFlareMinEnergy            -1.0e33               # Min flare energy
+dFlareMaxEnergy           -1.0e36                # Max flare energy
+sFlareFFD                           davenport    # flare frequency distribution evolution model
+dEnergyBin                       20            # Number of bins between min and max energy
+sFlareBandPass                  sxr
+
+saOutputOrder 	Time -Luminosity -LXUVStellar -LXUVFlare -LXUVTot 
+
+dXUVEngleMidLateA -0.22787892195647383
+
+dXUVEngleMidLateB -2.8864278647246078
+
+dXUVEngleMidLateC -1.670597064226028
+
+dXUVEngleMidLateD 0.35629200449988613
+
+dFlareSlopeA1 -0.14871947719148598
+
+dFlareSlopeA2 0.5170828668030074
+
+dFlareSlopeA3 -0.616360050615172
+
+dFlareYIntB1 4.705594030709598
+
+dFlareYIntB2 -16.451257404621384
+
+dFlareYIntB3 19.392420834481694

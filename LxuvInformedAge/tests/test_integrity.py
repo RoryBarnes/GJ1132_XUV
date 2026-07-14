@@ -1,4 +1,4 @@
-"""Integrity checks for the L_XUV-informed age inference outputs."""
+"""Integrity checks for the GJ 1132 activity-consistency check outputs."""
 
 import json
 import os
@@ -6,29 +6,29 @@ import os
 import numpy as np
 
 S_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-D_MAX_AGE_GYR = 13.0
 
 
-def fdaLoadAgesGyr(sName):
-    """Load an age-sample file and return the ages in Gyr."""
-    return np.loadtxt(os.path.join(S_DIRECTORY, sName)) / 1e9
+def fdictLoadSummary():
+    """Load the consistency summary."""
+    with open(os.path.join(S_DIRECTORY,
+                           "activityConsistency.json")) as fileHandle:
+        return json.load(fileHandle)
 
 
-def test_age_samples_within_physical_bounds():
-    """Both age posteriors are positive and truncated at 13 Gyr."""
-    for sName in ["lxuvInformedAgeSamples.txt", "rotationOnlyAgeSamples.txt"]:
-        daAge = fdaLoadAgesGyr(sName)
-        assert daAge.size > 1000
-        assert np.all(np.isfinite(daAge))
-        assert np.all(daAge > 0)
-        assert np.all(daAge <= D_MAX_AGE_GYR + 1e-3)
+def test_z_offset_samples_finite_and_plausible():
+    """The z posterior is finite, ample, and lives inside the prior's reach."""
+    daZ = np.loadtxt(os.path.join(S_DIRECTORY, "zOffsetSamples.txt"))
+    assert daZ.size > 10000
+    assert np.all(np.isfinite(daZ))
+    assert abs(np.mean(daZ)) < 4.0
+    assert 0.0 < np.std(daZ) < 1.5
 
 
-def test_stats_present_and_consistent():
-    """The stats file reports finite ages and a non-negative tension."""
-    with open(os.path.join(S_DIRECTORY, "ageInferenceStats.json")) as fileHandle:
-        dictStats = json.load(fileHandle)
-    assert dictStats["tension_sigma"] >= 0
-    for sKey in ["rotation_only", "lxuv_informed", "xuv_only"]:
-        dLower, dUpper = dictStats[sKey]["ci95_age_gyr"]
-        assert 0 < dLower < dUpper <= D_MAX_AGE_GYR + 1e-3
+def test_summary_is_internally_consistent():
+    """Summary offsets match the sample file and report a real shrinkage."""
+    dictSummary = fdictLoadSummary()
+    daZ = np.loadtxt(os.path.join(S_DIRECTORY, "zOffsetSamples.txt"))
+    assert abs(dictSummary["z_offset"]["mean"] - np.mean(daZ)) < 1e-6
+    assert dictSummary["z_offset"]["std"] < 1.0
+    assert dictSummary["consistency_sigma"] >= 0.0
+    assert dictSummary["sigma_int_at_rotation_age"] > 0.0
