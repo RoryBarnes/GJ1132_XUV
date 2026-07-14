@@ -53,18 +53,25 @@ def fdReadOption(sPath, sKey):
 
 
 def ftLoadTrajectory(sTrialDirectory):
-    """Return (absolute stellar age [Gyr], cumulative flux [Earth units])."""
+    """Return (age [Gyr], cumulative flux [Earth units], saturation age [Gyr]).
+
+    The saturation age is 10^d, where d = dXUVEngleMidLateD is the break of the
+    sampled XUV relation, expressed in log10(age/Gyr): activity is saturated
+    below it and declines above it.
+    """
     saForward = glob.glob(os.path.join(sTrialDirectory, "*.b.forward"))
     if not saForward:
         return None
     daForward = np.loadtxt(saForward[0])
     if daForward.ndim != 2 or len(daForward) < 5:
         return None
-    dStartAge = fdReadOption(os.path.join(sTrialDirectory, "star.in"), "dAge")
-    if not np.isfinite(dStartAge):
+    sStarPath = os.path.join(sTrialDirectory, "star.in")
+    dStartAge = fdReadOption(sStarPath, "dAge")
+    dBreak = fdReadOption(sStarPath, "dXUVEngleMidLateD")
+    if not np.isfinite(dStartAge) or not np.isfinite(dBreak):
         return None
     daAgeGyr = (dStartAge + daForward[:, 0]) / 1e9
-    return daAgeGyr, daForward[:, 1] / D_CUMULATIVE_EARTH_FLUX
+    return daAgeGyr, daForward[:, 1] / D_CUMULATIVE_EARTH_FLUX, 10.0 ** dBreak
 
 
 def flistLoadTrajectories(sSweepDirectory):
@@ -75,17 +82,18 @@ def flistLoadTrajectories(sSweepDirectory):
     summarizes the identical population as the flux-distribution steps rather
     than including unconverged extremes.
     """
-    listTrajectories = []
+    listTrajectories, listSaturationAges = [], []
     for sTrial in sorted(glob.glob(os.path.join(sSweepDirectory,
                                                 "*_xuv_rand_*"))):
         tTrajectory = ftLoadTrajectory(sTrial)
         if tTrajectory is not None and \
                 D_LOWER_BOUND <= tTrajectory[1][-1] <= D_UPPER_BOUND:
-            listTrajectories.append(tTrajectory)
+            listTrajectories.append((tTrajectory[0], tTrajectory[1]))
+            listSaturationAges.append(tTrajectory[2])
     if len(listTrajectories) < I_MIN_COVERAGE:
         raise ValueError(f"only {len(listTrajectories)} usable trajectories "
                          f"in {sSweepDirectory}")
-    return listTrajectories
+    return listTrajectories, np.array(listSaturationAges)
 
 
 def fdMaxCoveredAge(listTrajectories, iFloor):
@@ -186,6 +194,15 @@ def fdictSummarizeAge(daAgeSamples):
     }
 
 
+def fdictSummarizeSaturation(daSaturationAges):
+    """Return the saturation-age median and 95% interval in Gyr."""
+    return {
+        "median": float(np.median(daSaturationAges)),
+        "ci95": [float(np.percentile(daSaturationAges, 2.5)),
+                 float(np.percentile(daSaturationAges, 97.5))],
+    }
+
+
 def ftParseArguments():
     """Parse and return command-line arguments."""
     parser = argparse.ArgumentParser(
@@ -201,13 +218,14 @@ def ftParseArguments():
 def main():
     """Build the accumulation history and its flatness diagnostics."""
     args = ftParseArguments()
-    listTrajectories = flistLoadTrajectories(
+    listTrajectories, daSaturationAges = flistLoadTrajectories(
         os.path.dirname(args.converged_flux))
     dictAge = fdictSummarizeAge(np.loadtxt(args.age_samples))
     dictHistory = fdictStackOnAgeGrid(listTrajectories, dictAge["ci95"][1])
     dElasticity = fdComputeElasticity(listTrajectories)
     dictSummary = {
         "dictAgePosterior": dictAge,
+        "dictSaturationAge": fdictSummarizeSaturation(daSaturationAges),
         "dictHistory": dictHistory,
         "listShownTrajectories": flistSelectShownTrajectories(listTrajectories),
         "dictFractionMilestones": fdictFractionMilestones(listTrajectories),
@@ -230,6 +248,10 @@ def fnPrintSummary(dictSummary):
     print("Fraction of final cumulative XUV flux accumulated by age:")
     for sAge, dFraction in dictSummary["dictFractionMilestones"].items():
         print(f"  by {sAge} Gyr: {100 * dFraction:5.1f}%")
+    dictSat = dictSummary["dictSaturationAge"]
+    print(f"Saturation age: median {dictSat['median']:.2f} Gyr, 95% CI "
+          f"[{dictSat['ci95'][0]:.2f}, {dictSat['ci95'][1]:.2f}] Gyr "
+          f"(activity declines after this).")
     dictAge = dictSummary["dictAgePosterior"]
     print(f"Age 95% CI [{dictAge['ci95'][0]:.2f}, {dictAge['ci95'][1]:.2f}] "
           f"Gyr; by its LOWER bound the planet already has "
