@@ -32,6 +32,7 @@ S_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 S_COLOR_HISTORY = vplot.colors.dark_blue
 S_COLOR_AGE = vplot.colors.orange
 S_COLOR_SATURATION = vplot.colors.purple
+S_COLOR_MAINSEQUENCE = vplot.colors.pale_blue
 S_COLOR_SHORELINE = vplot.colors.red
 
 
@@ -87,6 +88,9 @@ def main():
     figure, axis = plt.subplots(figsize=(7.2, 4.6))
     fnPlotShownTrajectories(axis, dictSummary["listShownTrajectories"])
     fnPlotHistory(axis, dictSummary["dictHistory"])
+    axis.axvline(dictSummary["dictMainSequenceArrival"]["mean"],
+                 color=S_COLOR_MAINSEQUENCE, linestyle=(0, (5, 1)),
+                 linewidth=1.8, label="main-sequence arrival (mean)")
     fnPlotVerticalInterval(axis, dictSummary["dictSaturationAge"]["ci95"],
                            S_COLOR_SATURATION, "-.", "saturation age 95% CI")
     fnPlotVerticalInterval(axis, dictSummary["dictAgePosterior"]["ci95"],
