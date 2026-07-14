@@ -35,11 +35,14 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from utils.cumulativeXuv import D_CUMULATIVE_EARTH_FLUX, D_SHORELINE_FLUX
+from utils.cumulativeXuv import (D_CUMULATIVE_EARTH_FLUX, D_SHORELINE_FLUX,
+                                 D_LOWER_BOUND, D_UPPER_BOUND)
 
 I_GRID_POINTS = 240
 I_MIN_COVERAGE = 100
 D_COVERAGE_FRACTION = 0.3
+I_SHOWN_TRAJECTORIES = 25
+I_SHOWN_RESAMPLE = 160
 DA_MILESTONE_AGES = np.array([0.5, 1.0, 2.0, 3.0, 5.0])
 
 
@@ -65,12 +68,19 @@ def ftLoadTrajectory(sTrialDirectory):
 
 
 def flistLoadTrajectories(sSweepDirectory):
-    """Load every usable flux trajectory from the sweep."""
+    """Load usable flux trajectories, applying the pipeline's flux filter.
+
+    The same final-flux window [D_LOWER_BOUND, D_UPPER_BOUND] that
+    daExtractFluxValues applies everywhere else is applied here, so this step
+    summarizes the identical population as the flux-distribution steps rather
+    than including unconverged extremes.
+    """
     listTrajectories = []
     for sTrial in sorted(glob.glob(os.path.join(sSweepDirectory,
                                                 "*_xuv_rand_*"))):
         tTrajectory = ftLoadTrajectory(sTrial)
-        if tTrajectory is not None and tTrajectory[1][-1] > 0:
+        if tTrajectory is not None and \
+                D_LOWER_BOUND <= tTrajectory[1][-1] <= D_UPPER_BOUND:
             listTrajectories.append(tTrajectory)
     if len(listTrajectories) < I_MIN_COVERAGE:
         raise ValueError(f"only {len(listTrajectories)} usable trajectories "
@@ -109,6 +119,29 @@ def fdictStackOnAgeGrid(listTrajectories, dMaxAge):
         "daUpperFlux": np.percentile(daStack, 84, axis=0).tolist(),
         "iCohort": len(listCohort),
     }
+
+
+def flistSelectShownTrajectories(listTrajectories):
+    """Return a reproducible, spread-spanning set of real trajectories to plot.
+
+    Trajectories are ranked by final cumulative flux and sampled at evenly
+    spaced quantiles -- a deterministic rule (no RNG) that reproduces the same
+    set from the same sweep and spans the flux distribution rather than
+    over-showing its bulk. Each is resampled onto its own age range so the
+    stored curves stay compact while each still ends at its trial's real
+    present age, giving a genuine (present age, total dose) endpoint.
+    """
+    listSorted = sorted(listTrajectories, key=lambda t: t[1][-1])
+    daRanks = np.linspace(0, len(listSorted) - 1, I_SHOWN_TRAJECTORIES)
+    listShown = []
+    for dRank in daRanks:
+        daAge, daFlux = listSorted[int(round(dRank))]
+        daGrid = np.linspace(daAge[0], daAge[-1], I_SHOWN_RESAMPLE)
+        listShown.append({"daAgeGrid": daGrid.tolist(),
+                          "daFlux": np.interp(daGrid, daAge, daFlux).tolist(),
+                          "dPresentAge": float(daAge[-1]),
+                          "dFinalFlux": float(daFlux[-1])})
+    return listShown
 
 
 def fdMeanFractionAtAge(listTrajectories, dAge):
@@ -176,6 +209,7 @@ def main():
     dictSummary = {
         "dictAgePosterior": dictAge,
         "dictHistory": dictHistory,
+        "listShownTrajectories": flistSelectShownTrajectories(listTrajectories),
         "dictFractionMilestones": fdictFractionMilestones(listTrajectories),
         "dFractionByAgeLowerBound": fdMeanFractionAtAge(
             listTrajectories, dictAge["ci95"][0]),

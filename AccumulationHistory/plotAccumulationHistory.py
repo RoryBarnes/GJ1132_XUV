@@ -2,13 +2,16 @@
 """
 Plot when GJ 1132 b climbed its cumulative-XUV hill.
 
-Cumulative XUV flux versus stellar age: the median accumulation history with
-its 68% envelope, reconstructed from the Engle sweep's forward trajectories.
-The age posterior's 95% interval is marked by dotted vertical lines; by the
-time the star reaches even the lower edge of that interval the curve has long
-since flattened, so the planet received essentially its entire lifetime XUV
-dose billions of years earlier. The cosmic shoreline is drawn as a horizontal
-line to show the planet crossed the atmosphere-stripping threshold early too.
+Cumulative XUV flux versus stellar age. Thin lines are 25 real vconverge
+trajectories, chosen at evenly spaced final-flux quantiles so they span the
+distribution; each ends at its trial's own sampled present age, so the endpoint
+dots are draws from the joint (present age, total dose) posterior. The heavier
+line is the median accumulation history over the well-covered age range. The
+age posterior's 95% interval is marked by dotted verticals: by the time the
+star reaches even the lower edge, every trajectory has long since flattened, so
+the planet received essentially its whole lifetime XUV dose billions of years
+earlier. The cosmic shoreline is drawn horizontally to show the planet crossed
+the atmosphere-stripping threshold early too.
 
 Usage: python plotAccumulationHistory.py <outputPath>
 """
@@ -38,14 +41,23 @@ def fdictLoadHistory():
         return json.load(fileHandle)
 
 
+def fnPlotShownTrajectories(axis, listShown):
+    """Draw the 25 real trajectories with an endpoint dot at each present age."""
+    for iIndex, dictTrajectory in enumerate(listShown):
+        axis.plot(dictTrajectory["daAgeGrid"], dictTrajectory["daFlux"],
+                  color=S_COLOR_HISTORY, linewidth=0.8, alpha=0.45,
+                  label="25 sampled simulations" if iIndex == 0 else None)
+    daEndAge = [d["dPresentAge"] for d in listShown]
+    daEndFlux = [d["dFinalFlux"] for d in listShown]
+    axis.scatter(daEndAge, daEndFlux, s=14, color=S_COLOR_HISTORY, zorder=5,
+                 label="present-day state (age, dose)")
+
+
 def fnPlotHistory(axis, dictHistory):
-    """Draw the median accumulation curve and its 68% envelope."""
-    daAge = np.array(dictHistory["daAgeGrid"])
-    axis.fill_between(daAge, dictHistory["daLowerFlux"],
-                      dictHistory["daUpperFlux"], color=S_COLOR_HISTORY,
-                      alpha=0.22, linewidth=0, label="68% of realizations")
-    axis.plot(daAge, dictHistory["daMedianFlux"], color=S_COLOR_HISTORY,
-              linewidth=2.2, label="median accumulation history")
+    """Draw the median accumulation curve over the well-covered age range."""
+    axis.plot(dictHistory["daAgeGrid"], dictHistory["daMedianFlux"],
+              color=S_COLOR_HISTORY, linewidth=2.4,
+              label="median accumulation history")
 
 
 def fnPlotAgeInterval(axis, dictAge, dFractionLower):
@@ -71,13 +83,18 @@ def main():
     dictSummary = fdictLoadHistory()
     os.makedirs(os.path.dirname(sOutputPath), exist_ok=True)
     figure, axis = plt.subplots(figsize=(7, 4.6))
+    fnPlotShownTrajectories(axis, dictSummary["listShownTrajectories"])
     fnPlotHistory(axis, dictSummary["dictHistory"])
     fnPlotAgeInterval(axis, dictSummary["dictAgePosterior"],
                       dictSummary["dFractionByAgeLowerBound"])
     axis.axhline(D_SHORELINE_FLUX, color=S_COLOR_SHORELINE, linestyle="--",
                  linewidth=1.5, label="cosmic shoreline")
-    axis.set_ylim(0, max(dictSummary["dictHistory"]["daUpperFlux"]) * 1.05)
-    axis.set_xlim(0, dictSummary["dictAgePosterior"]["ci95"][1] * 1.02)
+    dMaxFlux = max(d["dFinalFlux"]
+                   for d in dictSummary["listShownTrajectories"])
+    axis.set_yscale("log")
+    axis.set_ylim(D_SHORELINE_FLUX * 0.3, dMaxFlux * 1.3)
+    axis.set_xlim(0, max(d["dPresentAge"]
+                         for d in dictSummary["listShownTrajectories"]) * 1.02)
     axis.set_xlabel("stellar age [Gyr]")
     axis.set_ylabel(r"cumulative XUV flux [$F_{\rm XUV,\oplus}$]")
     axis.legend(loc="lower right", fontsize=8.5)
