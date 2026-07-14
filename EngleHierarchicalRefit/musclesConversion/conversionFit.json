@@ -1,0 +1,134 @@
+{
+  "relation": "log10(L_XUV(5-1700A)/L_bol) = slope * log10(L_X/L_bol) + intercept",
+  "primary_fit_all_targets_rosat_band": {
+    "slope": 0.5974370925329943,
+    "intercept": -0.8899955088624677,
+    "slope_error": 0.06502640403196226,
+    "intercept_error": 0.3241721749258965,
+    "covariance_slope_intercept": [
+      [
+        0.004228433221327998,
+        0.020844892161916196
+      ],
+      [
+        0.0208448921619162,
+        0.10508759899618605
+      ]
+    ],
+    "slope_intercept_correlation": 0.9888585656106177,
+    "intrinsic_scatter_dex": {
+      "fScatterMaximumLikelihood": 0.22633909694035978,
+      "fScatterPosteriorMedian": 0.24004798513210313,
+      "fScatterCredible16": 0.20773882382745307,
+      "fScatterCredible84": 0.28166235017701835,
+      "fScatterCredible2p5": 0.18283323058279768,
+      "fScatterCredible97p5": 0.33459399176359744
+    },
+    "n_stars": 24,
+    "pivot": 0.0,
+    "pivot_note": "Fit performed about pivot x=0 so the intercept matches Engle's convention.",
+    "mean_abscissa": -4.929696431476237,
+    "intercept_at_mean_abscissa": -3.8351790119539078
+  },
+  "engle_comparison": {
+    "engle_slope": 0.5728,
+    "engle_slope_error": 0.0589,
+    "engle_intercept": -1.0509,
+    "engle_intercept_error": 0.2921,
+    "slope_difference": 0.024637092532994287,
+    "slope_difference_in_engle_sigma": 0.4182868002206161,
+    "intercept_difference": 0.16090449113753225,
+    "intercept_difference_in_engle_sigma": 0.5508541291938795
+  },
+  "alternate_fit_m_dwarfs_only": {
+    "slope": 0.6524264711798037,
+    "intercept": -0.6498916097280051,
+    "slope_error": 0.07507833186044026,
+    "intercept_error": 0.3644513171110479,
+    "covariance_slope_intercept": [
+      [
+        0.005636755914946399,
+        0.02705741598895738
+      ],
+      [
+        0.027057415988957383,
+        0.1328247625439776
+      ]
+    ],
+    "slope_intercept_correlation": 0.9888540121383814,
+    "intrinsic_scatter_dex": {
+      "fScatterMaximumLikelihood": 0.23021653466188544,
+      "fScatterPosteriorMedian": 0.24725964063139824,
+      "fScatterCredible16": 0.2108173320313617,
+      "fScatterCredible84": 0.2955066788827544,
+      "fScatterCredible2p5": 0.18336416621248217,
+      "fScatterCredible97p5": 0.35886566230361827
+    },
+    "n_stars": 20,
+    "pivot": 0.0,
+    "pivot_note": "Fit performed about pivot x=0 so the intercept matches Engle's convention.",
+    "mean_abscissa": -4.800175206666666,
+    "intercept_at_mean_abscissa": -3.7816529808583232
+  },
+  "alternate_fit_lx_5_100_angstrom": {
+    "slope": 0.5171292050569714,
+    "intercept": -1.2195688536566849,
+    "slope_error": 0.0629971170921028,
+    "intercept_error": 0.3229566852230936,
+    "covariance_slope_intercept": [
+      [
+        0.00396863676191611,
+        0.02007313941574038
+      ],
+      [
+        0.020073139415740376,
+        0.10430102053028836
+      ]
+    ],
+    "slope_intercept_correlation": 0.9866209806568987,
+    "intrinsic_scatter_dex": {
+      "fScatterMaximumLikelihood": 0.24695923375817777,
+      "fScatterPosteriorMedian": 0.2619170407357392,
+      "fScatterCredible16": 0.22666442275225304,
+      "fScatterCredible84": 0.3073225930408867,
+      "fScatterCredible2p5": 0.19948985897985433,
+      "fScatterCredible97p5": 0.3650764580358881
+    },
+    "n_stars": 24,
+    "pivot": 0.0,
+    "pivot_note": "Fit performed about pivot x=0 so the intercept matches Engle's convention.",
+    "mean_abscissa": -5.057943223317016,
+    "intercept_at_mean_abscissa": -3.835179011953909
+  },
+  "robustness_fit_without_l980_5_upper_limit": {
+    "slope": 0.5980525753295092,
+    "intercept": -0.8890375668749977,
+    "slope_error": 0.06656241384419968,
+    "intercept_error": 0.33151431596367953,
+    "covariance_slope_intercept": [
+      [
+        0.004430554936766506,
+        0.021809842810027544
+      ],
+      [
+        0.021809842810027544,
+        0.10990174168886634
+      ]
+    ],
+    "slope_intercept_correlation": 0.9883737100428897,
+    "intrinsic_scatter_dex": {
+      "fScatterMaximumLikelihood": 0.2309837969304008,
+      "fScatterPosteriorMedian": 0.24564026653511084,
+      "fScatterCredible16": 0.21187334643391528,
+      "fScatterCredible84": 0.28939895963123613,
+      "fScatterCredible2p5": 0.18597754407338246,
+      "fScatterCredible97p5": 0.3454519708154483
+    },
+    "n_stars": 23,
+    "pivot": 0.0,
+    "pivot_note": "Fit performed about pivot x=0 so the intercept matches Engle's convention.",
+    "mean_abscissa": -4.922598437735373,
+    "intercept_at_mean_abscissa": -3.833010239875656
+  },
+  "method_notes": "Unweighted ordinary least squares on 24 targets (MUSCLES v22 including Proxima Cen and the 4 K dwarfs, Mega-MUSCLES v25); parameter covariance uses sigma^2 = RSS/(N-2). Intrinsic scatter follows the Kelly (2007, ApJ 665, 1489) likelihood with negligible measurement errors: per-star variance is a single constant sigma^2, whose posterior under a Jeffreys prior is InverseGamma((N-2)/2, RSS/2). L_X band is ROSAT 0.1-2.4 keV (5.17-124 A); a 5-100 A alternative and an M-dwarf-only fit are included as alternates. All ratios come from the SED BOLOFLUX column, so distances cancel. Engle used the superseded Mega-MUSCLES v23 release, which MAST no longer distributes; see module docstring for all documented judgment calls."
+}

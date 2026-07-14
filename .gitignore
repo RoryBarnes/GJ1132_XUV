@@ -33,8 +33,13 @@ __pycache__/
 .vaibify/container_mtime_cache.json
 .vaibify/syncStatus.json
 
-# vconverge scratch space
+# vconverge scratch space (both spellings occur)
 **/.vconverge_tmp/
+**/vconverge_tmp/
+
+# MCMC fit logs (transient) and cached MUSCLES SED downloads (regenerable)
+EngleHierarchicalRefit/fitLog_*.txt
+EngleHierarchicalRefit/musclesConversion/seds/
 
 # Regenerable model outputs (not source): maxlev rewrites *_maxlev.in with the
 # best-fit parameters each run; vplanet writes *.forward; vconverge writes the
@@ -56,6 +61,14 @@ FfdAgeComparison/--samples.png
 KeplerFfdCorner/flare_mcmc_samples.txt
 KeplerFfdCorner/flare_mcmc_samples_param_names.txt
 
+# Stage-1 refit: calibration source data and canonical posterior products.
+# The CSVs are the empirical foundation of the joint refit (verbatim Engle
+# paper tables); the chains are the coefficient posteriors the catalog and
+# all downstream steps consume. A fresh clone must carry them.
+!EngleHierarchicalRefit/*.csv
+!EngleHierarchicalRefit/paperTables/*.csv
+!EngleHierarchicalRefit/jointChain_*.npy
+
 # Vaibify canonical outputs — manifest-pinned; the AICS L2 GitHub mirror requires them in git
 !Plot/CornerVariableSlope.pdf
 !Plot/ffd_comp.pdf
@@ -76,3 +89,10 @@ KeplerFfdCorner/flare_mcmc_samples_param_names.txt
 !Plot/GJ1132b_ErrorSourceComparison.pdf
 !Plot/FitComparison.pdf
 !KeplerFfdCorner/flare_mcmc_samples.npy
+!Plot/CornerJointRotation_midlate_withsd.pdf
+!Plot/CornerJointActivity_midlate_withsd.pdf
+!Plot/CornerJointRotation_early_withsd.pdf
+!Plot/CornerJointActivity_early_withsd.pdf
+!Plot/EngleVsRefit_midlate_withsd.pdf
+!Plot/EngleVsRefit_early_withsd.pdf
+!Plot/ActivityConsistency.pdf
