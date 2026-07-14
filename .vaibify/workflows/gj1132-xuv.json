@@ -34,7 +34,25 @@
         },
         "listUserTests": []
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "dictVerification": {
+        "sUnitTest": "unnecessary",
+        "sUser": "passed",
+        "sQualitative": "unnecessary",
+        "sQuantitative": "unnecessary",
+        "sIntegrity": "unnecessary",
+        "sLastUserUpdate": "2026-04-16 21:27:19 UTC"
+      },
+      "dictRunStats": {},
+      "dictLevelHighWater": {
+        "1": "2026-06-10T21:42:10Z"
+      },
+      "sLabel": "I01",
+      "saStepScripts": [
+        "TessFlareCandidates/dataIdentifyFlareCandidates.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Kepler FFD Corner",
@@ -88,7 +106,29 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "dictVerification": {
+        "sUser": "passed",
+        "sLastTestRun": "2026-04-28T18:25:41Z",
+        "sIntegrity": "passed",
+        "sQualitative": "passed",
+        "sQuantitative": "passed",
+        "sUnitTest": "passed",
+        "sLastUserUpdate": "2026-05-04 18:23:57 UTC"
+      },
+      "dictRunStats": {},
+      "dictLevelHighWater": {
+        "1": "2026-06-10T21:42:10Z"
+      },
+      "sLabel": "A01",
+      "saStepScripts": [
+        "KeplerFfdCorner/dataKeplerFfd.py",
+        "KeplerFfdCorner/plotCornerVariableSlope.py"
+      ],
+      "saTestStandards": [
+        "KeplerFfdCorner/tests/quantitative_standards.json"
+      ],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "FFD Age Comparison",
@@ -119,7 +159,30 @@
         },
         "listUserTests": []
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "dictVerification": {
+        "sUnitTest": "unnecessary",
+        "sUser": "passed",
+        "sQualitative": "unnecessary",
+        "sQuantitative": "unnecessary",
+        "sIntegrity": "unnecessary",
+        "sLastUserUpdate": "2026-04-16 21:36:56 UTC",
+        "sLastDepsCheck": "2026-04-08 23:07:07 UTC"
+      },
+      "dictRunStats": {
+        "sLastRun": "2026-03-22 19:39:29 UTC",
+        "fWallClock": 0.5,
+        "dictInputHashes": {}
+      },
+      "dictLevelHighWater": {
+        "1": "2026-06-10T21:42:10Z"
+      },
+      "sLabel": "A02",
+      "saStepScripts": [
+        "FfdAgeComparison/plotFfdComparison.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "TESS Flare Lightcurves",
@@ -150,7 +213,29 @@
         },
         "listUserTests": []
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "dictVerification": {
+        "sUnitTest": "unnecessary",
+        "sUser": "passed",
+        "sQualitative": "unnecessary",
+        "sQuantitative": "unnecessary",
+        "sIntegrity": "unnecessary",
+        "sLastDepsCheck": "2026-04-27 22:03:00 UTC",
+        "sLastUserUpdate": "2026-04-27 22:03:01 UTC"
+      },
+      "dictRunStats": {
+        "fWallClock": 7.9,
+        "fCpuTime": 0.0
+      },
+      "dictLevelHighWater": {
+        "1": "2026-06-10T21:42:10Z"
+      },
+      "sLabel": "A03",
+      "saStepScripts": [
+        "TessFlareLightcurves/plotFlareLightcurves.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Comprehensive FFD Comparison",
@@ -181,7 +266,29 @@
         },
         "listUserTests": []
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "dictVerification": {
+        "sUnitTest": "unnecessary",
+        "sUser": "passed",
+        "sQualitative": "unnecessary",
+        "sQuantitative": "unnecessary",
+        "sIntegrity": "unnecessary",
+        "sLastDepsCheck": "2026-04-28 04:27:14 UTC",
+        "sLastUserUpdate": "2026-04-28 04:27:18 UTC"
+      },
+      "dictRunStats": {
+        "fWallClock": 19.0,
+        "fCpuTime": 0.0
+      },
+      "dictLevelHighWater": {
+        "1": "2026-06-10T21:42:10Z"
+      },
+      "sLabel": "A04",
+      "saStepScripts": [
+        "ComprehensiveFfdComparison/plotComprehensiveFfd.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "XUV Luminosity Distribution",
@@ -238,7 +345,29 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "dictVerification": {
+        "sUser": "passed",
+        "sLastTestRun": "2026-04-28T18:25:41Z",
+        "sIntegrity": "passed",
+        "sQualitative": "passed",
+        "sQuantitative": "passed",
+        "sUnitTest": "passed",
+        "sLastUserUpdate": "2026-05-04 18:24:23 UTC"
+      },
+      "dictRunStats": {},
+      "dictLevelHighWater": {
+        "1": "2026-06-10T22:23:47Z"
+      },
+      "sLabel": "A05",
+      "saStepScripts": [
+        "XuvLuminosityDistribution/dataLxuv.py",
+        "XuvLuminosityDistribution/plotLxuv.py"
+      ],
+      "saTestStandards": [
+        "XuvLuminosityDistribution/tests/quantitative_standards.json"
+      ],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Engle Hierarchical Refit",
@@ -308,7 +437,31 @@
       "saTestCommands": [
         "pytest tests/test_joint_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "dictVerification": {
+        "sUnitTest": "passed",
+        "sIntegrity": "passed"
+      },
+      "dictRunStats": {
+        "fWallClock": 28.4,
+        "fCpuTime": 0.0
+      },
+      "sLabel": "A06",
+      "saStepScripts": [
+        "EngleHierarchicalRefit/musclesConversion/dataDeriveMusclesConversion.py",
+        "EngleHierarchicalRefit/dataPrepareJointSample.py",
+        "EngleHierarchicalRefit/dataRefitJointRelations.py",
+        "EngleHierarchicalRefit/dataRefitJointRelations.py",
+        "EngleHierarchicalRefit/dataRefitJointRelations.py",
+        "EngleHierarchicalRefit/dataRefitJointRelations.py",
+        "EngleHierarchicalRefit/dataPackageCoefficientPosteriors.py",
+        "EngleHierarchicalRefit/plotJointCornerRelations.py",
+        "EngleHierarchicalRefit/plotJointCornerRelations.py",
+        "EngleHierarchicalRefit/plotEngleVsRefitEvolution.py",
+        "EngleHierarchicalRefit/plotEngleVsRefitEvolution.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Engle Age Distribution",
@@ -361,7 +514,29 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "dictVerification": {
+        "sUser": "stale",
+        "sLastTestRun": "2026-04-28T18:25:42Z",
+        "sIntegrity": "passed",
+        "sQualitative": "passed",
+        "sQuantitative": "passed",
+        "sUnitTest": "passed",
+        "sLastUserUpdate": "2026-05-04 18:24:36 UTC"
+      },
+      "dictRunStats": {},
+      "dictLevelHighWater": {
+        "1": "2026-06-10T21:42:10Z"
+      },
+      "sLabel": "A07",
+      "saStepScripts": [
+        "EngleAgeDistribution/dataAge.py",
+        "EngleAgeDistribution/plotAge.py"
+      ],
+      "saTestStandards": [
+        "EngleAgeDistribution/tests/quantitative_standards.json"
+      ],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Activity Consistency Check",
@@ -407,7 +582,22 @@
       "saTestCommands": [
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "dictVerification": {
+        "sUnitTest": "passed",
+        "sIntegrity": "passed"
+      },
+      "dictRunStats": {
+        "fWallClock": 11.8,
+        "fCpuTime": 0.0
+      },
+      "sLabel": "A08",
+      "saStepScripts": [
+        "LxuvInformedAge/dataCheckActivityConsistency.py",
+        "LxuvInformedAge/plotActivityConsistency.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Maximum Likelihood",
@@ -456,7 +646,29 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "dictVerification": {
+        "sUser": "passed",
+        "sLastTestRun": "2026-04-28T18:25:42Z",
+        "sIntegrity": "untested",
+        "sQualitative": "untested",
+        "sQuantitative": "failed",
+        "sUnitTest": "failed",
+        "sLastUserUpdate": "2026-05-04 18:24:51 UTC"
+      },
+      "dictRunStats": {
+        "fWallClock": 8415.7,
+        "fCpuTime": 0.0
+      },
+      "dictLevelHighWater": {
+        "1": "2026-06-10T21:42:10Z"
+      },
+      "sLabel": "A09",
+      "saStepScripts": [],
+      "saTestStandards": [
+        "MaximumLikelihood/tests/quantitative_standards.json"
+      ],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Bayesian Posteriors",
@@ -521,7 +733,35 @@
         "{Step08.maxlike_results}",
         "{Step07.age_samples}"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "dictVerification": {
+        "sUser": "stale",
+        "sLastTestRun": "2026-04-29T22:00:04Z",
+        "sQuantitative": "untested",
+        "sUnitTest": "untested",
+        "sLastDepsCheck": "2026-06-01 22:46:28 UTC",
+        "sIntegrity": "untested",
+        "sQualitative": "untested",
+        "sLastUserUpdate": "2026-06-01 22:46:29 UTC"
+      },
+      "dictRunStats": {
+        "fWallClock": 5.4,
+        "fCpuTime": 0.0
+      },
+      "dictLevelHighWater": {
+        "1": "2026-06-10T22:23:47Z"
+      },
+      "sLabel": "A10",
+      "saStepScripts": [
+        "BayesianPosteriors/dataBayesianPosteriors.py",
+        "BayesianPosteriors/plotSamplerComparison.py"
+      ],
+      "saTestStandards": [
+        "BayesianPosteriors/tests/qualitative_standards.json",
+        "BayesianPosteriors/tests/quantitative_standards.json",
+        "BayesianPosteriors/tests/integrity_standards.json"
+      ],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "XUV Evolution",
@@ -574,7 +814,36 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "dictVerification": {
+        "sUser": "passed",
+        "sLastTestRun": "2026-04-29T22:03:44Z",
+        "sQuantitative": "untested",
+        "sUnitTest": "untested",
+        "sLastDepsCheck": "2026-07-03 17:56:42 UTC",
+        "sIntegrity": "untested",
+        "sQualitative": "untested",
+        "sLastUserUpdate": "2026-06-11T04:25:26Z"
+      },
+      "dictRunStats": {
+        "fWallClock": 3619.1,
+        "fCpuTime": 0.0
+      },
+      "dictLevelHighWater": {
+        "1": "2026-07-03T17:56:47Z"
+      },
+      "sLabel": "A11",
+      "saStepScripts": [
+        "utils/englePriorTable.py",
+        "XuvEvolution/dataRunVconverge.py",
+        "XuvEvolution/plotXuvEvolution.py"
+      ],
+      "saTestStandards": [
+        "XuvEvolution/tests/qualitative_standards.json",
+        "XuvEvolution/tests/quantitative_standards.json",
+        "XuvEvolution/tests/integrity_standards.json"
+      ],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Cumulative XUV and Cosmic Shoreline",
@@ -632,7 +901,37 @@
       "saDependencies": [
         "{Step02.manual}"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "dictVerification": {
+        "sUser": "stale",
+        "sLastTestRun": "2026-04-29T22:07:22Z",
+        "sQuantitative": "untested",
+        "sUnitTest": "untested",
+        "sLastDepsCheck": "2026-07-07 18:10:02 UTC",
+        "sIntegrity": "untested",
+        "sQualitative": "untested",
+        "sLastUserUpdate": "2026-07-07 18:10:04 UTC"
+      },
+      "dictRunStats": {
+        "fWallClock": 4222.7,
+        "fCpuTime": 0.0
+      },
+      "dictLevelHighWater": {
+        "1": "2026-07-07T18:10:07Z"
+      },
+      "sLabel": "A12",
+      "saStepScripts": [
+        "utils/englePriorTable.py",
+        "CumulativeXuvAndCosmicShoreline/dataRunVconverge.py",
+        "CumulativeXuvAndCosmicShoreline/plotCumulativeXuv.py",
+        "CumulativeXuvAndCosmicShoreline/plotCosmicShoreline.py"
+      ],
+      "saTestStandards": [
+        "CumulativeXuvAndCosmicShoreline/tests/qualitative_standards.json",
+        "CumulativeXuvAndCosmicShoreline/tests/quantitative_standards.json",
+        "CumulativeXuvAndCosmicShoreline/tests/integrity_standards.json"
+      ],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Error Source Comparison",
@@ -687,7 +986,36 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "dictVerification": {
+        "sUser": "passed",
+        "sLastTestRun": "2026-04-29T22:08:38Z",
+        "sQuantitative": "untested",
+        "sUnitTest": "untested",
+        "sLastDepsCheck": "2026-07-07 19:37:06 UTC",
+        "sIntegrity": "untested",
+        "sQualitative": "untested",
+        "sLastUserUpdate": "2026-06-11T04:25:27Z"
+      },
+      "dictRunStats": {
+        "fWallClock": 6722.5,
+        "fCpuTime": 0.0
+      },
+      "dictLevelHighWater": {
+        "1": "2026-07-03T19:59:39Z"
+      },
+      "sLabel": "A13",
+      "saStepScripts": [
+        "utils/englePriorTable.py",
+        "ErrorSourceComparison/dataRunVconverge.py",
+        "ErrorSourceComparison/plotErrorSourceComparison.py"
+      ],
+      "saTestStandards": [
+        "ErrorSourceComparison/tests/qualitative_standards.json",
+        "ErrorSourceComparison/tests/quantitative_standards.json",
+        "ErrorSourceComparison/tests/integrity_standards.json"
+      ],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Z-Offset Cumulative XUV Comparison",
@@ -736,7 +1064,22 @@
       "saTestCommands": [
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "dictVerification": {
+        "sUnitTest": "untested",
+        "sIntegrity": "untested"
+      },
+      "dictRunStats": {
+        "fWallClock": 7980.4,
+        "fCpuTime": 0.0
+      },
+      "sLabel": "A14",
+      "saStepScripts": [
+        "LxuvInformedCumulativeXuv/dataCompareZOffsetFlux.py",
+        "LxuvInformedCumulativeXuv/plotCompareZOffsetFlux.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Kepler vs TESS Comparison",
@@ -770,7 +1113,29 @@
       "dictPlotFileCategories": {
         "{sPlotDirectory}/FitComparison.{sFigureType}": "supporting"
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "dictVerification": {
+        "sUnitTest": "unnecessary",
+        "sUser": "passed",
+        "sQualitative": "unnecessary",
+        "sQuantitative": "unnecessary",
+        "sIntegrity": "unnecessary",
+        "sLastDepsCheck": "2026-04-28 06:05:06 UTC",
+        "sLastUserUpdate": "2026-04-28 06:05:06 UTC"
+      },
+      "dictRunStats": {
+        "fWallClock": 8.4,
+        "fCpuTime": 0.0
+      },
+      "dictLevelHighWater": {
+        "1": "2026-06-10T21:42:10Z"
+      },
+      "sLabel": "A15",
+      "saStepScripts": [
+        "KeplerVsTessComparison/plotKeplerVsTessComparison.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "AI Declaration",
@@ -800,7 +1165,23 @@
       "saDataFiles": [],
       "saTestCommands": [],
       "saPlotCommands": [],
-      "saPlotFiles": []
+      "saPlotFiles": [],
+      "dictVerification": {
+        "sUser": "passed",
+        "sUnitTest": "unnecessary",
+        "sIntegrity": "unnecessary",
+        "sQualitative": "unnecessary",
+        "sQuantitative": "unnecessary",
+        "sLastUserUpdate": "2026-06-11T04:28:54Z"
+      },
+      "dictLevelHighWater": {
+        "1": "2026-06-11T04:34:35Z",
+        "3": "2026-06-12T04:49:49Z"
+      },
+      "sLabel": "I02",
+      "saStepScripts": [],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "Model Graph Figures",
@@ -845,7 +1226,18 @@
           "sLastOutput": ""
         },
         "listUserTests": []
-      }
+      },
+      "dictVerification": {
+        "sUnitTest": "passed",
+        "sIntegrity": "passed"
+      },
+      "sLabel": "A16",
+      "saStepScripts": [
+        "modelGraphFigures/dataModelGraph.py",
+        "modelGraphFigures/plotProbabilisticGraphicalModel.py"
+      ],
+      "saTestStandards": [],
+      "saSourceCodeDeps": []
     },
     {
       "sName": "X-ray Measurement Value",
@@ -887,7 +1279,24 @@
         },
         "listUserTests": []
       },
-      "saDependencies": []
+      "dictVerification": {
+        "sUnitTest": "unnecessary",
+        "sUser": "untested",
+        "sQualitative": "unnecessary",
+        "sQuantitative": "unnecessary",
+        "sIntegrity": "unnecessary"
+      },
+      "saDependencies": [],
+      "dictRunStats": {
+        "fWallClock": 3.8,
+        "fCpuTime": 0.0
+      },
+      "sLabel": "A17",
+      "saStepScripts": [
+        "XrayMeasurementValue/dataXrayMeasurementValue.py",
+        "XrayMeasurementValue/plotXrayMeasurementValue.py"
+      ],
+      "saTestStandards": []
     }
   ],
   "sOverleafProjectId": "68656ed576acad848ef2ee0c",
@@ -1424,5 +1833,13 @@
   ],
   "dictDeterminism": {
     "bAcceptBlasVariance": true
-  }
+  },
+  "_sSourceFingerprint": "3e073e704f16f46fbeb86c6a554a2c30a774569e644116ebe82873d7fe03dcec",
+  "bArchiveTrackingMigrated": true,
+  "iAICSLevel": 0,
+  "dictWorkflowLevelHighWater": {
+    "1": "2026-06-10T21:42:10Z"
+  },
+  "bWarnedHundredSteps": false,
+  "sProjectRepoPath": "/workspace/GJ1132_XUV"
 }

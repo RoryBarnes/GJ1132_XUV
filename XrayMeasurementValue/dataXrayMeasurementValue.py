@@ -193,6 +193,30 @@ DICT_SOURCE_ABLATIONS = {
     "stellar population (intrinsic scatter)": ("daZ", "daSigmaInt"),
 }
 
+# States of knowledge. Each freezes a subset of sources at its mean, so every
+# scenario's spread is measured with the same estimator on the same draws and
+# the four are strictly comparable. The two projected scenarios assume the
+# measured offsets PERSIST over the star's history -- the flux is set by the
+# saturated phase, which ended ~5 Gyr ago and cannot be observed.
+SA_CONVERSION_SOURCES = ("daConversionScatter", "daSlope", "daIntercept")
+DICT_SCENARIOS = {
+    "noMeasurement": {
+        "sLabel": "no measurement",
+        "sZMode": "population", "saFrozen": (), "bProjected": False},
+    "xrayMeasurement": {
+        "sLabel": "X-ray measurement",
+        "sZMode": "informed", "saFrozen": (), "bProjected": False},
+    "panchromaticSed": {
+        "sLabel": "panchromatic X-UV SED",
+        "sZMode": "informed", "saFrozen": SA_CONVERSION_SOURCES,
+        "bProjected": True},
+    "relationFloor": {
+        "sLabel": "relation floor (star known exactly)",
+        "sZMode": "informed",
+        "saFrozen": SA_CONVERSION_SOURCES + ("daZ", "daSigmaInt"),
+        "bProjected": True},
+}
+
 
 def fdictDecomposeSources(dictSources):
     """Level 2: first-order variance indices by ablation of each source."""
@@ -213,6 +237,32 @@ def fdictDecomposeSources(dictSources):
                    "quadrature sum, because the conversion slope multiplies "
                    "several sources",
     }
+
+
+def fdictEvaluateScenario(dictSources, dictScenario, daReferenceOffset,
+                          dSweepMedian):
+    """Compose one state of knowledge: its offsets, flux, spread, and budget."""
+    daOffset = fdaComposeOffset(dictSources, dictScenario["saFrozen"])
+    daFlux = fdaAnchorFlux(daOffset, daReferenceOffset, dSweepMedian)
+    dictSummary = fdictSummarizeFlux(daFlux, dictScenario["sLabel"])
+    dictSummary["bProjected"] = dictScenario["bProjected"]
+    dictSummary["saFrozenSources"] = list(dictScenario["saFrozen"])
+    dictSummary["dictVarianceBySource"] = fdictVarianceBySource(
+        dictSources, dictScenario["saFrozen"])
+    return daFlux, dictSummary
+
+
+def fdictVarianceBySource(dictSources, saFrozen):
+    """Variance (dex^2) each source still contributes under one scenario."""
+    dTotal = float(np.var(fdaComposeOffset(dictSources, saFrozen)))
+    dictVariance = {}
+    for sName, saSources in DICT_SOURCE_ABLATIONS.items():
+        saBoth = tuple(saFrozen) + tuple(saSources)
+        dRemaining = float(np.var(fdaComposeOffset(dictSources, saBoth)))
+        dictVariance[sName] = max(dTotal - dRemaining, 0.0)
+    dictVariance["interaction residual"] = max(
+        dTotal - sum(dictVariance.values()), 0.0)
+    return dictVariance
 
 
 def fdictSummarizeFlux(daFlux, sLabel):
@@ -264,45 +314,50 @@ def main():
     daSweepFlux = daExtractFluxValues(fdictLoadConvergedJson(
         args.converged_flux))
 
-    dictPopulation = fdictSampleSources(daChain, dictSummary, dictConversion,
-                                        daInformed, "population")
-    dictInformed = fdictSampleSources(daChain, dictSummary, dictConversion,
-                                      daInformed, "informed")
-    daOffsetPopulation = fdaComposeOffset(dictPopulation)
-    daOffsetInformed = fdaComposeOffset(dictInformed)
+    dictSourcesByMode = {
+        sMode: fdictSampleSources(daChain, dictSummary, dictConversion,
+                                  daInformed, sMode)
+        for sMode in ("population", "informed")}
     dSweepMedian = float(np.median(daSweepFlux))
-    daFluxPopulation = fdaAnchorFlux(daOffsetPopulation, daOffsetPopulation,
-                                     dSweepMedian)
-    daFluxInformed = fdaAnchorFlux(daOffsetInformed, daOffsetPopulation,
-                                   dSweepMedian)
+    daReferenceOffset = fdaComposeOffset(dictSourcesByMode["population"])
 
-    np.savetxt("fluxSamplesPopulationZ.txt", daFluxPopulation)
-    np.savetxt("fluxSamplesInformedZ.txt", daFluxInformed)
+    dictScenarios = {}
+    for sKey, dictScenario in DICT_SCENARIOS.items():
+        daFlux, dictScenarioSummary = fdictEvaluateScenario(
+            dictSourcesByMode[dictScenario["sZMode"]], dictScenario,
+            daReferenceOffset, dSweepMedian)
+        np.savetxt(f"fluxSamples_{sKey}.txt", daFlux)
+        dictScenarios[sKey] = dictScenarioSummary
     np.savetxt("fluxSamplesForwardModelSweep.txt", daSweepFlux)
+
     dictBudget = {
         "dictLevel1ForwardModel": fdictDecomposeForwardModel(
             os.path.dirname(args.converged_flux)),
-        "dictLevel2PopulationZ": fdictDecomposeSources(dictPopulation),
-        "dictLevel2InformedZ": fdictDecomposeSources(dictInformed),
-        "dictPopulationZ": fdictSummarizeFlux(daFluxPopulation,
-                                              "no X-ray measurement"),
-        "dictInformedZ": fdictSummarizeFlux(daFluxInformed,
-                                            "with X-ray measurement"),
+        "dictLevel2SourceIndices": fdictDecomposeSources(
+            dictSourcesByMode["population"]),
+        "dictScenarios": dictScenarios,
         "dictForwardModelSweep": fdictSummarizeFlux(
             daSweepFlux, "vconverge sweep (population z)"),
     }
     dictBudget["dictValidation"] = fdictValidate(dictBudget)
-    dictBudget["dSpreadReductionFactor"] = (
-        dictBudget["dictPopulationZ"]["sigma_log10"]
-        / dictBudget["dictInformedZ"]["sigma_log10"])
+    dictBudget["dictGains"] = fdictComputeGains(dictScenarios)
     with open("uncertaintyBudget.json", "w") as fileHandle:
         json.dump(dictBudget, fileHandle, indent=2)
     fnPrintSummary(dictBudget)
 
 
+def fdictComputeGains(dictScenarios):
+    """Express each state of knowledge as a factor gained over no measurement."""
+    dBaseline = dictScenarios["noMeasurement"]["sigma_log10"]
+    return {sKey: {"dSpreadDex": dictScenario["sigma_log10"],
+                   "dFactorVersusNoMeasurement":
+                       dBaseline / dictScenario["sigma_log10"]}
+            for sKey, dictScenario in dictScenarios.items()}
+
+
 def fdictValidate(dictBudget):
     """Check the analytic propagation against the forward-model sweep."""
-    dAnalytic = dictBudget["dictPopulationZ"]["sigma_log10"]
+    dAnalytic = dictBudget["dictScenarios"]["noMeasurement"]["sigma_log10"]
     dSweep = dictBudget["dictForwardModelSweep"]["sigma_log10"]
     return {
         "sigma_log10_analytic": dAnalytic,
@@ -322,10 +377,10 @@ def fnPrintSummary(dictBudget):
     for sBlock, dShare in sorted(dictL1["dictBlockShares"].items(),
                                  key=lambda t: -t[1]):
         print(f"  {sBlock:38s} {100 * dShare:6.2f}%")
-    print(f"\nLEVEL 2 - within the X-UV coefficients "
-          f"(first-order indices, no X-ray):")
+    print("\nLEVEL 2 - within the X-UV coefficients "
+          "(first-order indices, no measurement):")
     for sName, dictShare in sorted(
-            dictBudget["dictLevel2PopulationZ"]["dictSourceShares"].items(),
+            dictBudget["dictLevel2SourceIndices"]["dictSourceShares"].items(),
             key=lambda t: -t[1]["dVarianceShare"]):
         print(f"  {sName:46s} {100 * dictShare['dVarianceShare']:6.2f}%  "
               f"({dictShare['dSpreadDex']:.3f} dex)")
@@ -333,13 +388,16 @@ def fnPrintSummary(dictBudget):
     print(f"\nValidation: analytic {dictV['sigma_log10_analytic']:.3f} dex vs "
           f"sweep {dictV['sigma_log10_forward_model_sweep']:.3f} dex "
           f"(ratio {dictV['agreement_ratio']:.2f})")
-    for sKey in ("dictPopulationZ", "dictInformedZ"):
-        dictS = dictBudget[sKey]
-        print(f"{dictS['label']:26s}: median {dictS['median']:.0f}, "
-              f"95% CI [{dictS['ci95'][0]:.0f}, {dictS['ci95'][1]:.0f}], "
-              f"sigma {dictS['sigma_log10']:.3f} dex")
-    print(f"One X-ray measurement narrows the log-spread by a factor "
-          f"{dictBudget['dSpreadReductionFactor']:.2f}.")
+    print("\nSTATES OF KNOWLEDGE (projected cases assume the measured offsets "
+          "persist):")
+    for sKey, dictScenario in dictBudget["dictScenarios"].items():
+        sMark = "*" if dictScenario["bProjected"] else " "
+        dFactor = dictBudget["dictGains"][sKey]["dFactorVersusNoMeasurement"]
+        print(f" {sMark}{dictScenario['label']:36s} sigma "
+              f"{dictScenario['sigma_log10']:.3f} dex, median "
+              f"{dictScenario['median']:.0f}, 95% CI "
+              f"[{dictScenario['ci95'][0]:.0f}, "
+              f"{dictScenario['ci95'][1]:.0f}]  ({dFactor:.2f}x)")
 
 
 if __name__ == "__main__":
