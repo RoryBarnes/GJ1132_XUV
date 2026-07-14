@@ -42,18 +42,17 @@ def test_shown_endpoints_sample_the_age_interval():
 
 
 def test_main_sequence_arrival_is_tight_and_early():
-    """The main-sequence arrival is a tight, early epoch after artifact cuts.
+    """Main-sequence arrival is an early, tight epoch (the contraction knee).
 
-    The luminosity-minimum estimator is bimodal (a Baraffe grid artifact puts
-    ~13% of tracks near 0.5 Gyr); after the data-driven cut the physical
-    cluster must be tight, as stellar age varies only a few percent across the
-    mass posterior.
+    Detected as the age at which the bolometric luminosity first reaches within
+    1% of its floor, which is robust to the flat-floor noise that made a naive
+    global-minimum estimator bimodal. Stellar mass varies only a few percent
+    across the posterior, so the arrival must be tight.
     """
     dictMs = fdictLoadHistory()["dictMainSequenceArrival"]
-    assert 1.0 < dictMs["mean"] < 2.5
-    assert dictMs["fractional_spread"] < 0.12, (
-        "the physical main-sequence-arrival cluster should be tight")
-    assert dictMs["fArtifactFraction"] < 0.3
+    assert 0.1 < dictMs["mean"] < 0.6, "ZAMS for a ~0.19 Msun star is early"
+    assert dictMs["fractional_spread"] < 0.06, (
+        "the main-sequence-arrival epoch should be tight")
 
 
 def test_causal_chain_is_ordered():

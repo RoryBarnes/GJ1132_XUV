@@ -43,6 +43,7 @@ I_MIN_COVERAGE = 100
 D_COVERAGE_FRACTION = 0.3
 I_SHOWN_TRAJECTORIES = 25
 I_SHOWN_RESAMPLE = 160
+D_MS_FLOOR_TOLERANCE = 0.01
 DA_MILESTONE_AGES = np.array([0.5, 1.0, 2.0, 3.0, 5.0])
 
 
@@ -53,13 +54,14 @@ def fdReadOption(sPath, sKey):
 
 
 def fdMainSequenceAge(sTrialDirectory, dStartAge):
-    """Return the stellar age [Gyr] of the bolometric-luminosity minimum.
+    """Return the main-sequence arrival age [Gyr]: where PMS contraction ends.
 
-    A pre-main-sequence star contracts and dims; at the zero-age main sequence
-    hydrogen burning halts the contraction and the luminosity bottoms out
-    before slowly rising. The interior minimum of L(t) is therefore the main-
-    sequence arrival. Returns NaN if the minimum is at a trajectory edge (no
-    turnaround captured).
+    A pre-main-sequence star contracts and dims steeply, then settles onto a
+    bolometric-luminosity floor that is flat to <0.1% for gigayears. The exact
+    global minimum of L(t) is therefore noise-dominated and lands anywhere on
+    that floor -- which is what made a naive argmin bimodal. The robust,
+    physical marker is the KNEE: the first age at which L has fallen within
+    D_MS_FLOOR_TOLERANCE of its floor, i.e. contraction is essentially done.
     """
     saStar = glob.glob(os.path.join(sTrialDirectory, "*.star.forward"))
     if not saStar:
@@ -67,10 +69,9 @@ def fdMainSequenceAge(sTrialDirectory, dStartAge):
     daStar = np.loadtxt(saStar[0])
     if daStar.ndim != 2 or len(daStar) < 5:
         return np.nan
-    iMinimum = int(np.argmin(daStar[:, 1]))
-    if iMinimum == 0 or iMinimum == len(daStar) - 1:
-        return np.nan
-    return (dStartAge + daStar[iMinimum, 0]) / 1e9
+    daLuminosity = daStar[:, 1]
+    baAtFloor = daLuminosity <= daLuminosity.min() * (1.0 + D_MS_FLOOR_TOLERANCE)
+    return (dStartAge + daStar[np.argmax(baAtFloor), 0]) / 1e9
 
 
 def ftLoadTrajectory(sTrialDirectory):
@@ -229,26 +230,14 @@ def fdictSummarizeSaturation(daSaturationAges):
 
 
 def fdictSummarizeMainSequence(daMainSequenceAges):
-    """Return the main-sequence arrival age, rejecting grid-artifact outliers.
-
-    The bolometric-luminosity minimum is bimodal: ~13% of tracks (sampled
-    masses just above ~0.20 Msun) flatten prematurely near 0.5 Gyr, a Baraffe
-    interpolation artifact rather than physics -- a stellar mass varying only a
-    few percent cannot move the ZAMS threefold. The dominant cluster is kept
-    with a data-driven cut (within a factor of two of the median) and its mean
-    reported; the rejected fraction is recorded as a diagnostic.
-    """
+    """Return the mean main-sequence arrival age and its fractional spread."""
     daValid = daMainSequenceAges[np.isfinite(daMainSequenceAges)]
-    dMedian = float(np.median(daValid))
-    baCluster = (daValid > 0.5 * dMedian) & (daValid < 2.0 * dMedian)
-    daCluster = daValid[baCluster]
-    dMean = float(np.mean(daCluster))
+    dMean = float(np.mean(daValid))
     return {
         "mean": dMean,
-        "std": float(np.std(daCluster)),
-        "fractional_spread": float(np.std(daCluster) / dMean),
-        "iCluster": int(daCluster.size),
-        "fArtifactFraction": float(1.0 - baCluster.mean()),
+        "std": float(np.std(daValid)),
+        "fractional_spread": float(np.std(daValid) / dMean),
+        "iValid": int(daValid.size),
     }
 
 
@@ -300,12 +289,10 @@ def fnPrintSummary(dictSummary):
     for sAge, dFraction in dictSummary["dictFractionMilestones"].items():
         print(f"  by {sAge} Gyr: {100 * dFraction:5.1f}%")
     dictMs = dictSummary["dictMainSequenceArrival"]
-    print(f"Main-sequence arrival (luminosity minimum): mean "
-          f"{dictMs['mean']:.2f} Gyr "
+    print(f"Main-sequence arrival (PMS-contraction knee): mean "
+          f"{1000 * dictMs['mean']:.0f} Myr "
           f"(+/- {100 * dictMs['fractional_spread']:.1f}%, "
-          f"{dictMs['iCluster']} trajectories; "
-          f"{100 * dictMs['fArtifactFraction']:.0f}% grid-artifact outliers "
-          f"rejected).")
+          f"{dictMs['iValid']} trajectories).")
     dictSat = dictSummary["dictSaturationAge"]
     print(f"Saturation age: median {dictSat['median']:.2f} Gyr, 95% CI "
           f"[{dictSat['ci95'][0]:.2f}, {dictSat['ci95'][1]:.2f}] Gyr "
