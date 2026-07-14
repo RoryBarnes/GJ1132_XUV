@@ -341,9 +341,44 @@ def main():
     }
     dictBudget["dictValidation"] = fdictValidate(dictBudget)
     dictBudget["dictGains"] = fdictComputeGains(dictScenarios)
+    dictBudget["dictPreposterior"] = fdictPreposterior(
+        dictScenarios, "xrayMeasurement", "panchromaticSed")
     with open("uncertaintyBudget.json", "w") as fileHandle:
         json.dump(dictBudget, fileHandle, indent=2)
     fnPrintSummary(dictBudget)
+
+
+def fdictPreposterior(dictScenarios, sCurrent, sFuture, iCenters=4000):
+    """Distribution of where a FUTURE measurement would centre the posterior.
+
+    The projected scenarios freeze the removed sources at their MEANS, so they
+    preserve today's central estimate by construction: they state how NARROW a
+    future posterior would be, not WHERE it would sit. A real measurement
+    returns a random value, so the future posterior's centre is itself random.
+    For a Gaussian update, Var[future centre] = Var[now] - E[Var[future]], so
+    the centre's spread follows from the two spreads already computed. The
+    mixture of all possible future posteriors must reproduce today's posterior
+    (the tower property), which the step's tests check.
+    """
+    dSigmaNow = dictScenarios[sCurrent]["sigma_log10"]
+    dSigmaFuture = dictScenarios[sFuture]["sigma_log10"]
+    dSigmaCenter = float(np.sqrt(max(dSigmaNow ** 2 - dSigmaFuture ** 2, 0.0)))
+    dCenterNow = float(np.log10(dictScenarios[sCurrent]["median"]))
+    daCenters = np.random.normal(dCenterNow, dSigmaCenter, iCenters)
+    dGap = dCenterNow - np.log10(D_SHORELINE_FLUX)
+    dHalfWidth = 1.96 * dSigmaFuture
+    return {
+        "sCurrentState": sCurrent,
+        "sFutureState": sFuture,
+        "dSigmaCenterDex": dSigmaCenter,
+        "dCenterNowDex": dCenterNow,
+        "daPossibleCenters": daCenters.tolist(),
+        "dShorelineGapDex": dGap,
+        "dProbabilityStillStraddlesShoreline": float(np.mean(
+            np.abs(daCenters - np.log10(D_SHORELINE_FLUX)) < dHalfWidth)),
+        "dProbabilityMedianBelowShoreline": float(np.mean(
+            daCenters < np.log10(D_SHORELINE_FLUX))),
+    }
 
 
 def fdictComputeGains(dictScenarios):
@@ -398,6 +433,17 @@ def fnPrintSummary(dictBudget):
               f"{dictScenario['median']:.0f}, 95% CI "
               f"[{dictScenario['ci95'][0]:.0f}, "
               f"{dictScenario['ci95'][1]:.0f}]  ({dFactor:.2f}x)")
+    dictPre = dictBudget["dictPreposterior"]
+    print("\nPREPOSTERIOR - where a future panchromatic SED would centre the "
+          "answer:")
+    print(f"  the projected medians above are NOT predictions: they inherit "
+          f"today's centre by construction.")
+    print(f"  a real measurement would centre the posterior anywhere with "
+          f"sigma {dictPre['dSigmaCenterDex']:.3f} dex")
+    print(f"  P(the 95% interval still straddles the shoreline) = "
+          f"{100 * dictPre['dProbabilityStillStraddlesShoreline']:.1f}%")
+    print(f"  P(the posterior median falls below the shoreline)  = "
+          f"{100 * dictPre['dProbabilityMedianBelowShoreline']:.2f}%")
 
 
 if __name__ == "__main__":

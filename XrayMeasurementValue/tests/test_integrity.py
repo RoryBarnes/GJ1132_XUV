@@ -89,6 +89,47 @@ def test_measurement_moves_the_bottleneck_to_the_conversion():
     assert dictVariance[S_CONVERSION_SOURCE] > dictVariance[S_POPULATION_SOURCE]
 
 
+def test_preposterior_satisfies_the_tower_property():
+    """The future posterior's centre-spread and width must reconstruct today's.
+
+    Var[now] = Var[future centre] + E[Var[future]]. If this fails, the fan of
+    possible future posteriors would not average back to what we believe now,
+    and the projection would be incoherent.
+    """
+    dictBudget = fdictLoadBudget()
+    dictPre = dictBudget["dictPreposterior"]
+    dNow = dictBudget["dictScenarios"][dictPre["sCurrentState"]]["sigma_log10"]
+    dFuture = dictBudget["dictScenarios"][
+        dictPre["sFutureState"]]["sigma_log10"]
+    dReconstructed = np.sqrt(dictPre["dSigmaCenterDex"] ** 2 + dFuture ** 2)
+    assert abs(dReconstructed - dNow) < 0.01 * dNow
+
+
+def test_projected_medians_are_an_artifact_not_a_prediction():
+    """Guard the figure's honesty: the projected centres are NOT predictions.
+
+    Freezing sources at their means preserves today's central estimate, so the
+    projected states share a median by construction. That is only defensible
+    while the preposterior records that a real measurement could land elsewhere.
+    """
+    dictBudget = fdictLoadBudget()
+    daMedians = np.array([dictBudget["dictScenarios"][sKey]["median"]
+                          for sKey in ("xrayMeasurement", "panchromaticSed",
+                                       "relationFloor")])
+    assert np.ptp(daMedians) / np.mean(daMedians) < 0.05
+    assert dictBudget["dictPreposterior"]["dSigmaCenterDex"] > 0.1, (
+        "projected medians coincide with today's, so the preposterior MUST "
+        "record that a future measurement could centre the answer elsewhere")
+
+
+def test_shoreline_verdict_probabilities_are_coherent():
+    """Straddling the shoreline must be likelier than falling below it."""
+    dictPre = fdictLoadBudget()["dictPreposterior"]
+    dStraddle = dictPre["dProbabilityStillStraddlesShoreline"]
+    dBelow = dictPre["dProbabilityMedianBelowShoreline"]
+    assert 0.0 <= dBelow <= dStraddle <= 1.0
+
+
 def test_lognormal_mean_exceeds_median():
     """Every distribution is right-skewed: the mean must exceed the median."""
     for sKey, dictScenario in fdictLoadBudget()["dictScenarios"].items():
