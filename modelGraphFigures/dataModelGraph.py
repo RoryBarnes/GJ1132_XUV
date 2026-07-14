@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
-"""Assemble the node/edge/plate structure for the two GJ 1132 model figures.
+"""Assemble the node/edge/plate structure for the GJ 1132 model figure.
 
-This script emits the machine-readable JSON description that the companion
-plot script renders:
+This script emits probabilisticGraphicalModelStructure.json, the
+machine-readable description that plotProbabilisticGraphicalModel.py renders
+as the generative PGM. The structure is derived by hand from the workflow
+dependency graph (``.vaibify/workflows/gj1132-xuv.json``) and from the
+manuscript model (``gj1132.tex``: Eqs. lxuv, englerot, englexuv, ffd,
+LXUVFlare). Keeping the structure in a data step (rather than hard-coded
+inside the renderer) makes the parameter categorization auditable and
+version-controlled.
 
-  probabilisticGraphicalModelStructure.json -> generative PGM
-
-Both structures are derived by hand from the workflow dependency graph
-(``.vaibify/workflows/gj1132-xuv.json``) and from the manuscript model
-(``gj1132.tex``: Eqs. lxuv, englerot, englexuv, ffd, LXUVFlare). Keeping the
-structure in a data step (rather than hard-coded inside the renderers) makes
-the parameter categorization auditable and version-controlled.
+NOTE: the joint-refit restructuring (2026-07) replaced the Sanz-Forcada
+conversion with the re-derived MUSCLES relation and added the per-star
+scatter offset z; the node/edge lists below still describe the pre-refit
+model and are updated together with the sweep rewiring.
 """
 
 import json

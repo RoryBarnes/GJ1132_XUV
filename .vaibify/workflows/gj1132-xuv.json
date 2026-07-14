@@ -246,20 +246,42 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataRefitEngleRelations.py"
+        "python musclesConversion/dataDeriveMusclesConversion.py",
+        "python dataPrepareJointSample.py",
+        "python dataRefitJointRelations.py --sample midlate --subdwarfs include",
+        "python dataRefitJointRelations.py --sample midlate --subdwarfs exclude",
+        "python dataRefitJointRelations.py --sample early --subdwarfs include",
+        "python dataRefitJointRelations.py --sample early --subdwarfs exclude",
+        "python dataPackageCoefficientPosteriors.py"
       ],
       "saDataFiles": [
-        "rotationCoefficientSamples.npy",
-        "xuvCoefficientSamples.npy",
-        "rotationCovariance.npy",
-        "xuvCovariance.npy",
-        "refitSummary.json"
+        "musclesConversion/conversionFit.json",
+        "musclesConversion/perStarBandFluxes.json",
+        "jointSampleMidLate.json",
+        "jointSampleEarly.json",
+        "jointChain_midlate_withsd.npy",
+        "jointFitSummary_midlate_withsd.json",
+        "jointChain_midlate_nosd.npy",
+        "jointFitSummary_midlate_nosd.json",
+        "jointChain_early_withsd.npy",
+        "jointFitSummary_early_withsd.json",
+        "jointChain_early_nosd.npy",
+        "jointFitSummary_early_nosd.json",
+        "engleCoefficientPosteriors.json"
       ],
       "saPlotCommands": [
-        "python plotRefitEngleRelations.py {sPlotDirectory}/RefitEngleRelations.{sFigureType}"
+        "python plotJointCornerRelations.py midlate_withsd {sPlotDirectory} {sFigureType}",
+        "python plotJointCornerRelations.py early_withsd {sPlotDirectory} {sFigureType}",
+        "python plotEngleVsRefitEvolution.py midlate_withsd {sPlotDirectory}/EngleVsRefit_midlate_withsd.{sFigureType}",
+        "python plotEngleVsRefitEvolution.py early_withsd {sPlotDirectory}/EngleVsRefit_early_withsd.{sFigureType}"
       ],
       "saPlotFiles": [
-        "{sPlotDirectory}/RefitEngleRelations.{sFigureType}"
+        "{sPlotDirectory}/CornerJointRotation_midlate_withsd.{sFigureType}",
+        "{sPlotDirectory}/CornerJointActivity_midlate_withsd.{sFigureType}",
+        "{sPlotDirectory}/CornerJointRotation_early_withsd.{sFigureType}",
+        "{sPlotDirectory}/CornerJointActivity_early_withsd.{sFigureType}",
+        "{sPlotDirectory}/EngleVsRefit_midlate_withsd.{sFigureType}",
+        "{sPlotDirectory}/EngleVsRefit_early_withsd.{sFigureType}"
       ],
       "dictTests": {
         "dictQualitative": {
@@ -275,17 +297,16 @@
           "sLastOutput": ""
         },
         "dictIntegrity": {
-          "sFilePath": "EngleHierarchicalRefit/tests/test_integrity.py",
-          "sContent": "\"\"\"Integrity checks for the Engle hierarchical refit outputs.\"\"\"\n\nimport json\nimport os\n\nimport numpy as np\n\nS_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n\n\ndef fdaLoad(sName):\n    \"\"\"Load a saved numpy array from the step directory.\"\"\"\n    return np.load(os.path.join(S_DIRECTORY, sName))\n\n\ndef test_coefficient_samples_shape_and_finite():\n    \"\"\"Both coefficient chains have six columns and are finite.\"\"\"\n    for sName in [\"rotationCoefficientSamples.npy\", \"xuvCoefficientSamples.npy\"]:\n        daChain = fdaLoad(sName)\n        assert daChain.ndim == 2 and daChain.shape[1] == 6\n        assert daChain.shape[0] > 1000\n        assert np.all(np.isfinite(daChain))\n\n\ndef test_intrinsic_scatter_positive():\n    \"\"\"Inferred segment intrinsic scatters are strictly positive.\"\"\"\n    for sName in [\"rotationCoefficientSamples.npy\", \"xuvCoefficientSamples.npy\"]:\n        daChain = fdaLoad(sName)\n        assert np.all(np.exp(daChain[:, 4]) > 0)\n        assert np.all(np.exp(daChain[:, 5]) > 0)\n\n\ndef test_covariance_matrices():\n    \"\"\"Both coefficient covariance matrices are 4x4 and symmetric.\"\"\"\n    for sName in [\"rotationCovariance.npy\", \"xuvCovariance.npy\"]:\n        daCovariance = fdaLoad(sName)\n        assert daCovariance.shape == (4, 4)\n        assert np.allclose(daCovariance, daCovariance.T)\n\n\ndef test_summary_reports_scatter():\n    \"\"\"The refit summary records a positive old-track scatter per relation.\"\"\"\n    with open(os.path.join(S_DIRECTORY, \"refitSummary.json\")) as fileHandle:\n        dictSummary = json.load(fileHandle)\n    for sRelation in [\"rotation\", \"xuv\"]:\n        assert dictSummary[sRelation][\"sigma_int_old\"][\"mean\"] > 0\n",
+          "sFilePath": "EngleHierarchicalRefit/tests/test_joint_integrity.py",
+          "sContent": "",
           "saCommands": [
-            "pytest tests/test_integrity.py"
+            "pytest tests/test_joint_integrity.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleHierarchicalRefit\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 4 items\n\ntests/test_integrity.py ....                                             [100%]\n\n============================== 4 passed in 0.19s ===============================\n"
-        },
-        "listUserTests": []
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleHierarchicalRefit\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 11 items\n\ntests/test_joint_integrity.py ...........                                [100%]\n\n============================== 11 passed in 0.55s ==============================\n"
+        }
       },
       "saTestCommands": [
-        "pytest tests/test_integrity.py"
+        "pytest tests/test_joint_integrity.py"
       ],
       "bRunEnabled": true
     },
@@ -295,7 +316,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataAge.py --rotation-samples {Step07.rotationCoefficientSamples}"
+        "python dataAge.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd}"
       ],
       "saDataFiles": [
         "age_samples.txt"
@@ -323,7 +344,7 @@
           "saCommands": [
             "pytest tests/test_quantitative.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 5 items\n\ntests/test_quantitative.py .....                                         [100%]\n\n============================== 5 passed in 0.31s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 5 items\n\ntests/test_quantitative.py .....                                         [100%]\n\n============================== 5 passed in 0.32s ===============================\n"
         },
         "dictIntegrity": {
           "sFilePath": "EngleAgeDistribution/tests/test_integrity.py",
@@ -331,7 +352,7 @@
           "saCommands": [
             "pytest tests/test_integrity.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 3 items\n\ntests/test_integrity.py ...                                              [100%]\n\n============================== 3 passed in 0.24s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleAgeDistribution\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 3 items\n\ntests/test_integrity.py ...                                              [100%]\n\n============================== 3 passed in 0.23s ===============================\n"
         },
         "listUserTests": []
       },
@@ -340,26 +361,25 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": false
+      "bRunEnabled": true
     },
     {
-      "sName": "L_XUV-Informed Age",
+      "sName": "Activity Consistency Check",
       "sDirectory": "LxuvInformedAge",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataInferLxuvInformedAge.py --rotation-only-ages {Step08.age_samples} --xuv-samples {Step07.xuvCoefficientSamples}"
+        "python dataCheckActivityConsistency.py --age-samples {Step08.age_samples} --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit}"
       ],
       "saDataFiles": [
-        "lxuvInformedAgeSamples.txt",
-        "rotationOnlyAgeSamples.txt",
-        "ageInferenceStats.json"
+        "activityConsistency.json",
+        "zOffsetSamples.txt"
       ],
       "saPlotCommands": [
-        "python plotLxuvInformedAge.py {sPlotDirectory}/LxuvInformedAge.{sFigureType}"
+        "python plotActivityConsistency.py {sPlotDirectory}/ActivityConsistency.{sFigureType}"
       ],
       "saPlotFiles": [
-        "{sPlotDirectory}/LxuvInformedAge.{sFigureType}"
+        "{sPlotDirectory}/ActivityConsistency.{sFigureType}"
       ],
       "dictTests": {
         "dictQualitative": {
@@ -380,7 +400,7 @@
           "saCommands": [
             "pytest tests/test_integrity.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/LxuvInformedAge\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 2 items\n\ntests/test_integrity.py ..                                               [100%]\n\n============================== 2 passed in 0.11s ===============================\n"
+          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/LxuvInformedAge\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 2 items\n\ntests/test_integrity.py ..                                               [100%]\n\n============================== 2 passed in 0.10s ===============================\n"
         },
         "listUserTests": []
       },
@@ -713,7 +733,7 @@
       "saTestCommands": [
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": false
     },
     {
       "sName": "Kepler vs TESS Comparison",
