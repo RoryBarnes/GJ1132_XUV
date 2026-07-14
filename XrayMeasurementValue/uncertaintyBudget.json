@@ -1,41 +1,86 @@
 {
-  "dictComponentsDex": {
-    "A_refit_mean_line": 0.07479332643230342,
-    "B_conversion_covariance": 0.04842912211722245,
-    "C_conversion_scatter": 0.24004798513210313,
-    "D_population_scatter_population_z": 0.32680252530913473,
-    "D_population_scatter_informed_z": 0.12645530844379663,
-    "sigma_int_native_at_gj1132_age": 0.5470074245366454
+  "dictLevel1ForwardModel": {
+    "iTrials": 2600,
+    "dTotalRSquared": 0.9995836133834585,
+    "dictBlockShares": {
+      "X-UV relation coefficients": 0.9976762249750193,
+      "planet parameters": 0.003786036803688164,
+      "stellar mass": 0.0009302107817045213,
+      "stellar age at present": 8.465429355697385e-05,
+      "stellar age at start": 0.000626017099820908
+    },
+    "dSigmaLog10Flux": 0.4186153080406447,
+    "sMethod": "standardized-regression variance decomposition over mutually independent input blocks (Saltelli et al. 2008); R^2 validates the linear partition"
   },
-  "dictValidation": {
-    "sigma_log10_analytic": 0.4193433507184266,
-    "sigma_log10_forward_model_sweep": 0.3981415736531504,
-    "agreement_ratio": 1.0532518542857485,
-    "note": "The analytic propagation is validated against the vconverge sweep in the population case before predicting the informed case."
+  "dictLevel2PopulationZ": {
+    "dTotalVariance": 0.17639901487179094,
+    "dTotalSpreadDex": 0.4199988272266852,
+    "dictSourceShares": {
+      "X-UV relation coefficients (posterior covariance)": {
+        "dVarianceShare": 0.03244408227822005,
+        "dSpreadDex": 0.07565120060050169
+      },
+      "band conversion (coefficient covariance)": {
+        "dVarianceShare": 0.020283935142235157,
+        "dSpreadDex": 0.05981693887866198
+      },
+      "band conversion (intrinsic scatter)": {
+        "dVarianceShare": 0.329218870679866,
+        "dSpreadDex": 0.24098523702735797
+      },
+      "stellar population (intrinsic scatter)": {
+        "dVarianceShare": 0.6284465032085346,
+        "dSpreadDex": 0.3329524651742457
+      }
+    },
+    "sMethod": "first-order variance indices by ablation (freeze one source at its mean, remeasure the variance); not a quadrature sum, because the conversion slope multiplies several sources"
+  },
+  "dictLevel2InformedZ": {
+    "dTotalVariance": 0.08337927099574675,
+    "dTotalSpreadDex": 0.28875468999783666,
+    "dictSourceShares": {
+      "X-UV relation coefficients (posterior covariance)": {
+        "dVarianceShare": 0.07125139506410189,
+        "dSpreadDex": 0.07707716508716939
+      },
+      "band conversion (coefficient covariance)": {
+        "dVarianceShare": 0.03684607180923534,
+        "dSpreadDex": 0.05542741746203749
+      },
+      "band conversion (intrinsic scatter)": {
+        "dVarianceShare": 0.6912013681091358,
+        "dSpreadDex": 0.24006637870431283
+      },
+      "stellar population (intrinsic scatter)": {
+        "dVarianceShare": 0.20594477388315235,
+        "dSpreadDex": 0.13104016602462448
+      }
+    },
+    "sMethod": "first-order variance indices by ablation (freeze one source at its mean, remeasure the variance); not a quadrature sum, because the conversion slope multiplies several sources"
   },
   "dictPopulationZ": {
     "label": "no X-ray measurement",
-    "median": 470.66693320818024,
-    "mean": 754.2644473010695,
+    "median": 470.6669332093102,
+    "mean": 753.797213159113,
     "ci95": [
-      69.45139431786266,
-      3137.757796094238
+      69.86801014265158,
+      3130.943105793923
     ],
-    "sigma_log10": 0.41934335071842654,
-    "mean_over_median": 1.6025439521740346,
-    "fraction_above_shoreline": 0.98771
+    "sigma_log10": 0.4199988272266852,
+    "mean_over_median": 1.6015512456318914,
+    "fraction_above_shoreline": 0.987975
   },
   "dictInformedZ": {
     "label": "with X-ray measurement",
-    "median": 320.7925068099135,
-    "mean": 397.6486525256664,
+    "median": 319.19293408827264,
+    "mean": 395.4007359786018,
     "ci95": [
-      85.87630365938259,
-      1166.2180039237355
+      85.21075919440122,
+      1152.6226701396765
     ],
-    "sigma_log10": 0.2886252987309185,
-    "mean_over_median": 1.23958211019341,
-    "fraction_above_shoreline": 0.99659
+    "sigma_log10": 0.28875468999783666,
+    "mean_over_median": 1.2387515316026825,
+    "fraction_above_shoreline": 0.996435
   },
   "dictForwardModelSweep": {
     "label": "vconverge sweep (population z)",
@@ -49,5 +94,11 @@
     "mean_over_median": 1.4663913984926615,
     "fraction_above_shoreline": 0.9895150720838795
   },
-  "dSpreadReductionFactor": 1.4528988018800622
+  "dictValidation": {
+    "sigma_log10_analytic": 0.4199988272266852,
+    "sigma_log10_forward_model_sweep": 0.3981415736531504,
+    "agreement_ratio": 1.054898194561757,
+    "note": "the analytic propagation must reproduce the forward-model sweep in the population case before its informed-case prediction can be trusted"
+  },
+  "dSpreadReductionFactor": 1.4545177681090888
 }
