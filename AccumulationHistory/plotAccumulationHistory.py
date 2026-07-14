@@ -31,6 +31,7 @@ S_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 S_COLOR_HISTORY = vplot.colors.dark_blue
 S_COLOR_AGE = vplot.colors.orange
+S_COLOR_SATURATION = vplot.colors.purple
 S_COLOR_SHORELINE = vplot.colors.red
 
 
@@ -60,18 +61,19 @@ def fnPlotHistory(axis, dictHistory):
               label="median accumulation history")
 
 
-def fnPlotAgeInterval(axis, dictAge, dFractionLower):
-    """Mark the age posterior's 95% interval with dotted verticals."""
-    for dEdge in dictAge["ci95"]:
-        axis.axvline(dEdge, color=S_COLOR_AGE, linestyle=":", linewidth=1.8)
-    axis.axvspan(dictAge["ci95"][0], dictAge["ci95"][1], color=S_COLOR_AGE,
-                 alpha=0.08, linewidth=0)
-    dMid = np.sqrt(dictAge["ci95"][0] * dictAge["ci95"][1])
-    axis.text(dMid, 0.05, "age\n95% CI", color=S_COLOR_AGE, ha="center",
-              va="bottom", fontsize=8, transform=axis.get_xaxis_transform())
+def fnPlotVerticalInterval(axis, dCi95, sColor, sStyle, sLabel):
+    """Mark a 95% interval with two vertical lines and a light band."""
+    for iIndex, dEdge in enumerate(dCi95):
+        axis.axvline(dEdge, color=sColor, linestyle=sStyle, linewidth=1.8,
+                     label=sLabel if iIndex == 0 else None)
+    axis.axvspan(dCi95[0], dCi95[1], color=sColor, alpha=0.08, linewidth=0)
+
+
+def fnAnnotateDose(axis, dCi95Lower, dFractionLower):
+    """Annotate the fraction of the dose delivered by the age lower bound."""
     axis.annotate(f"{100 * dFractionLower:.0f}% of the dose\n"
                   "already delivered",
-                  xy=(dictAge["ci95"][0], 0.62), xytext=(0.5, 0.35),
+                  xy=(dCi95Lower, 0.55), xytext=(0.5, 0.30),
                   textcoords=axis.transAxes, xycoords=axis.get_xaxis_transform(),
                   ha="center", fontsize=8.5, color="0.25",
                   arrowprops=dict(arrowstyle="->", color="0.5", linewidth=1))
@@ -82,17 +84,23 @@ def main():
     sOutputPath = sys.argv[1]
     dictSummary = fdictLoadHistory()
     os.makedirs(os.path.dirname(sOutputPath), exist_ok=True)
-    figure, axis = plt.subplots(figsize=(7, 4.6))
+    figure, axis = plt.subplots(figsize=(7.2, 4.6))
     fnPlotShownTrajectories(axis, dictSummary["listShownTrajectories"])
     fnPlotHistory(axis, dictSummary["dictHistory"])
-    fnPlotAgeInterval(axis, dictSummary["dictAgePosterior"],
-                      dictSummary["dFractionByAgeLowerBound"])
+    fnPlotVerticalInterval(axis, dictSummary["dictSaturationAge"]["ci95"],
+                           S_COLOR_SATURATION, "-.", "saturation age 95% CI")
+    fnPlotVerticalInterval(axis, dictSummary["dictAgePosterior"]["ci95"],
+                           S_COLOR_AGE, ":", "stellar age 95% CI")
+    fnAnnotateDose(axis, dictSummary["dictAgePosterior"]["ci95"][0],
+                   dictSummary["dFractionByAgeLowerBound"])
     axis.axhline(D_SHORELINE_FLUX, color=S_COLOR_SHORELINE, linestyle="--",
                  linewidth=1.5, label="cosmic shoreline")
+    daShownFlux = [dFlux for d in dictSummary["listShownTrajectories"]
+                   for dFlux in d["daFlux"]]
     dMaxFlux = max(d["dFinalFlux"]
                    for d in dictSummary["listShownTrajectories"])
     axis.set_yscale("log")
-    axis.set_ylim(D_SHORELINE_FLUX * 0.3, dMaxFlux * 1.3)
+    axis.set_ylim(max(min(daShownFlux), 1.0), dMaxFlux * 1.3)
     axis.set_xlim(0, max(d["dPresentAge"]
                          for d in dictSummary["listShownTrajectories"]) * 1.02)
     axis.set_xlabel("stellar age [Gyr]")

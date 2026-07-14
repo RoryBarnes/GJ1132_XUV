@@ -41,6 +41,20 @@ def test_shown_endpoints_sample_the_age_interval():
     assert abs(np.median(daEndAge) - dMedian) < 1.0
 
 
+def test_saturation_precedes_and_shapes_the_plateau():
+    """Saturation ends early and well before the stellar-age interval."""
+    dictSummary = fdictLoadHistory()
+    dictSat = dictSummary["dictSaturationAge"]
+    dLower, dMedian, dUpper = (dictSat["ci95"][0], dictSat["median"],
+                               dictSat["ci95"][1])
+    assert 0 < dLower < dMedian < dUpper
+    assert dUpper < dictSummary["dictAgePosterior"]["ci95"][0], (
+        "the saturation phase must end before the youngest allowed stellar age")
+    dMostAccumulated = dictSummary["dictFractionMilestones"]["3.0"]
+    assert dMostAccumulated > 0.5, (
+        "most of the dose should arrive around the saturation epoch")
+
+
 def test_history_is_monotone_and_bracketed():
     """The median accumulation curve rises monotonically inside its envelope."""
     dictHistory = fdictLoadHistory()["dictHistory"]
