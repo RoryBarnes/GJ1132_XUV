@@ -1,0 +1,53 @@
+{
+  "dictComponentsDex": {
+    "A_refit_mean_line": 0.07479332643230342,
+    "B_conversion_covariance": 0.04842912211722245,
+    "C_conversion_scatter": 0.24004798513210313,
+    "D_population_scatter_population_z": 0.32680252530913473,
+    "D_population_scatter_informed_z": 0.12645530844379663,
+    "sigma_int_native_at_gj1132_age": 0.5470074245366454
+  },
+  "dictValidation": {
+    "sigma_log10_analytic": 0.4193433507184266,
+    "sigma_log10_forward_model_sweep": 0.3981415736531504,
+    "agreement_ratio": 1.0532518542857485,
+    "note": "The analytic propagation is validated against the vconverge sweep in the population case before predicting the informed case."
+  },
+  "dictPopulationZ": {
+    "label": "no X-ray measurement",
+    "median": 470.66693320818024,
+    "mean": 754.2644473010695,
+    "ci95": [
+      69.45139431786266,
+      3137.757796094238
+    ],
+    "sigma_log10": 0.41934335071842654,
+    "mean_over_median": 1.6025439521740346,
+    "fraction_above_shoreline": 0.98771
+  },
+  "dictInformedZ": {
+    "label": "with X-ray measurement",
+    "median": 320.7925068099135,
+    "mean": 397.6486525256664,
+    "ci95": [
+      85.87630365938259,
+      1166.2180039237355
+    ],
+    "sigma_log10": 0.2886252987309185,
+    "mean_over_median": 1.23958211019341,
+    "fraction_above_shoreline": 0.99659
+  },
+  "dictForwardModelSweep": {
+    "label": "vconverge sweep (population z)",
+    "median": 470.6669332081094,
+    "mean": 690.1819424112916,
+    "ci95": [
+      71.54609320910534,
+      2647.6371992532863
+    ],
+    "sigma_log10": 0.3981415736531504,
+    "mean_over_median": 1.4663913984926615,
+    "fraction_above_shoreline": 0.9895150720838795
+  },
+  "dSpreadReductionFactor": 1.4528988018800622
+}

@@ -846,6 +846,48 @@
         },
         "listUserTests": []
       }
+    },
+    {
+      "sName": "X-ray Measurement Value",
+      "sDirectory": "XrayMeasurementValue",
+      "bRunEnabled": true,
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python dataXrayMeasurementValue.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-offsets {Step09.zOffsetSamples} --converged-flux {Step13.Engle_Converged_Param_Dictionary}"
+      ],
+      "saDataFiles": [
+        "uncertaintyBudget.json",
+        "fluxSamplesPopulationZ.txt",
+        "fluxSamplesInformedZ.txt",
+        "fluxSamplesForwardModelSweep.txt"
+      ],
+      "saTestCommands": [
+        "pytest tests/test_integrity.py"
+      ],
+      "saPlotCommands": [
+        "python plotXrayMeasurementValue.py {sPlotDirectory}/XrayMeasurementValue.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/XrayMeasurementValue.{sFigureType}"
+      ],
+      "dictTests": {
+        "dictQualitative": {
+          "saCommands": [],
+          "sFilePath": ""
+        },
+        "dictQuantitative": {
+          "saCommands": [],
+          "sFilePath": "",
+          "sStandardsPath": ""
+        },
+        "dictIntegrity": {
+          "saCommands": [],
+          "sFilePath": ""
+        },
+        "listUserTests": []
+      },
+      "saDependencies": []
     }
   ],
   "sOverleafProjectId": "68656ed576acad848ef2ee0c",
