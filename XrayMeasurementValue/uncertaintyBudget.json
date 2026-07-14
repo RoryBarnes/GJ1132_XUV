@@ -12,7 +12,7 @@
     "dSigmaLog10Flux": 0.4186153080406447,
     "sMethod": "standardized-regression variance decomposition over mutually independent input blocks (Saltelli et al. 2008); R^2 validates the linear partition"
   },
-  "dictLevel2PopulationZ": {
+  "dictLevel2SourceIndices": {
     "dTotalVariance": 0.17639901487179094,
     "dTotalSpreadDex": 0.4199988272266852,
     "dictSourceShares": {
@@ -35,52 +35,101 @@
     },
     "sMethod": "first-order variance indices by ablation (freeze one source at its mean, remeasure the variance); not a quadrature sum, because the conversion slope multiplies several sources"
   },
-  "dictLevel2InformedZ": {
-    "dTotalVariance": 0.08337927099574675,
-    "dTotalSpreadDex": 0.28875468999783666,
-    "dictSourceShares": {
-      "X-UV relation coefficients (posterior covariance)": {
-        "dVarianceShare": 0.07125139506410189,
-        "dSpreadDex": 0.07707716508716939
-      },
-      "band conversion (coefficient covariance)": {
-        "dVarianceShare": 0.03684607180923534,
-        "dSpreadDex": 0.05542741746203749
-      },
-      "band conversion (intrinsic scatter)": {
-        "dVarianceShare": 0.6912013681091358,
-        "dSpreadDex": 0.24006637870431283
-      },
-      "stellar population (intrinsic scatter)": {
-        "dVarianceShare": 0.20594477388315235,
-        "dSpreadDex": 0.13104016602462448
+  "dictScenarios": {
+    "noMeasurement": {
+      "label": "no measurement",
+      "median": 470.6669332093102,
+      "mean": 753.797213159113,
+      "ci95": [
+        69.86801014265158,
+        3130.943105793923
+      ],
+      "sigma_log10": 0.4199988272266852,
+      "mean_over_median": 1.6015512456318914,
+      "fraction_above_shoreline": 0.987975,
+      "bProjected": false,
+      "saFrozenSources": [],
+      "dictVarianceBySource": {
+        "X-UV relation coefficients (posterior covariance)": 0.005723104152297348,
+        "band conversion (coefficient covariance)": 0.0035780661768135824,
+        "band conversion (intrinsic scatter)": 0.0580738844651319,
+        "stellar population (intrinsic scatter)": 0.1108573440656073,
+        "interaction residual": 0.0
       }
     },
-    "sMethod": "first-order variance indices by ablation (freeze one source at its mean, remeasure the variance); not a quadrature sum, because the conversion slope multiplies several sources"
-  },
-  "dictPopulationZ": {
-    "label": "no X-ray measurement",
-    "median": 470.6669332093102,
-    "mean": 753.797213159113,
-    "ci95": [
-      69.86801014265158,
-      3130.943105793923
-    ],
-    "sigma_log10": 0.4199988272266852,
-    "mean_over_median": 1.6015512456318914,
-    "fraction_above_shoreline": 0.987975
-  },
-  "dictInformedZ": {
-    "label": "with X-ray measurement",
-    "median": 319.19293408827264,
-    "mean": 395.4007359786018,
-    "ci95": [
-      85.21075919440122,
-      1152.6226701396765
-    ],
-    "sigma_log10": 0.28875468999783666,
-    "mean_over_median": 1.2387515316026825,
-    "fraction_above_shoreline": 0.996435
+    "xrayMeasurement": {
+      "label": "X-ray measurement",
+      "median": 319.19293408827264,
+      "mean": 395.4007359786018,
+      "ci95": [
+        85.21075919440122,
+        1152.6226701396765
+      ],
+      "sigma_log10": 0.28875468999783666,
+      "mean_over_median": 1.2387515316026825,
+      "fraction_above_shoreline": 0.996435,
+      "bProjected": false,
+      "saFrozenSources": [],
+      "dictVarianceBySource": {
+        "X-UV relation coefficients (posterior covariance)": 0.005940889377874764,
+        "band conversion (coefficient covariance)": 0.0030721986065109785,
+        "band conversion (intrinsic scatter)": 0.057631866184202546,
+        "stellar population (intrinsic scatter)": 0.01717152511176115,
+        "interaction residual": 0.0
+      }
+    },
+    "panchromaticSed": {
+      "label": "panchromatic X-UV SED",
+      "median": 320.8786377074887,
+      "mean": 336.96082140750127,
+      "ci95": [
+        156.3489594959935,
+        611.139854751636
+      ],
+      "sigma_log10": 0.15047993451019764,
+      "mean_over_median": 1.0501192096018341,
+      "fraction_above_shoreline": 0.99998,
+      "bProjected": true,
+      "saFrozenSources": [
+        "daConversionScatter",
+        "daSlope",
+        "daIntercept"
+      ],
+      "dictVarianceBySource": {
+        "X-UV relation coefficients (posterior covariance)": 0.005880372759527321,
+        "band conversion (coefficient covariance)": 0.0,
+        "band conversion (intrinsic scatter)": 0.0,
+        "stellar population (intrinsic scatter)": 0.016983996351514027,
+        "interaction residual": 0.0
+      }
+    },
+    "relationFloor": {
+      "label": "relation floor (star known exactly)",
+      "median": 317.97740169672454,
+      "mean": 322.46840684319125,
+      "ci95": [
+        224.78009604269806,
+        444.4679880120414
+      ],
+      "sigma_log10": 0.07523439598135515,
+      "mean_over_median": 1.0141236613749993,
+      "fraction_above_shoreline": 1.0,
+      "bProjected": true,
+      "saFrozenSources": [
+        "daConversionScatter",
+        "daSlope",
+        "daIntercept",
+        "daZ",
+        "daSigmaInt"
+      ],
+      "dictVarianceBySource": {
+        "X-UV relation coefficients (posterior covariance)": 0.005660214338679345,
+        "band conversion (coefficient covariance)": 0.0,
+        "band conversion (intrinsic scatter)": 0.0,
+        "stellar population (intrinsic scatter)": 0.0,
+        "interaction residual": 0.0
+      }
+    }
   },
   "dictForwardModelSweep": {
     "label": "vconverge sweep (population z)",
@@ -100,5 +149,22 @@
     "agreement_ratio": 1.054898194561757,
     "note": "the analytic propagation must reproduce the forward-model sweep in the population case before its informed-case prediction can be trusted"
   },
-  "dSpreadReductionFactor": 1.4545177681090888
+  "dictGains": {
+    "noMeasurement": {
+      "dSpreadDex": 0.4199988272266852,
+      "dFactorVersusNoMeasurement": 1.0
+    },
+    "xrayMeasurement": {
+      "dSpreadDex": 0.28875468999783666,
+      "dFactorVersusNoMeasurement": 1.4545177681090888
+    },
+    "panchromaticSed": {
+      "dSpreadDex": 0.15047993451019764,
+      "dFactorVersusNoMeasurement": 2.7910620016798515
+    },
+    "relationFloor": {
+      "dSpreadDex": 0.07523439598135515,
+      "dFactorVersusNoMeasurement": 5.582537372012275
+    }
+  }
 }

@@ -1,8 +1,8 @@
 """Integrity checks for the cumulative-XUV variance budget.
 
 Two gates are load-bearing. The analytic propagation must reproduce the
-vconverge forward-model sweep in the population case, or its informed-case
-prediction cannot be trusted. And the level-1 decomposition must remain
+vconverge forward-model sweep in the population case, or none of the projected
+states of knowledge can be trusted. And the level-1 decomposition must remain
 near-linear (high R^2), or the additive partition of variance across input
 blocks is not valid.
 """
@@ -14,8 +14,8 @@ import numpy as np
 
 S_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SA_SAMPLE_FILES = ["fluxSamplesPopulationZ.txt", "fluxSamplesInformedZ.txt",
-                   "fluxSamplesForwardModelSweep.txt"]
+SA_SCENARIOS = ["noMeasurement", "xrayMeasurement", "panchromaticSed",
+                "relationFloor"]
 S_POPULATION_SOURCE = "stellar population (intrinsic scatter)"
 S_CONVERSION_SOURCE = "band conversion (intrinsic scatter)"
 
@@ -28,8 +28,10 @@ def fdictLoadBudget():
 
 
 def test_flux_samples_positive_and_finite():
-    """Every flux distribution is populated, finite, and positive."""
-    for sName in SA_SAMPLE_FILES:
+    """Every scenario's flux distribution is populated, finite, and positive."""
+    saFiles = [f"fluxSamples_{sKey}.txt" for sKey in SA_SCENARIOS]
+    saFiles.append("fluxSamplesForwardModelSweep.txt")
+    for sName in saFiles:
         daFlux = np.loadtxt(os.path.join(S_DIRECTORY, sName))
         assert daFlux.size > 100
         assert np.all(np.isfinite(daFlux))
@@ -41,7 +43,7 @@ def test_analytic_propagation_matches_forward_model():
     dictValidation = fdictLoadBudget()["dictValidation"]
     assert 0.85 < dictValidation["agreement_ratio"] < 1.15, (
         "analytic propagation disagrees with the forward-model sweep; the "
-        "informed-case prediction is not trustworthy")
+        "projected states of knowledge are not trustworthy")
 
 
 def test_forward_model_partition_is_linear():
@@ -55,40 +57,40 @@ def test_forward_model_partition_is_linear():
 
 def test_variance_shares_are_physical():
     """Every first-order index lies in [0, 1] and the shares roughly close."""
-    for sKey in ("dictLevel2PopulationZ", "dictLevel2InformedZ"):
-        dictShares = fdictLoadBudget()[sKey]["dictSourceShares"]
-        daShares = np.array([d["dVarianceShare"] for d in dictShares.values()])
-        assert np.all(daShares >= 0.0) and np.all(daShares <= 1.0)
-        assert 0.9 < daShares.sum() < 1.15
+    dictShares = fdictLoadBudget()["dictLevel2SourceIndices"]["dictSourceShares"]
+    daShares = np.array([d["dVarianceShare"] for d in dictShares.values()])
+    assert np.all(daShares >= 0.0) and np.all(daShares <= 1.0)
+    assert 0.9 < daShares.sum() < 1.15
 
 
-def test_measurement_narrows_the_flux():
-    """The X-ray measurement must reduce, never inflate, the flux spread."""
-    dictBudget = fdictLoadBudget()
-    dPopulation = dictBudget["dictPopulationZ"]["sigma_log10"]
-    dInformed = dictBudget["dictInformedZ"]["sigma_log10"]
-    assert 0 < dInformed < dPopulation
-    assert dictBudget["dSpreadReductionFactor"] > 1.0
+def test_scenarios_are_monotonically_tighter():
+    """Each successive state of knowledge must narrow the flux, never widen it."""
+    dictScenarios = fdictLoadBudget()["dictScenarios"]
+    daSpreads = np.array([dictScenarios[sKey]["sigma_log10"]
+                          for sKey in SA_SCENARIOS])
+    assert np.all(daSpreads > 0)
+    assert np.all(np.diff(daSpreads) < 0), (
+        "knowing more about the star must not widen its inferred XUV history")
 
 
-def test_measurement_collapses_the_population_term():
-    """The measurement must shrink the population-scatter term specifically."""
-    dictBudget = fdictLoadBudget()
-    dBefore = (dictBudget["dictLevel2PopulationZ"]["dictSourceShares"]
-               [S_POPULATION_SOURCE]["dSpreadDex"])
-    dAfter = (dictBudget["dictLevel2InformedZ"]["dictSourceShares"]
-              [S_POPULATION_SOURCE]["dSpreadDex"])
-    assert dAfter < dBefore
-    dConversion = (dictBudget["dictLevel2InformedZ"]["dictSourceShares"]
-                   [S_CONVERSION_SOURCE]["dSpreadDex"])
-    assert dConversion > dAfter, (
-        "with the measurement in hand, the band conversion should become the "
-        "dominant remaining uncertainty")
+def test_stacked_variance_reconstructs_each_total():
+    """Each scenario's per-source variances must sum to its total variance."""
+    for sKey, dictScenario in fdictLoadBudget()["dictScenarios"].items():
+        dTotal = dictScenario["sigma_log10"] ** 2
+        dStacked = sum(dictScenario["dictVarianceBySource"].values())
+        assert abs(dStacked - dTotal) < 0.02 * max(dTotal, 1e-3), (
+            f"{sKey}: stacked variance segments do not reconstruct the total")
+
+
+def test_measurement_moves_the_bottleneck_to_the_conversion():
+    """With the X-ray in hand, band conversion must dominate the remainder."""
+    dictVariance = (fdictLoadBudget()["dictScenarios"]["xrayMeasurement"]
+                    ["dictVarianceBySource"])
+    assert dictVariance[S_CONVERSION_SOURCE] > dictVariance[S_POPULATION_SOURCE]
 
 
 def test_lognormal_mean_exceeds_median():
-    """Both distributions are right-skewed: the mean must exceed the median."""
-    for sKey in ("dictPopulationZ", "dictInformedZ"):
-        dictStats = fdictLoadBudget()[sKey]
-        assert dictStats["mean"] > dictStats["median"]
-        assert dictStats["mean_over_median"] > 1.0
+    """Every distribution is right-skewed: the mean must exceed the median."""
+    for sKey, dictScenario in fdictLoadBudget()["dictScenarios"].items():
+        assert dictScenario["mean"] > dictScenario["median"]
+        assert dictScenario["mean_over_median"] > 1.0
