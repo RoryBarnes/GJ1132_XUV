@@ -529,6 +529,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
+        "python ../utils/englePriorTable.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-mode population --tau-reference 0.85 --output EngleBarnes/engle_xuv_priors.txt",
         "python dataRunVconverge.py --flare-samples {Step02.flare_mcmc_samples} --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
       ],
       "saDataFiles": [
@@ -581,6 +582,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
+        "python ../utils/englePriorTable.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-mode population --tau-reference 0.85 --output Engle/engle_xuv_priors.txt",
         "python dataRunVconverge.py --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
       ],
       "saDataFiles": [
@@ -638,6 +640,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
+        "python ../utils/englePriorTable.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-mode none --tau-reference 0.85 --output EngleModelErrorsOnly/engle_xuv_priors.txt",
         "python dataRunVconverge.py --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
       ],
       "saDataFiles": [
@@ -687,25 +690,25 @@
       "bRunEnabled": true
     },
     {
-      "sName": "L_XUV-Informed Cumulative XUV",
+      "sName": "Z-Offset Cumulative XUV Comparison",
       "sDirectory": "LxuvInformedCumulativeXuv",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataRunLxuvInformedVconverge.py --lxuv-informed-ages {Step09.lxuvInformedAgeSamples} --rotation-only-ages {Step09.rotationOnlyAgeSamples}"
+        "python dataCompareZOffsetFlux.py --age-samples {Step08.age_samples} --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-offsets {Step09.zOffsetSamples}"
       ],
       "saDataFiles": [
-        "cumulativeXuvFluxSamplesInformed.txt",
-        "cumulativeXuvFluxSamplesRotationOnly.txt",
-        "cumulativeXuvFluxSamplesFlaresInformed.txt",
-        "cumulativeXuvFluxSamplesFlaresRotationOnly.txt",
+        "cumulativeXuvFluxSamplesZPopulation.txt",
+        "cumulativeXuvFluxSamplesZInformed.txt",
+        "cumulativeXuvFluxSamplesFlaresZPopulation.txt",
+        "cumulativeXuvFluxSamplesFlaresZInformed.txt",
         "cumulativeXuvStats.json"
       ],
       "saPlotCommands": [
-        "python plotLxuvInformedCumulativeXuv.py {sPlotDirectory}/LxuvInformedCumulativeXuv.{sFigureType}"
+        "python plotCompareZOffsetFlux.py {sPlotDirectory}/ZOffsetCumulativeXuv.{sFigureType}"
       ],
       "saPlotFiles": [
-        "{sPlotDirectory}/LxuvInformedCumulativeXuv.{sFigureType}"
+        "{sPlotDirectory}/ZOffsetCumulativeXuv.{sFigureType}"
       ],
       "dictTests": {
         "dictQualitative": {
@@ -733,7 +736,7 @@
       "saTestCommands": [
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": false
+      "bRunEnabled": true
     },
     {
       "sName": "Kepler vs TESS Comparison",
