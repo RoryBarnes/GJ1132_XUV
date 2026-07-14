@@ -52,12 +52,34 @@ def fdReadOption(sPath, sKey):
     return float(matchOption.group(1)) if matchOption else np.nan
 
 
+def fdMainSequenceAge(sTrialDirectory, dStartAge):
+    """Return the stellar age [Gyr] of the bolometric-luminosity minimum.
+
+    A pre-main-sequence star contracts and dims; at the zero-age main sequence
+    hydrogen burning halts the contraction and the luminosity bottoms out
+    before slowly rising. The interior minimum of L(t) is therefore the main-
+    sequence arrival. Returns NaN if the minimum is at a trajectory edge (no
+    turnaround captured).
+    """
+    saStar = glob.glob(os.path.join(sTrialDirectory, "*.star.forward"))
+    if not saStar:
+        return np.nan
+    daStar = np.loadtxt(saStar[0])
+    if daStar.ndim != 2 or len(daStar) < 5:
+        return np.nan
+    iMinimum = int(np.argmin(daStar[:, 1]))
+    if iMinimum == 0 or iMinimum == len(daStar) - 1:
+        return np.nan
+    return (dStartAge + daStar[iMinimum, 0]) / 1e9
+
+
 def ftLoadTrajectory(sTrialDirectory):
-    """Return (age [Gyr], cumulative flux [Earth units], saturation age [Gyr]).
+    """Return (age, cumulative flux, saturation age, main-sequence age).
 
     The saturation age is 10^d, where d = dXUVEngleMidLateD is the break of the
-    sampled XUV relation, expressed in log10(age/Gyr): activity is saturated
-    below it and declines above it.
+    sampled XUV relation in log10(age/Gyr): activity is saturated below it and
+    declines above it. The main-sequence age is the bolometric-luminosity
+    minimum (pre-main-sequence contraction ends there).
     """
     saForward = glob.glob(os.path.join(sTrialDirectory, "*.b.forward"))
     if not saForward:
@@ -71,7 +93,8 @@ def ftLoadTrajectory(sTrialDirectory):
     if not np.isfinite(dStartAge) or not np.isfinite(dBreak):
         return None
     daAgeGyr = (dStartAge + daForward[:, 0]) / 1e9
-    return daAgeGyr, daForward[:, 1] / D_CUMULATIVE_EARTH_FLUX, 10.0 ** dBreak
+    return (daAgeGyr, daForward[:, 1] / D_CUMULATIVE_EARTH_FLUX,
+            10.0 ** dBreak, fdMainSequenceAge(sTrialDirectory, dStartAge))
 
 
 def flistLoadTrajectories(sSweepDirectory):
@@ -82,7 +105,7 @@ def flistLoadTrajectories(sSweepDirectory):
     summarizes the identical population as the flux-distribution steps rather
     than including unconverged extremes.
     """
-    listTrajectories, listSaturationAges = [], []
+    listTrajectories, listSaturationAges, listMainSequenceAges = [], [], []
     for sTrial in sorted(glob.glob(os.path.join(sSweepDirectory,
                                                 "*_xuv_rand_*"))):
         tTrajectory = ftLoadTrajectory(sTrial)
@@ -90,10 +113,12 @@ def flistLoadTrajectories(sSweepDirectory):
                 D_LOWER_BOUND <= tTrajectory[1][-1] <= D_UPPER_BOUND:
             listTrajectories.append((tTrajectory[0], tTrajectory[1]))
             listSaturationAges.append(tTrajectory[2])
+            listMainSequenceAges.append(tTrajectory[3])
     if len(listTrajectories) < I_MIN_COVERAGE:
         raise ValueError(f"only {len(listTrajectories)} usable trajectories "
                          f"in {sSweepDirectory}")
-    return listTrajectories, np.array(listSaturationAges)
+    return (listTrajectories, np.array(listSaturationAges),
+            np.array(listMainSequenceAges))
 
 
 def fdMaxCoveredAge(listTrajectories, iFloor):
@@ -203,6 +228,30 @@ def fdictSummarizeSaturation(daSaturationAges):
     }
 
 
+def fdictSummarizeMainSequence(daMainSequenceAges):
+    """Return the main-sequence arrival age, rejecting grid-artifact outliers.
+
+    The bolometric-luminosity minimum is bimodal: ~13% of tracks (sampled
+    masses just above ~0.20 Msun) flatten prematurely near 0.5 Gyr, a Baraffe
+    interpolation artifact rather than physics -- a stellar mass varying only a
+    few percent cannot move the ZAMS threefold. The dominant cluster is kept
+    with a data-driven cut (within a factor of two of the median) and its mean
+    reported; the rejected fraction is recorded as a diagnostic.
+    """
+    daValid = daMainSequenceAges[np.isfinite(daMainSequenceAges)]
+    dMedian = float(np.median(daValid))
+    baCluster = (daValid > 0.5 * dMedian) & (daValid < 2.0 * dMedian)
+    daCluster = daValid[baCluster]
+    dMean = float(np.mean(daCluster))
+    return {
+        "mean": dMean,
+        "std": float(np.std(daCluster)),
+        "fractional_spread": float(np.std(daCluster) / dMean),
+        "iCluster": int(daCluster.size),
+        "fArtifactFraction": float(1.0 - baCluster.mean()),
+    }
+
+
 def ftParseArguments():
     """Parse and return command-line arguments."""
     parser = argparse.ArgumentParser(
@@ -218,14 +267,16 @@ def ftParseArguments():
 def main():
     """Build the accumulation history and its flatness diagnostics."""
     args = ftParseArguments()
-    listTrajectories, daSaturationAges = flistLoadTrajectories(
-        os.path.dirname(args.converged_flux))
+    listTrajectories, daSaturationAges, daMainSequenceAges = \
+        flistLoadTrajectories(os.path.dirname(args.converged_flux))
     dictAge = fdictSummarizeAge(np.loadtxt(args.age_samples))
     dictHistory = fdictStackOnAgeGrid(listTrajectories, dictAge["ci95"][1])
     dElasticity = fdComputeElasticity(listTrajectories)
     dictSummary = {
         "dictAgePosterior": dictAge,
         "dictSaturationAge": fdictSummarizeSaturation(daSaturationAges),
+        "dictMainSequenceArrival": fdictSummarizeMainSequence(
+            daMainSequenceAges),
         "dictHistory": dictHistory,
         "listShownTrajectories": flistSelectShownTrajectories(listTrajectories),
         "dictFractionMilestones": fdictFractionMilestones(listTrajectories),
@@ -248,6 +299,13 @@ def fnPrintSummary(dictSummary):
     print("Fraction of final cumulative XUV flux accumulated by age:")
     for sAge, dFraction in dictSummary["dictFractionMilestones"].items():
         print(f"  by {sAge} Gyr: {100 * dFraction:5.1f}%")
+    dictMs = dictSummary["dictMainSequenceArrival"]
+    print(f"Main-sequence arrival (luminosity minimum): mean "
+          f"{dictMs['mean']:.2f} Gyr "
+          f"(+/- {100 * dictMs['fractional_spread']:.1f}%, "
+          f"{dictMs['iCluster']} trajectories; "
+          f"{100 * dictMs['fArtifactFraction']:.0f}% grid-artifact outliers "
+          f"rejected).")
     dictSat = dictSummary["dictSaturationAge"]
     print(f"Saturation age: median {dictSat['median']:.2f} Gyr, 95% CI "
           f"[{dictSat['ci95'][0]:.2f}, {dictSat['ci95'][1]:.2f}] Gyr "
