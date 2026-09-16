@@ -38,8 +38,8 @@ __pycache__/
 **/vconverge_tmp/
 
 # MCMC fit logs (transient) and cached MUSCLES SED downloads (regenerable)
-EngleHierarchicalRefit/fitLog_*.txt
-EngleHierarchicalRefit/musclesConversion/seds/
+**/fitLog_*.txt
+MUSCLESBandConversion/seds/
 
 # Regenerable model outputs (not source): maxlev rewrites *_maxlev.in with the
 # best-fit parameters each run; vplanet writes *.forward; vconverge writes the
@@ -55,19 +55,20 @@ xuv_PriorIndicies.json
 # Stray / non-canonical plot artifacts (no figure-compare standard references them)
 Plot/*_standard.png
 Plot/test_aspect.png
-FfdAgeComparison/--samples.png
+FFDAgeComparison/--samples.png
 
 # Redundant text dumps of the flare MCMC samples (canonical form is the .npy)
-KeplerFfdCorner/flare_mcmc_samples.txt
-KeplerFfdCorner/flare_mcmc_samples_param_names.txt
+KeplerFFDCorner/flare_mcmc_samples.txt
+KeplerFFDCorner/flare_mcmc_samples_param_names.txt
 
 # Stage-1 refit: calibration source data and canonical posterior products.
 # The CSVs are the empirical foundation of the joint refit (verbatim Engle
 # paper tables); the chains are the coefficient posteriors the catalog and
 # all downstream steps consume. A fresh clone must carry them.
-!EngleHierarchicalRefit/*.csv
-!EngleHierarchicalRefit/paperTables/*.csv
-!EngleHierarchicalRefit/jointChain_*.npy
+!JointSamplePreparation/*.csv
+!JointSamplePreparation/paperTables/*.csv
+!EarlyJointRefit/jointChain_*.npy
+!Mid-LateJointRefit/jointChain_*.npy
 
 # Vaibify canonical outputs — manifest-pinned; the AICS L2 GitHub mirror requires them in git
 !Plot/CornerVariableSlope.pdf
@@ -88,7 +89,7 @@ KeplerFfdCorner/flare_mcmc_samples_param_names.txt
 !Plot/CosmicShoreline.pdf
 !Plot/GJ1132b_ErrorSourceComparison.pdf
 !Plot/FitComparison.pdf
-!KeplerFfdCorner/flare_mcmc_samples.npy
+!KeplerFFDCorner/flare_mcmc_samples.npy
 !Plot/CornerJointRotation_midlate_withsd.pdf
 !Plot/CornerJointActivity_midlate_withsd.pdf
 !Plot/CornerJointRotation_early_withsd.pdf
@@ -98,3 +99,15 @@ KeplerFfdCorner/flare_mcmc_samples_param_names.txt
 !Plot/ActivityConsistency.pdf
 !Plot/XrayMeasurementValue.pdf
 !Plot/AccumulationHistory.pdf
+
+# vconverge realization directories: one vplanet run per posterior sample.
+# Regenerated from the tracked vconverge.in + vspace.in, so the canonical
+# record per model directory is the *.in files plus
+# output/Converged_Param_Dictionary.json -- not the thousands of run dirs.
+**/output/*xuv_rand_*/
+
+# maxlev scratch run directories, named by run id
+MaximumLikelihood/output/
+
+# Vaibify test-marker backups (rotated automatically; not canonical)
+.vaibify/test_markers/*.backup-*/
