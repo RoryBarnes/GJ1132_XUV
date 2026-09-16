@@ -7,14 +7,11 @@
   "listSteps": [
     {
       "sName": "TESS Flare Candidates",
-      "sDirectory": "TessFlareCandidates",
+      "sDirectory": "TESSFlareCandidates",
       "bPlotOnly": true,
       "bInteractive": true,
       "saDataCommands": [
         "python dataIdentifyFlareCandidates.py --output flare_candidates.json"
-      ],
-      "saDataFiles": [
-        "flare_candidates.json"
       ],
       "saPlotCommands": [],
       "saPlotFiles": [],
@@ -34,19 +31,23 @@
         },
         "listUserTests": []
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "sStepId": "tess-flare-candidates",
+      "fWallClockBudgetSeconds": 0.0,
+      "saOutputDataFiles": [
+        "flare_candidates.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": true,
+      "listRemoteData": []
     },
     {
       "sName": "Kepler FFD Corner",
-      "sDirectory": "KeplerFfdCorner",
+      "sDirectory": "KeplerFFDCorner",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
         "python dataKeplerFfd.py"
-      ],
-      "saDataFiles": [
-        "flare_mcmc_samples.npy",
-        "kepler_ffd_posterior_stats.json"
       ],
       "saPlotCommands": [
         "python plotCornerVariableSlope.py {sPlotDirectory}/CornerVariableSlope.{sFigureType}"
@@ -88,17 +89,24 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "sStepId": "kepler-ffd-corner",
+      "saOutputDataFiles": [
+        "flare_mcmc_samples.npy",
+        "kepler_ffd_posterior_stats.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": true,
+      "listRemoteData": []
     },
     {
       "sName": "FFD Age Comparison",
-      "sDirectory": "FfdAgeComparison",
+      "sDirectory": "FFDAgeComparison",
       "bPlotOnly": true,
       "bInteractive": false,
       "saDataCommands": [],
-      "saDataFiles": [],
       "saPlotCommands": [
-        "python plotFfdComparison.py --samples {Step02.flare_mcmc_samples} {sPlotDirectory}/ffd_comp.{sFigureType}"
+        "python plotFfdComparison.py --samples {step:kepler-ffd-corner.flare_mcmc_samples} {sPlotDirectory}/ffd_comp.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/ffd_comp.{sFigureType}"
@@ -119,17 +127,21 @@
         },
         "listUserTests": []
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "sStepId": "ffd-age-comparison",
+      "saOutputDataFiles": [],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "TESS Flare Lightcurves",
-      "sDirectory": "TessFlareLightcurves",
+      "sDirectory": "TESSFlareLightcurves",
       "bPlotOnly": true,
       "bInteractive": false,
       "saDataCommands": [],
-      "saDataFiles": [],
       "saPlotCommands": [
-        "python plotFlareLightcurves.py --flare-candidates {Step01.flare_candidates} {sPlotDirectory}/GJ1132_flares.{sFigureType}"
+        "python plotFlareLightcurves.py --flare-candidates {step:tess-flare-candidates.flare_candidates} {sPlotDirectory}/GJ1132_flares.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132_flares.{sFigureType}"
@@ -150,17 +162,21 @@
         },
         "listUserTests": []
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "sStepId": "tess-flare-lightcurves",
+      "saOutputDataFiles": [],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Comprehensive FFD Comparison",
-      "sDirectory": "ComprehensiveFfdComparison",
+      "sDirectory": "ComprehensiveFFDComparison",
       "bPlotOnly": true,
       "bInteractive": false,
       "saDataCommands": [],
-      "saDataFiles": [],
       "saPlotCommands": [
-        "python plotComprehensiveFfd.py --flare-candidates {Step01.flare_candidates} --kepler-posterior {Step02.kepler_ffd_posterior_stats} {sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
+        "python plotComprehensiveFfd.py --flare-candidates {step:tess-flare-candidates.flare_candidates} --kepler-posterior {step:kepler-ffd-corner.kepler_ffd_posterior_stats} {sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}"
@@ -181,21 +197,20 @@
         },
         "listUserTests": []
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "sStepId": "comprehensive-ffd-comparison",
+      "saOutputDataFiles": [],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "XUV Luminosity Distribution",
-      "sDirectory": "XuvLuminosityDistribution",
+      "sDirectory": "XUVLuminosityDistribution",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
         "python dataLxuv.py"
-      ],
-      "saDataFiles": [
-        "lxuv_samples.txt",
-        "lxuv_lbol_samples.txt",
-        "log_lxuv_lbol_samples.txt",
-        "lxuv_constraints.json"
       ],
       "saPlotCommands": [
         "python plotLxuv.py --output-directory {sPlotDirectory} --figure-type {sFigureType}"
@@ -238,49 +253,185 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "sStepId": "xuv-luminosity-distribution",
+      "saOutputDataFiles": [
+        "lxuv_samples.txt",
+        "lxuv_lbol_samples.txt",
+        "log_lxuv_lbol_samples.txt",
+        "lxuv_constraints.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
-      "sName": "Engle Hierarchical Refit",
-      "sDirectory": "EngleHierarchicalRefit",
+      "sName": "MUSCLES Band Conversion",
+      "sDirectory": "MUSCLESBandConversion",
+      "bRunEnabled": false,
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python musclesConversion/dataDeriveMusclesConversion.py",
-        "python dataPrepareJointSample.py",
-        "python dataRefitJointRelations.py --sample midlate --subdwarfs include",
-        "python dataRefitJointRelations.py --sample midlate --subdwarfs exclude",
-        "python dataRefitJointRelations.py --sample early --subdwarfs include",
-        "python dataRefitJointRelations.py --sample early --subdwarfs exclude",
-        "python dataPackageCoefficientPosteriors.py"
+        "python dataDeriveMusclesConversion.py"
       ],
-      "saDataFiles": [
-        "musclesConversion/conversionFit.json",
-        "musclesConversion/perStarBandFluxes.json",
+      "saTestCommands": [
+        "pytest tests/test_conversion_integrity.py"
+      ],
+      "saPlotCommands": [],
+      "saPlotFiles": [],
+      "dictTests": {
+        "dictQualitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictQuantitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictIntegrity": {
+          "sFilePath": "MusclesBandConversion/tests/test_conversion_integrity.py",
+          "sContent": "",
+          "saCommands": [
+            "pytest tests/test_conversion_integrity.py"
+          ],
+          "sLastOutput": ""
+        }
+      },
+      "saDependencies": [],
+      "sStepId": "muscles-band-conversion",
+      "saOutputDataFiles": [
+        "conversionFit.json",
+        "perStarBandFluxes.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
+    },
+    {
+      "sName": "Joint Sample Preparation",
+      "sDirectory": "JointSamplePreparation",
+      "bRunEnabled": true,
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python dataPrepareJointSample.py"
+      ],
+      "saTestCommands": [
+        "pytest tests/test_sample_integrity.py"
+      ],
+      "saPlotCommands": [],
+      "saPlotFiles": [],
+      "dictTests": {
+        "dictQualitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictQuantitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictIntegrity": {
+          "sFilePath": "JointSamplePreparation/tests/test_sample_integrity.py",
+          "sContent": "",
+          "saCommands": [
+            "pytest tests/test_sample_integrity.py"
+          ],
+          "sLastOutput": ""
+        }
+      },
+      "saDependencies": [],
+      "sStepId": "joint-sample-preparation",
+      "saOutputDataFiles": [
         "jointSampleMidLate.json",
-        "jointSampleEarly.json",
-        "jointChain_midlate_withsd.npy",
-        "jointFitSummary_midlate_withsd.json",
-        "jointChain_midlate_nosd.npy",
-        "jointFitSummary_midlate_nosd.json",
-        "jointChain_early_withsd.npy",
-        "jointFitSummary_early_withsd.json",
-        "jointChain_early_nosd.npy",
-        "jointFitSummary_early_nosd.json",
-        "engleCoefficientPosteriors.json"
+        "jointSampleEarly.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
+    },
+    {
+      "sName": "Mid-Late Joint Refit",
+      "sDirectory": "Mid-LateJointRefit",
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python ../utils/dataRefitJointRelations.py --sample midlate --subdwarfs include --joint-sample {step:joint-sample-preparation.jointSampleMidLate} --output-directory .",
+        "python ../utils/dataRefitJointRelations.py --sample midlate --subdwarfs exclude --joint-sample {step:joint-sample-preparation.jointSampleMidLate} --output-directory ."
       ],
       "saPlotCommands": [
-        "python plotJointCornerRelations.py midlate_withsd {sPlotDirectory} {sFigureType}",
-        "python plotJointCornerRelations.py early_withsd {sPlotDirectory} {sFigureType}",
-        "python plotEngleVsRefitEvolution.py midlate_withsd {sPlotDirectory}/EngleVsRefit_midlate_withsd.{sFigureType}",
-        "python plotEngleVsRefitEvolution.py early_withsd {sPlotDirectory}/EngleVsRefit_early_withsd.{sFigureType}"
+        "python ../utils/plotJointCornerRelations.py --tag midlate_withsd --joint-chain jointChain_midlate_withsd.npy --output-directory {sPlotDirectory} --figure-type {sFigureType}",
+        "python ../utils/plotEngleVsRefitEvolution.py --tag midlate_withsd --joint-chain jointChain_midlate_withsd.npy --fit-summary jointFitSummary_midlate_withsd.json --joint-sample {step:joint-sample-preparation.jointSampleMidLate} --conversion-fit {step:muscles-band-conversion.conversionFit} --output {sPlotDirectory}/EngleVsRefit_midlate_withsd.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/CornerJointRotation_midlate_withsd.{sFigureType}",
         "{sPlotDirectory}/CornerJointActivity_midlate_withsd.{sFigureType}",
+        "{sPlotDirectory}/EngleVsRefit_midlate_withsd.{sFigureType}"
+      ],
+      "dictTests": {
+        "dictQualitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictQuantitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictIntegrity": {
+          "sFilePath": "MidLateJointRefit/tests/test_refit_integrity.py",
+          "sContent": "",
+          "saCommands": [
+            "pytest tests/test_refit_integrity.py"
+          ],
+          "sLastOutput": ""
+        }
+      },
+      "saTestCommands": [
+        "pytest tests/test_refit_integrity.py"
+      ],
+      "bRunEnabled": true,
+      "sStepId": "engle-hierarchical-refit",
+      "saOutputDataFiles": [
+        "jointChain_midlate_withsd.npy",
+        "jointFitSummary_midlate_withsd.json",
+        "jointChain_midlate_nosd.npy",
+        "jointFitSummary_midlate_nosd.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
+    },
+    {
+      "sName": "Early Joint Refit",
+      "sDirectory": "EarlyJointRefit",
+      "bRunEnabled": true,
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python ../utils/dataRefitJointRelations.py --sample early --subdwarfs include --joint-sample {step:joint-sample-preparation.jointSampleEarly} --output-directory .",
+        "python ../utils/dataRefitJointRelations.py --sample early --subdwarfs exclude --joint-sample {step:joint-sample-preparation.jointSampleEarly} --output-directory ."
+      ],
+      "saTestCommands": [
+        "pytest tests/test_refit_integrity.py"
+      ],
+      "saPlotCommands": [
+        "python ../utils/plotJointCornerRelations.py --tag early_withsd --joint-chain jointChain_early_withsd.npy --output-directory {sPlotDirectory} --figure-type {sFigureType}",
+        "python ../utils/plotEngleVsRefitEvolution.py --tag early_withsd --joint-chain jointChain_early_withsd.npy --fit-summary jointFitSummary_early_withsd.json --joint-sample {step:joint-sample-preparation.jointSampleEarly} --conversion-fit {step:muscles-band-conversion.conversionFit} --output {sPlotDirectory}/EngleVsRefit_early_withsd.{sFigureType}"
+      ],
+      "saPlotFiles": [
         "{sPlotDirectory}/CornerJointRotation_early_withsd.{sFigureType}",
         "{sPlotDirectory}/CornerJointActivity_early_withsd.{sFigureType}",
-        "{sPlotDirectory}/EngleVsRefit_midlate_withsd.{sFigureType}",
         "{sPlotDirectory}/EngleVsRefit_early_withsd.{sFigureType}"
       ],
       "dictTests": {
@@ -297,18 +448,70 @@
           "sLastOutput": ""
         },
         "dictIntegrity": {
-          "sFilePath": "EngleHierarchicalRefit/tests/test_joint_integrity.py",
+          "sFilePath": "EarlyJointRefit/tests/test_refit_integrity.py",
           "sContent": "",
           "saCommands": [
-            "pytest tests/test_joint_integrity.py"
+            "pytest tests/test_refit_integrity.py"
           ],
-          "sLastOutput": "============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: /workspace/GJ1132_XUV/EngleHierarchicalRefit\nplugins: dependency-0.6.1, cov-7.1.0, timeout-2.4.0, env-1.6.0\ncollected 11 items\n\ntests/test_joint_integrity.py ...........                                [100%]\n\n============================== 11 passed in 0.55s ==============================\n"
+          "sLastOutput": ""
         }
       },
-      "saTestCommands": [
-        "pytest tests/test_joint_integrity.py"
+      "saDependencies": [],
+      "sStepId": "early-joint-refit",
+      "saOutputDataFiles": [
+        "jointChain_early_withsd.npy",
+        "jointFitSummary_early_withsd.json",
+        "jointChain_early_nosd.npy",
+        "jointFitSummary_early_nosd.json"
       ],
-      "bRunEnabled": true
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
+    },
+    {
+      "sName": "Engle Coefficient Packaging",
+      "sDirectory": "EngleCoefficientPackaging",
+      "bRunEnabled": true,
+      "bPlotOnly": false,
+      "bInteractive": false,
+      "saDataCommands": [
+        "python dataPackageCoefficientPosteriors.py --conversion-fit {step:muscles-band-conversion.conversionFit} --midlate-withsd-chain {step:engle-hierarchical-refit.jointChain_midlate_withsd} --midlate-withsd-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_withsd} --midlate-nosd-chain {step:engle-hierarchical-refit.jointChain_midlate_nosd} --midlate-nosd-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_nosd} --early-withsd-chain {step:early-joint-refit.jointChain_early_withsd} --early-withsd-summary {step:early-joint-refit.jointFitSummary_early_withsd} --early-nosd-chain {step:early-joint-refit.jointChain_early_nosd} --early-nosd-summary {step:early-joint-refit.jointFitSummary_early_nosd}"
+      ],
+      "saTestCommands": [
+        "pytest tests/test_package_integrity.py"
+      ],
+      "saPlotCommands": [],
+      "saPlotFiles": [],
+      "dictTests": {
+        "dictQualitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictQuantitative": {
+          "sFilePath": "",
+          "sContent": "",
+          "saCommands": [],
+          "sLastOutput": ""
+        },
+        "dictIntegrity": {
+          "sFilePath": "EngleCoefficientPackaging/tests/test_package_integrity.py",
+          "sContent": "",
+          "saCommands": [
+            "pytest tests/test_package_integrity.py"
+          ],
+          "sLastOutput": ""
+        }
+      },
+      "saDependencies": [],
+      "sStepId": "engle-coefficient-packaging",
+      "saOutputDataFiles": [
+        "engleCoefficientPosteriors.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Engle Age Distribution",
@@ -316,10 +519,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataAge.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd}"
-      ],
-      "saDataFiles": [
-        "age_samples.txt"
+        "python dataAge.py --joint-chain {step:engle-hierarchical-refit.jointChain_midlate_withsd} --fit-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_withsd}"
       ],
       "saPlotCommands": [
         "python plotAge.py {sPlotDirectory}/EngleAgeHist.{sFigureType}"
@@ -361,19 +561,22 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "sStepId": "engle-age-distribution",
+      "saOutputDataFiles": [
+        "age_samples.txt"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Activity Consistency Check",
-      "sDirectory": "LxuvInformedAge",
+      "sDirectory": "ActivityConsistencyCheck",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataCheckActivityConsistency.py --age-samples {Step08.age_samples} --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit}"
-      ],
-      "saDataFiles": [
-        "activityConsistency.json",
-        "zOffsetSamples.txt"
+        "python dataCheckActivityConsistency.py --age-samples {step:engle-age-distribution.age_samples} --joint-chain {step:engle-hierarchical-refit.jointChain_midlate_withsd} --fit-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_withsd} --conversion-fit {step:muscles-band-conversion.conversionFit}"
       ],
       "saPlotCommands": [
         "python plotActivityConsistency.py {sPlotDirectory}/ActivityConsistency.{sFigureType}"
@@ -407,7 +610,15 @@
       "saTestCommands": [
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "sStepId": "activity-consistency-check",
+      "saOutputDataFiles": [
+        "activityConsistency.json",
+        "zOffsetSamples.txt"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Maximum Likelihood",
@@ -416,9 +627,6 @@
       "bInteractive": false,
       "saDataCommands": [
         "maxlev gj1132_ribas.json"
-      ],
-      "saDataFiles": [
-        "maxlike_results.txt"
       ],
       "saPlotCommands": [],
       "saPlotFiles": [],
@@ -456,7 +664,14 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "sStepId": "maximum-likelihood",
+      "saOutputDataFiles": [
+        "maxlike_results.txt"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Bayesian Posteriors",
@@ -464,14 +679,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataBayesianPosteriors.py --lxuv-constraints {Step06.lxuv_constraints} --age-samples {Step08.age_samples}"
-      ],
-      "saDataFiles": [
-        "output/dynesty_transform_final.npy",
-        "output/emcee_samples.npz",
-        "output/dynesty_samples.npz",
-        "output/multinest_samples.npz",
-        "output/ultranest_samples.npz"
+        "python dataBayesianPosteriors.py --lxuv-constraints {step:xuv-luminosity-distribution.lxuv_constraints} --age-samples {step:engle-age-distribution.age_samples}"
       ],
       "saPlotCommands": [
         "python plotSamplerComparison.py {sPlotDirectory}/sampler_comparison.{sFigureType}"
@@ -518,23 +726,30 @@
         "pytest tests/test_integrity.py"
       ],
       "saDependencies": [
-        "{Step08.maxlike_results}",
-        "{Step07.age_samples}"
+        "{step:engle-age-distribution.maxlike_results}",
+        "{step:engle-hierarchical-refit.age_samples}"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "sStepId": "bayesian-posteriors",
+      "saOutputDataFiles": [
+        "output/dynesty_transform_final.npy",
+        "output/emcee_samples.npz",
+        "output/dynesty_samples.npz",
+        "output/multinest_samples.npz",
+        "output/ultranest_samples.npz"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "XUV Evolution",
-      "sDirectory": "XuvEvolution",
+      "sDirectory": "XUVEvolution",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python ../utils/englePriorTable.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-mode population --tau-reference 0.85 --output EngleBarnes/engle_xuv_priors.txt",
-        "python dataRunVconverge.py --flare-samples {Step02.flare_mcmc_samples} --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
-      ],
-      "saDataFiles": [
-        "EngleBarnes/output/Converged_Param_Dictionary.json",
-        "RibasBarnes/output/Converged_Param_Dictionary.json"
+        "python ../utils/englePriorTable.py --joint-chain {step:engle-hierarchical-refit.jointChain_midlate_withsd} --fit-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_withsd} --conversion-fit {step:muscles-band-conversion.conversionFit} --z-mode population --tau-reference 0.85 --output EngleBarnes/engle_xuv_priors.txt",
+        "python dataRunVconverge.py --flare-samples {step:kepler-ffd-corner.flare_mcmc_samples} --age-samples {step:engle-age-distribution.age_samples} --dynesty-samples {step:bayesian-posteriors.dynesty_transform_final}"
       ],
       "saPlotCommands": [
         "python plotXuvEvolution.py {sPlotDirectory}/XUVEvol.{sFigureType}"
@@ -574,24 +789,28 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "sStepId": "xuv-evolution",
+      "saOutputDataFiles": [
+        "EngleBarnes/output/Converged_Param_Dictionary.json",
+        "RibasBarnes/output/Converged_Param_Dictionary.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Cumulative XUV and Cosmic Shoreline",
-      "sDirectory": "CumulativeXuvAndCosmicShoreline",
+      "sDirectory": "CumulativeXUVAndCosmicShoreline",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python ../utils/englePriorTable.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-mode population --tau-reference 0.85 --output Engle/engle_xuv_priors.txt",
-        "python dataRunVconverge.py --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
-      ],
-      "saDataFiles": [
-        "Engle/output/Converged_Param_Dictionary.json",
-        "Ribas/output/Converged_Param_Dictionary.json"
+        "python ../utils/englePriorTable.py --joint-chain {step:engle-hierarchical-refit.jointChain_midlate_withsd} --fit-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_withsd} --conversion-fit {step:muscles-band-conversion.conversionFit} --z-mode population --tau-reference 0.85 --output Engle/engle_xuv_priors.txt",
+        "python dataRunVconverge.py --age-samples {step:engle-age-distribution.age_samples} --dynesty-samples {step:bayesian-posteriors.dynesty_transform_final}"
       ],
       "saPlotCommands": [
-        "python plotCumulativeXuv.py {sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType} --engle-barnes-converged {Step12.EngleBarnes_Converged_Param_Dictionary} --ribas-barnes-converged {Step12.RibasBarnes_Converged_Param_Dictionary}",
-        "python plotCosmicShoreline.py {sPlotDirectory}/CosmicShoreline.{sFigureType} --engle-barnes-converged {Step12.EngleBarnes_Converged_Param_Dictionary} --ribas-barnes-converged {Step12.RibasBarnes_Converged_Param_Dictionary}"
+        "python plotCumulativeXuv.py {sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType} --engle-barnes-converged {step:xuv-evolution.EngleBarnes_Converged_Param_Dictionary} --ribas-barnes-converged {step:xuv-evolution.RibasBarnes_Converged_Param_Dictionary}",
+        "python plotCosmicShoreline.py {sPlotDirectory}/CosmicShoreline.{sFigureType} --engle-barnes-converged {step:xuv-evolution.EngleBarnes_Converged_Param_Dictionary} --ribas-barnes-converged {step:xuv-evolution.RibasBarnes_Converged_Param_Dictionary}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType}",
@@ -630,9 +849,17 @@
         "pytest tests/test_integrity.py"
       ],
       "saDependencies": [
-        "{Step02.manual}"
+        "{step:kepler-ffd-corner.manual}"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "sStepId": "cumulative-xuv-and-cosmic-shoreline",
+      "saOutputDataFiles": [
+        "Engle/output/Converged_Param_Dictionary.json",
+        "Ribas/output/Converged_Param_Dictionary.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Error Source Comparison",
@@ -640,17 +867,11 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python ../utils/englePriorTable.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-mode none --tau-reference 0.85 --output EngleModelErrorsOnly/engle_xuv_priors.txt",
-        "python dataRunVconverge.py --age-samples {Step08.age_samples} --dynesty-samples {Step11.dynesty_transform_final}"
-      ],
-      "saDataFiles": [
-        "EngleModelErrorsOnly/output/Converged_Param_Dictionary.json",
-        "EngleStellarErrorsOnly/output/Converged_Param_Dictionary.json",
-        "RibasModelErrorsOnly/output/Converged_Param_Dictionary.json",
-        "RibasStellarErrorsOnly/output/Converged_Param_Dictionary.json"
+        "python ../utils/englePriorTable.py --joint-chain {step:engle-hierarchical-refit.jointChain_midlate_withsd} --fit-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_withsd} --conversion-fit {step:muscles-band-conversion.conversionFit} --z-mode none --tau-reference 0.85 --output EngleModelErrorsOnly/engle_xuv_priors.txt",
+        "python dataRunVconverge.py --age-samples {step:engle-age-distribution.age_samples} --dynesty-samples {step:bayesian-posteriors.dynesty_transform_final}"
       ],
       "saPlotCommands": [
-        "python plotErrorSourceComparison.py {sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType} --engle-converged {Step13.Engle_Converged_Param_Dictionary} --ribas-converged {Step13.Ribas_Converged_Param_Dictionary}"
+        "python plotErrorSourceComparison.py {sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType} --engle-converged {step:cumulative-xuv-and-cosmic-shoreline.Engle_Converged_Param_Dictionary} --ribas-converged {step:cumulative-xuv-and-cosmic-shoreline.Ribas_Converged_Param_Dictionary}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType}"
@@ -687,22 +908,25 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "sStepId": "error-source-comparison",
+      "saOutputDataFiles": [
+        "EngleModelErrorsOnly/output/Converged_Param_Dictionary.json",
+        "EngleStellarErrorsOnly/output/Converged_Param_Dictionary.json",
+        "RibasModelErrorsOnly/output/Converged_Param_Dictionary.json",
+        "RibasStellarErrorsOnly/output/Converged_Param_Dictionary.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Z-Offset Cumulative XUV Comparison",
-      "sDirectory": "LxuvInformedCumulativeXuv",
+      "sDirectory": "Z-OffsetCumulativeXUVComparison",
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataCompareZOffsetFlux.py --age-samples {Step08.age_samples} --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-offsets {Step09.zOffsetSamples}"
-      ],
-      "saDataFiles": [
-        "cumulativeXuvFluxSamplesZPopulation.txt",
-        "cumulativeXuvFluxSamplesZInformed.txt",
-        "cumulativeXuvFluxSamplesFlaresZPopulation.txt",
-        "cumulativeXuvFluxSamplesFlaresZInformed.txt",
-        "cumulativeXuvStats.json"
+        "python dataCompareZOffsetFlux.py --age-samples {step:engle-age-distribution.age_samples} --joint-chain {step:engle-hierarchical-refit.jointChain_midlate_withsd} --fit-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_withsd} --conversion-fit {step:muscles-band-conversion.conversionFit} --z-offsets {step:activity-consistency-check.zOffsetSamples}"
       ],
       "saPlotCommands": [
         "python plotCompareZOffsetFlux.py {sPlotDirectory}/ZOffsetCumulativeXuv.{sFigureType}"
@@ -736,17 +960,27 @@
       "saTestCommands": [
         "pytest tests/test_integrity.py"
       ],
-      "bRunEnabled": true
+      "bRunEnabled": true,
+      "sStepId": "z-offset-cumulative-xuv-comparison",
+      "saOutputDataFiles": [
+        "cumulativeXuvFluxSamplesZPopulation.txt",
+        "cumulativeXuvFluxSamplesZInformed.txt",
+        "cumulativeXuvFluxSamplesFlaresZPopulation.txt",
+        "cumulativeXuvFluxSamplesFlaresZInformed.txt",
+        "cumulativeXuvStats.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Kepler vs TESS Comparison",
-      "sDirectory": "KeplerVsTessComparison",
+      "sDirectory": "KeplerVsTESSComparison",
       "bPlotOnly": true,
       "bInteractive": false,
       "saDataCommands": [],
-      "saDataFiles": [],
       "saPlotCommands": [
-        "python plotKeplerVsTessComparison.py --flare-candidates {Step01.flare_candidates} --kepler-posterior {Step02.kepler_ffd_posterior_stats} {sPlotDirectory}/FitComparison.{sFigureType}"
+        "python plotKeplerVsTessComparison.py --flare-candidates {step:tess-flare-candidates.flare_candidates} --kepler-posterior {step:kepler-ffd-corner.kepler_ffd_posterior_stats} {sPlotDirectory}/FitComparison.{sFigureType}"
       ],
       "saPlotFiles": [
         "{sPlotDirectory}/FitComparison.{sFigureType}"
@@ -770,11 +1004,16 @@
       "dictPlotFileCategories": {
         "{sPlotDirectory}/FitComparison.{sFigureType}": "supporting"
       },
-      "bRunEnabled": false
+      "bRunEnabled": false,
+      "sStepId": "kepler-vs-tess-comparison",
+      "saOutputDataFiles": [],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "AI Declaration",
-      "sDirectory": "aiDeclaration",
+      "sDirectory": "AIDeclaration",
       "sStepKind": "ai-declaration",
       "sDeclarationFile": "AI_USAGE.md",
       "bRunEnabled": false,
@@ -797,22 +1036,23 @@
         "listUserTests": []
       },
       "saDataCommands": [],
-      "saDataFiles": [],
       "saTestCommands": [],
       "saPlotCommands": [],
-      "saPlotFiles": []
+      "saPlotFiles": [],
+      "sStepId": "ai-declaration",
+      "saOutputDataFiles": [],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Model Graph Figures",
-      "sDirectory": "modelGraphFigures",
+      "sDirectory": "ModelGraphFigures",
       "bRunEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
         "python dataModelGraph.py"
-      ],
-      "saDataFiles": [
-        "probabilisticGraphicalModelStructure.json"
       ],
       "saPlotCommands": [
         "python plotProbabilisticGraphicalModel.py {sPlotDirectory}/ProbabilisticGraphicalModel.{sFigureType}"
@@ -845,22 +1085,24 @@
           "sLastOutput": ""
         },
         "listUserTests": []
-      }
+      },
+      "sStepId": "model-graph-figures",
+      "fWallClockBudgetSeconds": 0.0,
+      "saOutputDataFiles": [
+        "probabilisticGraphicalModelStructure.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "X-ray Measurement Value",
-      "sDirectory": "XrayMeasurementValue",
+      "sDirectory": "X-rayMeasurementValue",
       "bRunEnabled": true,
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataXrayMeasurementValue.py --joint-chain {Step07.jointChain_midlate_withsd} --fit-summary {Step07.jointFitSummary_midlate_withsd} --conversion-fit {Step07.conversionFit} --z-offsets {Step09.zOffsetSamples} --converged-flux {Step13.Engle_Converged_Param_Dictionary}"
-      ],
-      "saDataFiles": [
-        "uncertaintyBudget.json",
-        "fluxSamplesPopulationZ.txt",
-        "fluxSamplesInformedZ.txt",
-        "fluxSamplesForwardModelSweep.txt"
+        "python dataXrayMeasurementValue.py --joint-chain {step:engle-hierarchical-refit.jointChain_midlate_withsd} --fit-summary {step:engle-hierarchical-refit.jointFitSummary_midlate_withsd} --conversion-fit {step:muscles-band-conversion.conversionFit} --z-offsets {step:activity-consistency-check.zOffsetSamples} --converged-flux {step:cumulative-xuv-and-cosmic-shoreline.Engle_Converged_Param_Dictionary}"
       ],
       "saTestCommands": [
         "pytest tests/test_integrity.py"
@@ -887,7 +1129,18 @@
         },
         "listUserTests": []
       },
-      "saDependencies": []
+      "saDependencies": [],
+      "sStepId": "x-ray-measurement-value",
+      "fWallClockBudgetSeconds": 1.0,
+      "saOutputDataFiles": [
+        "uncertaintyBudget.json",
+        "fluxSamplesPopulationZ.txt",
+        "fluxSamplesInformedZ.txt",
+        "fluxSamplesForwardModelSweep.txt"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     },
     {
       "sName": "Accumulation History",
@@ -896,10 +1149,7 @@
       "bPlotOnly": false,
       "bInteractive": false,
       "saDataCommands": [
-        "python dataAccumulationHistory.py --converged-flux {Step13.Engle_Converged_Param_Dictionary} --age-samples {Step08.age_samples}"
-      ],
-      "saDataFiles": [
-        "accumulationHistory.json"
+        "python dataAccumulationHistory.py --converged-flux {step:cumulative-xuv-and-cosmic-shoreline.Engle_Converged_Param_Dictionary} --age-samples {step:engle-age-distribution.age_samples}"
       ],
       "saTestCommands": [
         "pytest tests/test_integrity.py"
@@ -926,488 +1176,19 @@
         },
         "listUserTests": []
       },
-      "saDependencies": []
+      "saDependencies": [],
+      "sStepId": "accumulation-history",
+      "saOutputDataFiles": [
+        "accumulationHistory.json"
+      ],
+      "saInputDataFiles": [],
+      "bNoInputData": false,
+      "listRemoteData": []
     }
   ],
   "sOverleafProjectId": "68656ed576acad848ef2ee0c",
   "sOverleafFigureDirectory": "Figures",
-  "dictSyncStatus": {
-    "TessFlareCandidates/flare_candidates.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "9d2a97d80deda6584b6320b8f67e56b13a75bf28"
-    },
-    "KeplerFfdCorner/flare_mcmc_samples.npy": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": true,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "87bcafab12cdc0b8900bd021e982ad605aee0ac4"
-    },
-    "KeplerFfdCorner/kepler_ffd_posterior_stats.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "a02ed81289719faf2c768948bbd7db31784cbf37"
-    },
-    "KeplerFfdCorner/{sPlotDirectory}/CornerVariableSlope.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "FfdAgeComparison/{sPlotDirectory}/ffd_comp.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "TessFlareLightcurves/{sPlotDirectory}/GJ1132_flares.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "ComprehensiveFfdComparison/{sPlotDirectory}/GJ1132_FFD_comp2.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "XuvLuminosityDistribution/lxuv_samples.txt": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "60106b47ae01f27d871798825629edb4cb19b1f1"
-    },
-    "XuvLuminosityDistribution/lxuv_lbol_samples.txt": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "02b9a7d6389f0025329b12a78744675f0549fc9e"
-    },
-    "XuvLuminosityDistribution/log_lxuv_lbol_samples.txt": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "2e1ed7c520c72bea728005e4013d0c79703a7b93"
-    },
-    "XuvLuminosityDistribution/lxuv_constraints.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "430ba5e0d428682c478c16496bb0222523df39de"
-    },
-    "XuvLuminosityDistribution/{sPlotDirectory}/lxuv_hist.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "XuvLuminosityDistribution/{sPlotDirectory}/log_lxuv_lbol_hist.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "EngleAgeDistribution/age_samples.txt": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": true,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "4f21ec793357ee0471b2ee2e76f3f7fa0841f1de"
-    },
-    "EngleAgeDistribution/{sPlotDirectory}/EngleAgeHist.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "MaximumLikelihood/maxlike_results.txt": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "e52498a56bc57f1595b9d15e3327ccb8dc59ff65"
-    },
-    "BayesianPosteriors/output/dynesty_transform_final.npy": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "f04b755d0ac43fae7c70d0e03dbe56e440819026"
-    },
-    "BayesianPosteriors/output/emcee_samples.npz": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "315483291ad1baebda9405009d18aeccd033b2bc"
-    },
-    "BayesianPosteriors/output/dynesty_samples.npz": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "fef3a28b1063105d783c074eb6b9e934ef12f735"
-    },
-    "BayesianPosteriors/output/multinest_samples.npz": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "345206fb07db16a6f4d82694496b3adba7585f86"
-    },
-    "BayesianPosteriors/output/ultranest_samples.npz": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "4624aceceb80a79cc0828f41d4dbcb3b82afe234"
-    },
-    "BayesianPosteriors/{sPlotDirectory}/sampler_comparison.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "XuvEvolution/EngleBarnes/output/Converged_Param_Dictionary.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "d7288a55a9d52f322c9724043f622305b0f88b56"
-    },
-    "XuvEvolution/RibasBarnes/output/Converged_Param_Dictionary.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "4a68353f2f3d2a2ea39c38bc7707c92cab35b47a"
-    },
-    "XuvEvolution/{sPlotDirectory}/XUVEvol.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "CumulativeXuvAndCosmicShoreline/Engle/output/Converged_Param_Dictionary.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "b148fcfcf85f5db69c5ae194b5b0f5741ab913fd"
-    },
-    "CumulativeXuvAndCosmicShoreline/Ribas/output/Converged_Param_Dictionary.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "a538b1fa2f53cac771956b410a91523487ee01e0"
-    },
-    "CumulativeXuvAndCosmicShoreline/{sPlotDirectory}/GJ1132b_CumulativeXUV_Multi.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "CumulativeXuvAndCosmicShoreline/{sPlotDirectory}/CosmicShoreline.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "ErrorSourceComparison/EngleModelErrorsOnly/output/Converged_Param_Dictionary.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "8b768b1508883bc3b19ca44ecedfd328672f275a"
-    },
-    "ErrorSourceComparison/EngleStellarErrorsOnly/output/Converged_Param_Dictionary.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "1a5f40f50bca07fc1fa651312f599a897c1d830e"
-    },
-    "ErrorSourceComparison/RibasModelErrorsOnly/output/Converged_Param_Dictionary.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "90b8eebaa3f2b9f98cba1ab73b920482ba9afb68"
-    },
-    "ErrorSourceComparison/RibasStellarErrorsOnly/output/Converged_Param_Dictionary.json": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "4db4f5502f30482bd2794b825afb77a68b665dbd"
-    },
-    "ErrorSourceComparison/{sPlotDirectory}/GJ1132b_ErrorSourceComparison.{sFigureType}": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "",
-      "sZenodoLastPushedDigest": ""
-    },
-    "Plot/CornerVariableSlope.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "122cad016c7c9deac260182c264aef5bef65c971",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "122cad016c7c9deac260182c264aef5bef65c971"
-    },
-    "Plot/ffd_comp.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "42dc78992d7c73274cf45d7ee587d34ebad2c42d",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "42dc78992d7c73274cf45d7ee587d34ebad2c42d"
-    },
-    "Plot/GJ1132_flares.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "04e84402cce53c1758672a67ed56e3770e33db48",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "7353c7eafdb7d556076fa88a2894401fcf50acf5"
-    },
-    "Plot/GJ1132_FFD_comp2.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "6569fa3db41a06ed4a61dca211deafa45ef90469",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "c745e07e18c3af4205aed5ba8edadcb7e201a078"
-    },
-    "Plot/lxuv_hist.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "fc4b600fde30e4117c40c034bd959fad022a4d47",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "fc4b600fde30e4117c40c034bd959fad022a4d47"
-    },
-    "Plot/log_lxuv_lbol_hist.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "ac0d42fd4e860ed18a15e241fc7f7a1989608cb7",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "ac0d42fd4e860ed18a15e241fc7f7a1989608cb7"
-    },
-    "Plot/EngleAgeHist.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "9beefbb4bba4d050862c4f4aaf0fbd9c8d210869",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "add8747e2800d740a454c53e77f242d6c5be2e29"
-    },
-    "Plot/sampler_comparison.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "0d5de25f7b04d5485a57121519ef17d8b9d68a43",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "b55b4111429a70355a344ed7db111a93e9e9e3aa"
-    },
-    "Plot/XUVEvol.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "c269272832dea89c9ee81be821571d771a3e127b",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "8fad717ff6ca13b68448cfb55840e935c8e79363"
-    },
-    "Plot/GJ1132b_CumulativeXUV_Multi.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "eff3f84a72d9d22eb5a002e414ed7b8056d8d904",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "06007810793c119dc23a7198adaf0a0c0cc55c1e"
-    },
-    "Plot/CosmicShoreline.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "269cb2684764b612f3a3f7dcfa08d7d090f16d8c",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "f7de419359be37d7a3f102a81cf8b96edc63a932"
-    },
-    "Plot/GJ1132b_ErrorSourceComparison.pdf": {
-      "bOverleaf": true,
-      "sOverleafTimestamp": "2026-07-10T19:32:14Z",
-      "sOverleafLastPushedDigest": "bf2118036cacfc33bcc942891d70d06e95413ed2",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "1d0c030ad147a5a824aa161f840749dbc5f80b66"
-    },
-    "Plot/FitComparison.pdf": {
-      "bOverleaf": false,
-      "sOverleafTimestamp": "",
-      "sOverleafLastPushedDigest": "",
-      "bGithub": false,
-      "sGithubTimestamp": "",
-      "bZenodo": true,
-      "sZenodoTimestamp": "2026-04-21T22:57:47Z",
-      "sZenodoLastPushedDigest": "aa4225543f7a5f1ad9adb655a7f7f951696c747e"
-    }
-  },
   "sZenodoService": "sandbox",
-  "sZenodoDepositionId": "491709",
-  "sZenodoLatestDoi": "10.5072/zenodo.491709",
-  "sZenodoConceptDoi": "10.5072/zenodo.491683",
-  "sZenodoLatestUrl": "https://sandbox.zenodo.org/records/491709",
   "dictZenodoMetadata": {
     "sTitle": "GJ 1132 XUV Evolution",
     "sDescription": "An investigation into the historical range of XUV luminosity of GJ 1132 and the cumulative XUV flux on planet b.",
@@ -1426,16 +1207,10 @@
     ],
     "sRelatedGithubUrl": "https://github.com/RoryBarnes/GJ1132_XUV"
   },
-  "iWorkflowSchemaVersion": 5,
+  "iWorkflowSchemaVersion": 13,
   "dictRemotes": {
     "overleaf": {
-      "sProjectId": "68656ed576acad848ef2ee0c",
-      "sLastPushCommit": "dd8fa2db246639bfe375ef79510b204303195569"
-    },
-    "zenodo": {
-      "sRecordId": "491709",
-      "sDoi": "10.5072/zenodo.491709",
-      "sService": "sandbox"
+      "sProjectId": "68656ed576acad848ef2ee0c"
     },
     "github": {
       "sOwner": "RoryBarnes",
@@ -1462,6 +1237,7 @@
     }
   ],
   "dictDeterminism": {
-    "bAcceptBlasVariance": true
+    "bAcceptBlasVariance": true,
+    "sBlasVarianceAnswer": "accepted"
   }
 }
