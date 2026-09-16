@@ -1,0 +1,15 @@
+# Host star parameters
+sName		star                  # Body name
+saModules    	stellar              # Active modules
+
+# Physical properties
+dMass        	0.189                  # Mass in Msun
+dRotPeriod      -1.0                  # Rotation period, negative -> days
+dAge            1.0e6                 # Initial age [yr]
+
+# STELLAR parameters
+sStellarModel	  baraffe             # Stellar evolution model
+sXUVModel           Engle24MidLate
+bHaltEndBaraffeGrid 0                 # Don't end sim when we reach end of grid
+
+saOutputOrder 	Time -Luminosity -LXUVStellar -LXUVTot 
