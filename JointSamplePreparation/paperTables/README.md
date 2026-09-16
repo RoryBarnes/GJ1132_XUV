@@ -11,7 +11,8 @@ the `age_via` annotations encode fit-membership facts stated in the papers.
 - `earlyMXray.csv`, `midlateMXray.csv` — Engle (2024), ApJ 960, 62
   (arXiv:2310.04302v2), Tables 3 (M0-2) and 4 (M2.5-6.5). Columns include
   Prot, log L_X, and provenance flags absent from the older working file
-  `../xrayActivityData.csv` (which matches Table 4 exactly, row for row).
+  `../xrayActivityData.csv` (kept beside this directory for provenance; it
+  matches Table 4 exactly, row for row).
 
 ## Key facts recorded during extraction (verified against the TeX)
 

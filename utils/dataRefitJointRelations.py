@@ -20,7 +20,7 @@ normals for asymmetric errors; Kelly 2007 for the error framework):
 
 The activity relation is fit in NATIVE log(L_X/L_bol); conversion to the
 X-UV(5-1700 A) band happens downstream at prediction time via the re-derived
-MUSCLES conversion (musclesConversion/conversionFit.json).
+MUSCLES conversion (the MusclesBandConversion step's conversionFit.json).
 
 Sample composition follows the papers: M67 is excluded (gyro-circular age);
 for the mid-late fit the young-track M4+ cluster rows are excluded because
@@ -32,6 +32,7 @@ Convergence is gated on the integrated autocorrelation time of the 12
 hyperparameters (chain length >= 50 tau; Foreman-Mackey et al. 2013).
 
 Usage: python dataRefitJointRelations.py --sample midlate --subdwarfs exclude
+       --joint-sample jointSampleMidLate.json --output-directory .
 """
 
 import argparse
@@ -41,7 +42,6 @@ import os
 import numpy as np
 import emcee
 
-S_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 I_HYPER_DIMENSIONS = 12
 I_QUADRATURE_NODES = 40
 I_WALKERS = 128
@@ -193,11 +193,9 @@ def fdictEnsembleBlock(listEnsemble):
     }
 
 
-def fdictBuildData(sSample, bIncludeSubdwarfs):
+def fdictBuildData(sJointSamplePath, sSample, bIncludeSubdwarfs):
     """Load, filter, and assemble all model inputs for one fit variant."""
-    sFilename = ("jointSampleMidLate.json" if sSample == "midlate"
-                 else "jointSampleEarly.json")
-    with open(os.path.join(S_DIRECTORY, sFilename)) as fileHandle:
+    with open(sJointSamplePath) as fileHandle:
         listRecords = json.load(fileHandle)
     listKept = flistFilterRecords(listRecords, sSample, bIncludeSubdwarfs)
     dictSplit = fdictAssembleArrays(listKept)
@@ -400,6 +398,10 @@ def ftParseArguments():
                         choices=["midlate", "early"])
     parser.add_argument("--subdwarfs", required=True,
                         choices=["include", "exclude"])
+    parser.add_argument("--joint-sample", required=True,
+                        help="Path to the fit-ready joint sample JSON.")
+    parser.add_argument("--output-directory", default=".",
+                        help="Directory receiving the chain and summary.")
     return parser.parse_args()
 
 
@@ -408,7 +410,7 @@ def main():
     args = ftParseArguments()
     bInclude = args.subdwarfs == "include"
     sTag = f"{args.sample}_{'withsd' if bInclude else 'nosd'}"
-    dictData = fdictBuildData(args.sample, bInclude)
+    dictData = fdictBuildData(args.joint_sample, args.sample, bInclude)
     print(f"[{sTag}] benchmarks={dictData['iBenchmarks']} "
           f"field={len(dictData['dictField']['daY'])} "
           f"ensembles={len(dictData['dictEnsemble']['daY'])}", flush=True)
@@ -419,10 +421,10 @@ def main():
         (dictData, DICT_PUBLISHED[args.sample]), iSeed)
     dictSummary, daFlat = fdictSummarizeFit(
         sampler, iSteps, bConverged, dTauMax, dictData, args.sample)
-    np.save(os.path.join(S_DIRECTORY, f"jointChain_{sTag}.npy"),
+    np.save(os.path.join(args.output_directory, f"jointChain_{sTag}.npy"),
             daFlat[:, :I_HYPER_DIMENSIONS])
-    with open(os.path.join(S_DIRECTORY, f"jointFitSummary_{sTag}.json"),
-              "w") as fileHandle:
+    with open(os.path.join(args.output_directory,
+                           f"jointFitSummary_{sTag}.json"), "w") as fileHandle:
         json.dump(dictSummary, fileHandle, indent=2)
     print(f"[{sTag}] done: converged={bConverged} tau={dTauMax:.1f} "
           f"draws={dictSummary['iPosteriorDraws']}", flush=True)

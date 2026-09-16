@@ -12,8 +12,13 @@ catalog consumer has every number needed to predict an individual M dwarf's
 X-UV history with honest uncertainties from this single file.
 
 Canonical variants (per project decision 2026-07-14) are the *_withsd fits.
+
+Usage: python dataPackageCoefficientPosteriors.py --conversion-fit <path>
+       --midlate-withsd-chain <path> --midlate-withsd-summary <path>
+       (and the same pair for midlate-nosd, early-withsd, early-nosd)
 """
 
+import argparse
 import json
 import os
 
@@ -25,11 +30,25 @@ SA_PARAMETERS = ["a_rot", "b_rot", "c_rot", "d_rot", "e_rot", "f_rot",
                  "a_act", "b_act", "c_act", "d_act", "e_act", "f_act"]
 
 
-def fdictPackageOneFit(sTag):
+def ftParseArguments():
+    """Parse and return command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Package the joint-refit posteriors into one catalog.")
+    parser.add_argument("--conversion-fit", required=True,
+                        help="Path to the MUSCLES conversionFit.json.")
+    for sTag in SA_TAGS:
+        sOption = sTag.replace("_", "-")
+        parser.add_argument(f"--{sOption}-chain", required=True,
+                            help=f"Path to the {sTag} hyperparameter chain.")
+        parser.add_argument(f"--{sOption}-summary", required=True,
+                            help=f"Path to the {sTag} fit summary JSON.")
+    return parser.parse_args()
+
+
+def fdictPackageOneFit(sTag, sChainPath, sSummaryPath):
     """Build the posterior block for one fit variant."""
-    daChain = np.load(os.path.join(S_DIRECTORY, f"jointChain_{sTag}.npy"))
-    with open(os.path.join(S_DIRECTORY,
-                           f"jointFitSummary_{sTag}.json")) as fileHandle:
+    daChain = np.load(sChainPath)
+    with open(sSummaryPath) as fileHandle:
         dictSummary = json.load(fileHandle)
     return {
         "bCanonical": sTag.endswith("_withsd"),
@@ -48,10 +67,9 @@ def fdictPackageOneFit(sTag):
     }
 
 
-def fdictPackageConversion():
+def fdictPackageConversion(sConversionFitPath):
     """Extract the MUSCLES conversion block for catalog consumers."""
-    with open(os.path.join(S_DIRECTORY, "musclesConversion",
-                           "conversionFit.json")) as fileHandle:
+    with open(sConversionFitPath) as fileHandle:
         dictFit = json.load(fileHandle)
     dictPrimary = dictFit["primary_fit_all_targets_rosat_band"]
     return {
@@ -66,16 +84,19 @@ def fdictPackageConversion():
 
 def main():
     """Assemble and save the catalog-ready posterior package."""
+    args = ftParseArguments()
     dictPackage = {
         "sDescription": "Joint hierarchical refit of the Engle & Guinan "
                         "(2023) and Engle (2024) M dwarf relations, with the "
                         "re-derived MUSCLES X-UV band conversion.",
         "sValidity": "M0-6.5 dwarfs only; no calibrated relation later than "
                      "M6.5.",
-        "dictConversionXuv": fdictPackageConversion(),
+        "dictConversionXuv": fdictPackageConversion(args.conversion_fit),
     }
     for sTag in SA_TAGS:
-        dictPackage[sTag] = fdictPackageOneFit(sTag)
+        dictPackage[sTag] = fdictPackageOneFit(
+            sTag, getattr(args, f"{sTag}_chain"),
+            getattr(args, f"{sTag}_summary"))
     sPath = os.path.join(S_DIRECTORY, "engleCoefficientPosteriors.json")
     with open(sPath, "w") as fileHandle:
         json.dump(dictPackage, fileHandle, indent=2)

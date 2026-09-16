@@ -12,18 +12,20 @@ published X-UV coefficients is band-consistent. Field stars are plotted at
 their posterior-median rotation ages (display only; the fit never uses
 tabulated ages for them).
 
-Usage: python plotEngleVsRefitEvolution.py <tag> [outputPath]
+Usage: python plotEngleVsRefitEvolution.py --tag midlate_withsd
+       --joint-chain jointChain_midlate_withsd.npy
+       --fit-summary jointFitSummary_midlate_withsd.json
+       --joint-sample <path> --conversion-fit <path> --output <figure path>
 """
 
+import argparse
 import json
 import os
-import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
 import vplot  # noqa: F401  (applies the project figure style on import)
 
-S_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 I_CURVE_DRAWS = 2000
 
 DICT_PUBLISHED_XUV = {
@@ -48,18 +50,14 @@ def fdaHingeRows(daRows, daX):
     return daGrid + daRows[:, 2:3] * np.clip(daX - daRows[:, 3:4], 0.0, None)
 
 
-def ftLoadInputs(sTag):
+def ftLoadInputs(args):
     """Load the chain, fit summary, sample records, and MUSCLES conversion."""
-    daChain = np.load(os.path.join(S_DIRECTORY, f"jointChain_{sTag}.npy"))
-    with open(os.path.join(S_DIRECTORY,
-                           f"jointFitSummary_{sTag}.json")) as fileHandle:
+    daChain = np.load(args.joint_chain)
+    with open(args.fit_summary) as fileHandle:
         dictSummary = json.load(fileHandle)
-    sSampleFile = ("jointSampleMidLate.json" if sTag.startswith("midlate")
-                   else "jointSampleEarly.json")
-    with open(os.path.join(S_DIRECTORY, sSampleFile)) as fileHandle:
+    with open(args.joint_sample) as fileHandle:
         listRecords = json.load(fileHandle)
-    with open(os.path.join(S_DIRECTORY, "musclesConversion",
-                           "conversionFit.json")) as fileHandle:
+    with open(args.conversion_fit) as fileHandle:
         dictPrimary = json.load(fileHandle)["primary_fit_all_targets_rosat_band"]
     dictConversion = {"dSlope": dictPrimary["slope"],
                       "dIntercept": dictPrimary["intercept"],
@@ -188,14 +186,32 @@ def fdDisplayAge(dictRecord, daMedianRotation):
                           np.array([dictRecord["dictRotation"]["dProtDays"]]))[0])
 
 
+def ftParseArguments():
+    """Parse and return command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Compare the published Engle relations with the refit.")
+    parser.add_argument("--tag", required=True,
+                        help="Fit variant tag, e.g. midlate_withsd.")
+    parser.add_argument("--joint-chain", required=True,
+                        help="Path to the flattened hyperparameter chain.")
+    parser.add_argument("--fit-summary", required=True,
+                        help="Path to the fit summary JSON.")
+    parser.add_argument("--joint-sample", required=True,
+                        help="Path to the fit-ready joint sample JSON.")
+    parser.add_argument("--conversion-fit", required=True,
+                        help="Path to the MUSCLES conversionFit.json.")
+    parser.add_argument("--output", required=True,
+                        help="Output figure path.")
+    return parser.parse_args()
+
+
 def main():
     """Render the two-panel Engle-vs-refit comparison for one fit variant."""
     np.random.seed(7)
-    sTag = sys.argv[1]
-    sOutputPath = sys.argv[2] if len(sys.argv) > 2 else os.path.join(
-        S_DIRECTORY, "Plot", f"EngleVsRefit_{sTag}.pdf")
-    daChain, dictSummary, listRecords, dictConversion = ftLoadInputs(sTag)
-    os.makedirs(os.path.dirname(sOutputPath), exist_ok=True)
+    args = ftParseArguments()
+    sTag = args.tag
+    daChain, dictSummary, listRecords, dictConversion = ftLoadInputs(args)
+    os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
     figure, (axisLeft, axisRight) = plt.subplots(1, 2, figsize=(11, 4.5))
     fnPlotRotationPanel(axisLeft, daChain, dictSummary, listRecords, sTag)
     fnPlotXuvPanel(axisRight, daChain, dictSummary, listRecords,
@@ -203,8 +219,8 @@ def main():
     figure.suptitle(f"Engle relations: published vs joint refit ({sTag})",
                     fontsize=12)
     figure.tight_layout()
-    figure.savefig(sOutputPath, bbox_inches="tight")
-    print(f"Saved {sOutputPath}")
+    figure.savefig(args.output, bbox_inches="tight")
+    print(f"Saved {args.output}")
 
 
 if __name__ == "__main__":

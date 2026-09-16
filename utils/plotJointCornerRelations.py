@@ -9,19 +9,18 @@ physical blocks keeps each figure legible; the cross-block correlations are
 weak by construction (the relations couple only through the latent field-star
 ages).
 
-Usage: python plotJointCornerRelations.py <tag> [outputDirectory] [figureType]
-       e.g. python plotJointCornerRelations.py midlate_nosd ../Plot pdf
+Usage: python plotJointCornerRelations.py --tag midlate_nosd
+       --joint-chain jointChain_midlate_nosd.npy
+       --output-directory Plot --figure-type pdf
 """
 
+import argparse
 import os
-import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
 import corner
 import vplot  # noqa: F401  (applies the project figure style on import)
-
-S_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 SA_ROTATION_LABELS = [r"$a_{\rm rot}$", r"$b_{\rm rot}$", r"$c_{\rm rot}$",
                       r"$d_{\rm rot}$ [d]", r"$e_{\rm rot}$", r"$f_{\rm rot}$"]
@@ -29,9 +28,19 @@ SA_ACTIVITY_LABELS = [r"$a_{\rm act}$", r"$b_{\rm act}$", r"$c_{\rm act}$",
                       r"$d_{\rm act}$", r"$e_{\rm act}$", r"$f_{\rm act}$"]
 
 
-def fdaLoadHyperChain(sTag):
-    """Load the flattened hyperparameter chain for one fit variant."""
-    return np.load(os.path.join(S_DIRECTORY, f"jointChain_{sTag}.npy"))
+def ftParseArguments():
+    """Parse and return command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Corner plots of the joint hierarchical refit posteriors.")
+    parser.add_argument("--tag", required=True,
+                        help="Fit variant tag, e.g. midlate_withsd.")
+    parser.add_argument("--joint-chain", required=True,
+                        help="Path to the flattened hyperparameter chain.")
+    parser.add_argument("--output-directory", default="Plot",
+                        help="Directory receiving the two corner figures.")
+    parser.add_argument("--figure-type", default="pdf",
+                        help="Figure file extension, e.g. pdf or png.")
+    return parser.parse_args()
 
 
 def fnRenderCorner(daBlock, saLabels, sTitle, sOutputPath):
@@ -47,20 +56,19 @@ def fnRenderCorner(daBlock, saLabels, sTitle, sOutputPath):
 
 def main():
     """Render the rotation and activity corner figures for one fit variant."""
-    sTag = sys.argv[1]
-    sOutputDirectory = sys.argv[2] if len(sys.argv) > 2 else \
-        os.path.join(S_DIRECTORY, "Plot")
-    sFigureType = sys.argv[3] if len(sys.argv) > 3 else "pdf"
-    os.makedirs(sOutputDirectory, exist_ok=True)
-    daChain = fdaLoadHyperChain(sTag)
+    args = ftParseArguments()
+    os.makedirs(args.output_directory, exist_ok=True)
+    daChain = np.load(args.joint_chain)
     fnRenderCorner(daChain[:, 0:6], SA_ROTATION_LABELS,
-                   f"Rotation-age relation ({sTag})",
-                   os.path.join(sOutputDirectory,
-                                f"CornerJointRotation_{sTag}.{sFigureType}"))
+                   f"Rotation-age relation ({args.tag})",
+                   os.path.join(args.output_directory,
+                                f"CornerJointRotation_{args.tag}"
+                                f".{args.figure_type}"))
     fnRenderCorner(daChain[:, 6:12], SA_ACTIVITY_LABELS,
-                   f"Activity-age relation ({sTag})",
-                   os.path.join(sOutputDirectory,
-                                f"CornerJointActivity_{sTag}.{sFigureType}"))
+                   f"Activity-age relation ({args.tag})",
+                   os.path.join(args.output_directory,
+                                f"CornerJointActivity_{args.tag}"
+                                f".{args.figure_type}"))
 
 
 if __name__ == "__main__":
