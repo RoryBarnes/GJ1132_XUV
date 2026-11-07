@@ -119,7 +119,7 @@ def main():
         dictSummary = json.load(fileHandle)
     with open(args.conversion_fit) as fileHandle:
         dictConversion = json.load(
-            fileHandle)["primary_fit_all_targets_rosat_band"]
+            fileHandle)["adopted_fit"]
     daObserved = ftSampleObservedActivity(len(daTau))
     iCount = min(len(daObserved), len(daTau))
     daMean, daSigma = ftPredictActivity(daTau[:iCount], daChain, dictSummary)

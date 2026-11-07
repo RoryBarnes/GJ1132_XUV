@@ -71,7 +71,7 @@ def fdictPackageConversion(sConversionFitPath):
     """Extract the MUSCLES conversion block for catalog consumers."""
     with open(sConversionFitPath) as fileHandle:
         dictFit = json.load(fileHandle)
-    dictPrimary = dictFit["primary_fit_all_targets_rosat_band"]
+    dictPrimary = dictFit["adopted_fit"]
     return {
         "sRelation": dictFit["relation"],
         "dSlope": dictPrimary["slope"],

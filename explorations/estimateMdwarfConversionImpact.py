@@ -32,8 +32,8 @@ D_TAU_PRESENT = 0.8533
 D_TAU_REFERENCE = 0.85
 D_INITIAL_AGE_YEARS = 1.0e6
 D_SHORELINE_FLUX = 51.43
-DICT_CONVERSIONS = {"allStars": "primary_fit_all_targets_rosat_band",
-                    "mDwarfsOnly": "alternate_fit_m_dwarfs_only"}
+DICT_CONVERSIONS = {"allStars": "alternate_fit_all_targets_rosat_band",
+                    "mDwarfsOnly": "adopted_fit"}
 
 
 def ftParseArguments():

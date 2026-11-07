@@ -58,7 +58,7 @@ def ftLoadInputs(args):
     with open(args.joint_sample) as fileHandle:
         listRecords = json.load(fileHandle)
     with open(args.conversion_fit) as fileHandle:
-        dictPrimary = json.load(fileHandle)["primary_fit_all_targets_rosat_band"]
+        dictPrimary = json.load(fileHandle)["adopted_fit"]
     dictConversion = {"dSlope": dictPrimary["slope"],
                       "dIntercept": dictPrimary["intercept"],
                       "daCovariance": dictPrimary["covariance_slope_intercept"]}

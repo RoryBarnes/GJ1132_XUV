@@ -18,15 +18,16 @@ Documented judgment calls (the paper text is silent on all of these):
    paper's submission (2023 October): the 11 MUSCLES Treasury stars (7 M
    dwarfs and the 4 K dwarfs eps Eri, HD 40307, HD 85512, HD 97658), plus
    Proxima Centauri (GJ 551, distributed as a v22 MUSCLES product), plus
-   the 12 Mega-MUSCLES M dwarfs. Although Engle's relation is applied to
-   M0-M6.5 dwarfs, restricting the fit to the 20 M dwarfs gives
-   slope/intercept of 0.652/-0.650 (1.35/1.37 of Engle's quoted sigmas
-   away), while the full 24-star sample gives 0.597/-0.890 (0.42/0.55
-   sigma away); the coefficient match indicates Engle fit the conversion
-   to the complete MUSCLES + Mega-MUSCLES sample, so the 24-star fit is
-   reported as primary and the M-dwarf-only fit as an alternate. The v24
-   "MUSCLES Extension" (mostly FGK transiting-planet hosts, released days
-   before submission) is excluded.
+   the 12 Mega-MUSCLES M dwarfs. The full 24-star sample gives
+   slope/intercept of 0.597/-0.890 (0.42/0.55 of Engle's quoted sigmas
+   away), which suggests Engle fit the complete MUSCLES + Mega-MUSCLES
+   sample, while the 20 M dwarfs alone give 0.652/-0.650 (1.35/1.37 sigma
+   away). By project decision (2026-11-07) the M-dwarf-only fit is ADOPTED
+   and written as "adopted_fit", the key every downstream step reads,
+   because the relation is applied to an M dwarf (GJ 1132) and the K dwarfs
+   flatten the slope at low activity; the 24-star fit is kept as an
+   alternate. The v24 "MUSCLES Extension" (mostly FGK transiting-planet
+   hosts, released days before submission) is excluded.
 2. SED product: the "adapt-const-res-sed" panchromatic SEDs (1 A bins,
    adaptively downsampled to avoid negative fluxes), which are the
    recommended integration products.
@@ -38,9 +39,10 @@ Documented judgment calls (the paper text is silent on all of these):
    log10(L_X/L_bol) age relations are anchored to ROSAT-era soft X-ray
    fluxes. A 5-100 A alternative (the band above which the MUSCLES SEDs
    switch from APEC coronal models to Lya-scaled EUV estimates) is also
-   computed and reported as a sensitivity check; on the 24-star sample it
-   gives 0.517/-1.220, so the two candidate bands bracket Engle's
-   published coefficients from opposite sides.
+   computed on the adopted M-dwarf sample and reported as a sensitivity
+   check. (On the 24-star sample it gives 0.517/-1.220, so there the two
+   candidate bands bracket Engle's published coefficients from opposite
+   sides.)
 5. L_bol: taken from the SED products themselves via the BOLOFLUX column
    (flux density normalized by the bolometric flux, which includes a
    blackbody extension beyond 5.5 microns). Band integrals of BOLOFLUX are
@@ -57,7 +59,8 @@ Documented judgment calls (the paper text is silent on all of these):
    credible interval is drawn.
 7. L 980-5: its SED X-ray segment is based on a Chandra non-detection upper
    limit (MUSCLES README); it is retained but flagged in the per-star
-   provenance, and the fit is repeated without it as a robustness check.
+   provenance, and the M-dwarf fit is repeated without it as a robustness
+   check.
 
 Outputs (written next to this script):
     seds/                  cached MUSCLES SED FITS files
@@ -295,39 +298,49 @@ def fnWriteJson(sFileName, dictPayload):
     print("Wrote {}".format(sPathOutput))
 
 
+def fdaExtractColumn(listPerStar, sKey):
+    return numpy.array([dictStar[sKey] for dictStar in listPerStar])
+
+
 def fdictBuildConversionReport(listPerStar):
-    daAbscissa = numpy.array([dictStar["log_lx_lbol"] for dictStar in listPerStar])
-    daOrdinate = numpy.array([dictStar["log_lxuv_lbol"] for dictStar in listPerStar])
-    daAbscissaAlternate = numpy.array([dictStar["log_lx_lbol_alternate_5_100"] for dictStar in listPerStar])
-    baOnlyMDwarfs = numpy.array([dictStar["spectral_class_group"] == "M" for dictStar in listPerStar])
-    baKeepDetections = numpy.array([dictStar["star"] != "L 980-5" for dictStar in listPerStar])
-    dictFitPrimary = fdictSummarizeLineFit(daAbscissa, daOrdinate)
+    """Fit the adopted M-dwarf sample, its sensitivity checks, and the all-star alternate."""
+    daAbscissa = fdaExtractColumn(listPerStar, "log_lx_lbol")
+    daOrdinate = fdaExtractColumn(listPerStar, "log_lxuv_lbol")
+    daAbscissaAlternate = fdaExtractColumn(listPerStar, "log_lx_lbol_alternate_5_100")
+    baOnlyMDwarfs = fdaExtractColumn(listPerStar, "spectral_class_group") == "M"
+    baMDwarfDetections = baOnlyMDwarfs & (fdaExtractColumn(listPerStar, "star") != "L 980-5")
+    dictFitAdopted = fdictSummarizeLineFit(daAbscissa[baOnlyMDwarfs], daOrdinate[baOnlyMDwarfs])
+    dictFitAllTargets = fdictSummarizeLineFit(daAbscissa, daOrdinate)
     return {
         "relation": "log10(L_XUV(5-1700A)/L_bol) = slope * log10(L_X/L_bol) + intercept",
-        "primary_fit_all_targets_rosat_band": dictFitPrimary,
-        "engle_comparison": fdictCompareToEngle(dictFitPrimary),
-        "alternate_fit_m_dwarfs_only": fdictSummarizeLineFit(daAbscissa[baOnlyMDwarfs], daOrdinate[baOnlyMDwarfs]),
-        "alternate_fit_lx_5_100_angstrom": fdictSummarizeLineFit(daAbscissaAlternate, daOrdinate),
-        "robustness_fit_without_l980_5_upper_limit": fdictSummarizeLineFit(
-            daAbscissa[baKeepDetections], daOrdinate[baKeepDetections]
-        ),
+        "adopted_sample": "M dwarfs only, ROSAT 0.1-2.4 keV band",
+        "adopted_fit": dictFitAdopted,
+        "engle_comparison": fdictCompareToEngle(dictFitAdopted),
+        "alternate_fit_all_targets_rosat_band": dictFitAllTargets,
+        "engle_comparison_all_targets": fdictCompareToEngle(dictFitAllTargets),
+        "alternate_fit_m_dwarfs_lx_5_100_angstrom": fdictSummarizeLineFit(
+            daAbscissaAlternate[baOnlyMDwarfs], daOrdinate[baOnlyMDwarfs]),
+        "robustness_fit_m_dwarfs_without_l980_5_upper_limit": fdictSummarizeLineFit(
+            daAbscissa[baMDwarfDetections], daOrdinate[baMDwarfDetections]),
         "method_notes": fsSummarizeMethodNotes(),
     }
 
 
 def fsSummarizeMethodNotes():
     return (
-        "Unweighted ordinary least squares on 24 targets (MUSCLES v22 including "
-        "Proxima Cen and the 4 K dwarfs, Mega-MUSCLES v25); parameter covariance "
-        "uses sigma^2 = RSS/(N-2). Intrinsic scatter follows the Kelly (2007, ApJ "
-        "665, 1489) likelihood with negligible measurement errors: per-star "
-        "variance is a single constant sigma^2, whose posterior under a Jeffreys "
-        "prior is InverseGamma((N-2)/2, RSS/2). L_X band is ROSAT 0.1-2.4 keV "
-        "(5.17-124 A); a 5-100 A alternative and an M-dwarf-only fit are included "
-        "as alternates. All ratios come from the SED BOLOFLUX column, so distances "
-        "cancel. Engle used the superseded Mega-MUSCLES v23 release, which MAST no "
-        "longer distributes; see module docstring for all documented judgment "
-        "calls."
+        "Adopted fit: unweighted ordinary least squares on the 20 M dwarfs "
+        "(MUSCLES v22 including Proxima Cen, Mega-MUSCLES v25); the 24-target fit "
+        "that adds the 4 MUSCLES K dwarfs is kept as an alternate. Parameter "
+        "covariance uses sigma^2 = RSS/(N-2). Intrinsic scatter follows the Kelly "
+        "(2007, ApJ 665, 1489) likelihood with negligible measurement errors: "
+        "per-star variance is a single constant sigma^2, whose posterior under a "
+        "Jeffreys prior is InverseGamma((N-2)/2, RSS/2). L_X band is ROSAT "
+        "0.1-2.4 keV (5.17-124 A); a 5-100 A alternative and a fit without the "
+        "L 980-5 X-ray upper limit are computed on the M-dwarf sample as "
+        "sensitivity checks. All ratios come from the SED BOLOFLUX column, so "
+        "distances cancel. Engle used the superseded Mega-MUSCLES v23 release, "
+        "which MAST no longer distributes; see module docstring for all "
+        "documented judgment calls."
     )
 
 
@@ -336,8 +349,8 @@ def main():
     fnWriteJson("perStarBandFluxes.json", {"stars": listPerStar})
     dictReport = fdictBuildConversionReport(listPerStar)
     fnWriteJson("conversionFit.json", dictReport)
-    dictPrimary = dictReport["primary_fit_all_targets_rosat_band"]
-    print("slope     = {:.4f} +/- {:.4f}".format(dictPrimary["slope"], dictPrimary["slope_error"]))
+    dictPrimary = dictReport["adopted_fit"]
+    print("slope    = {:.4f} +/- {:.4f}".format(dictPrimary["slope"], dictPrimary["slope_error"]))
     print("intercept = {:.4f} +/- {:.4f}".format(dictPrimary["intercept"], dictPrimary["intercept_error"]))
     print("corr(slope, intercept) = {:.4f}".format(dictPrimary["slope_intercept_correlation"]))
     print("intrinsic scatter (median [68%]) = {:.4f} [{:.4f}, {:.4f}] dex".format(

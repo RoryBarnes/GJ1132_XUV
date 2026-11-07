@@ -25,10 +25,10 @@ import numpy as np
 
 
 def fdictLoadConversion(sConversionFitPath):
-    """Load the primary MUSCLES conversion block."""
+    """Load the adopted MUSCLES conversion block."""
     with open(sConversionFitPath) as fileHandle:
         dictFit = json.load(fileHandle)
-    return dictFit["primary_fit_all_targets_rosat_band"]
+    return dictFit["adopted_fit"]
 
 
 def fdaDrawZ(sZMode, iRows, sZOffsetsPath):

@@ -4,13 +4,14 @@ Plot the MUSCLES X-ray to XUV band conversion for two stellar samples.
 
 Each marker is one star's log10(L_XUV/L_bol) against log10(L_X/L_bol), both
 integrated from its MUSCLES or Mega-MUSCLES SED. The solid lines are unweighted
-fits to all stars and to the M dwarfs alone. Each band is the 1-sigma
+fits to the M dwarfs alone (adopted; the fit downstream steps use) and to all
+stars including the four K dwarfs (alternate). Each band is the 1-sigma
 uncertainty on the mean relation, propagated from the slope-intercept
 covariance. The dashed line is the relation published by Engle (2024, ApJ 960,
 62). Unweighted least squares assumes every star shares one unknown
 uncertainty in log10(L_XUV/L_bol), estimated from the residuals as
 sqrt(RSS/(N-2)) (Hogg, Bovy & Lang 2010, arXiv:1008.4686, Section 7); the
-uniform vertical error bars show that estimate for the all-star fit. It is a
+uniform vertical error bars show that estimate for the adopted fit. It is a
 total per-star scatter, not a measurement error, and the fit treats
 log10(L_X/L_bol) as exact.
 
@@ -36,10 +37,10 @@ I_GRID_POINTS = 200
 S_COLOR_ENGLE = "black"
 S_COLOR_TARGET = vplot.colors.red
 LIST_FIT_STYLES = [
-    {"sKey": "primary_fit_all_targets_rosat_band", "sName": "All stars",
-     "sColor": vplot.colors.dark_blue},
-    {"sKey": "alternate_fit_m_dwarfs_only", "sName": "M dwarfs only",
+    {"sKey": "adopted_fit", "sName": "M dwarfs only, adopted",
      "sColor": vplot.colors.purple},
+    {"sKey": "alternate_fit_all_targets_rosat_band", "sName": "All stars",
+     "sColor": vplot.colors.dark_blue},
 ]
 DICT_CLASS_STYLES = {
     "M": {"sMarker": "o", "sColor": vplot.colors.pale_blue, "sLabel": "M dwarfs"},
@@ -106,7 +107,7 @@ def fnPlotUniformErrorBars(axis, listStars, tSigmas):
                   [dictStar["log_lxuv_lbol"] for dictStar in listStars],
                   yerr=tSigmas[0], fmt="none", ecolor="0.55", elinewidth=1.0,
                   zorder=3, label=(fr"uniform $\pm${tSigmas[0]:.3f} dex "
-                                   fr"(M-dwarf fit: $\pm${tSigmas[1]:.3f})"))
+                                   fr"(all-star fit: $\pm${tSigmas[1]:.3f})"))
 
 
 def fnPlotStars(axis, listStars):

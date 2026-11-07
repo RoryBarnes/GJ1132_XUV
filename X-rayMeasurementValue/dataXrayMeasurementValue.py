@@ -309,7 +309,7 @@ def main():
         dictSummary = json.load(fileHandle)
     with open(args.conversion_fit) as fileHandle:
         dictConversion = json.load(
-            fileHandle)["primary_fit_all_targets_rosat_band"]
+            fileHandle)["adopted_fit"]
     daInformed = np.loadtxt(args.z_offsets)
     daSweepFlux = daExtractFluxValues(fdictLoadConvergedJson(
         args.converged_flux))
