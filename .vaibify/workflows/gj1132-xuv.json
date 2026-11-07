@@ -277,8 +277,12 @@
       "saTestCommands": [
         "pytest tests/test_conversion_integrity.py"
       ],
-      "saPlotCommands": [],
-      "saPlotFiles": [],
+      "saPlotCommands": [
+        "python plotMusclesConversion.py {sPlotDirectory}/MusclesConversion.{sFigureType}"
+      ],
+      "saPlotFiles": [
+        "{sPlotDirectory}/MusclesConversion.{sFigureType}"
+      ],
       "dictTests": {
         "dictQualitative": {
           "sFilePath": "",
@@ -309,7 +313,8 @@
       ],
       "saInputDataFiles": [],
       "bNoInputData": false,
-      "listRemoteData": []
+      "listRemoteData": [],
+      "sDescription": "PURPOSE. Engle (2024, ApJ 960, 62; arXiv:2310.04302v2) converts X-ray activity, log10(L_X/L_bol), into X-ray-to-ultraviolet activity, log10(L_XUV/L_bol) over 5-1700 A, with the published relation log10(L_XUV/L_bol) = 0.5728 [0.0589] * log10(L_X/L_bol) - 1.0509 [0.2921]. The paper says only that MUSCLES and Mega-MUSCLES spectral energy distributions (SEDs) from MAST were integrated over 5-1700 A. It publishes no star list, per-star values, L_X band or source, L_bol source, fitting method, slope-intercept covariance, or intrinsic scatter. Propagating this conversion's uncertainty into GJ 1132 b's XUV history requires the full covariance and the scatter, so this step reconstructs the fit from the public SEDs to supply them. The step's products are the uncertainty model of the conversion; the comparison with Engle's coefficients is a consistency check, not the goal.\n\nDATA. 24 MAST \"adapt-const-res-sed\" panchromatic SEDs (1 A bins, adaptively downsampled to avoid negative fluxes), cached in seds/: the 11 MUSCLES Treasury stars (7 M dwarfs plus the K dwarfs eps Eri, HD 40307, HD 85512 and HD 97658) and Proxima Centauri (GJ 551), all v22, plus the 12 Mega-MUSCLES M dwarfs at v25 (20 M dwarfs and 4 K dwarfs in total). Engle would have used the Mega-MUSCLES v23 release, which MAST no longer distributes, so star-level differences from his sample are expected. MUSCLES SEDs combine HST ultraviolet spectra with X-ray data or coronal models and Lyman-alpha-scaled EUV estimates, so they are not purely HST data. No paper tabulates the per-star inputs to Engle's fit: France et al. (2016) Table 3 lists broadband ratios for 11 stars but with no uncertainties, no L_X column, and a 5-911 A XUV band.\n\nBAND INTEGRATION. Each SED's BOLOFLUX column (flux density divided by the bolometric flux, including a blackbody extension beyond 5.5 microns) is integrated over each band with fractional overlap of edge bins, giving L_band/L_bol directly; distance cancels exactly. X-ray band: ROSAT 0.1-2.4 keV = 5.17-124.0 A, chosen because Engle's activity-age relations are anchored to ROSAT-era soft X-ray fluxes. XUV band: 5-1700 A. Engle does not say where his L_X came from; this step assumes it comes from the same SEDs. The X-ray band lies inside the XUV band, so the two axes are not fully independent.\n\nFIT AND COVARIANCE. Unweighted ordinary least squares of y = log10(L_XUV/L_bol) on x = log10(L_X/L_bol), with the intercept defined at x = 0 to match Engle's convention. Unweighted least squares assumes every star shares one unknown uncertainty in y and none in x. That uncertainty is estimated from the residuals as sigma^2 = RSS/(N-2), and the parameter covariance is sigma^2 (X^T X)^-1, where X has columns x and 1. No per-star measurement errors enter the fit: the SED BOLOERR column is incomplete in these bands (5-48% of the XUV flux of the v22 stars carries an error, and two stars have none in the X-ray band; see explorations/assessSedBandUncertainties.py). The slope-intercept correlation is about 0.989 because the intercept sits about 5 dex from the data mean (x_mean = -4.93). Expressed at x_mean (intercept_at_mean_abscissa), the intercept is uncorrelated with the slope. Downstream consumers must draw slope and intercept jointly from the bivariate normal, and they do (utils/englePriorTable.py, X-rayMeasurementValue).\n\nINTRINSIC SCATTER. Kelly (2007, ApJ 665, 1489) linear-regression likelihood in the limit of negligible measurement errors (see also Hogg, Bovy & Lang 2010, arXiv:1008.4686, Section 7): y ~ Normal(m x + b, sigma^2). Under a Jeffreys prior 1/sigma^2 the marginal posterior is sigma^2 ~ InverseGamma((N-2)/2, RSS/2). The step reports the maximum-likelihood value sqrt(RSS/N), the posterior median, and the 68% and 95% credible intervals. Downstream steps use the posterior median. Because measurement errors are not modelled, this is the total star-to-star scatter about the relation (intrinsic variation plus measurement error), not purely intrinsic.\n\nFIT VARIANTS (values at this writing; conversionFit.json is authoritative). Primary fit, all 24 stars, ROSAT band, the one used downstream: slope 0.597 +/- 0.065, intercept -0.890 +/- 0.324, scatter 0.240 dex (68%: 0.208-0.282), 0.42 and 0.55 of Engle's sigmas from his slope and intercept. M dwarfs only (N = 20): slope 0.652 +/- 0.075, intercept -0.650 +/- 0.364, scatter 0.247 dex, 1.35 and 1.37 sigma from Engle. Alternate X-ray band 5-100 A (where the SEDs switch from APEC coronal models to Lyman-alpha-scaled EUV): slope 0.517, intercept -1.220. Without L 980-5, whose X-ray segment rests on a Chandra non-detection: slope 0.598, intercept -0.889. HD 97658's X-ray segment is scaled from HD 85512 and is kept in every fit. The 24-star sample was preferred over the M-dwarf sample partly because its coefficients sit closer to Engle's, so that agreement is not independent validation of the reconstructed sample.\n\nOPEN QUESTION. GJ 1132 is an M dwarf, but the primary fit includes four K dwarfs, which flatten the slope. Whether downstream steps should adopt the M-dwarf-only fit is undecided. A screening estimate (explorations/estimateMdwarfConversionImpact.py, mDwarfConversionImpact.json) integrates the Engle hinge over the forward model's L_bol history with common random numbers: the M-dwarf fit raises the median cumulative XUV flux by about 14% with no host-star X-ray measurement and by about 10% with it, widens the spread from 0.425 to 0.456 dex, and leaves the fraction above the cosmic shoreline at about 99%.\n\nOUTPUTS. conversionFit.json: every fit variant with slope, intercept, errors, 2x2 covariance, correlation, scatter summaries, and the Engle comparison. perStarBandFluxes.json: per-star band ratios, SED file and URL, and provenance cautions. Plot/MusclesConversion: both fits, each with its 1-sigma mean-relation band propagated from the covariance; Engle's relation; and the 24 stars as filled symbols with uniform vertical error bars equal to the all-star fit's sqrt(RSS/(N-2)) = 0.236 dex (0.243 dex for the M-dwarf fit). These bars are the fit's implied per-star uncertainty, not measurements, so they cannot test the fit. Downstream consumers of conversionFit.json: A08 and A09 (refit comparison plots), A10 (coefficient package), A12 (activity consistency), A15-A18 (XUV and cumulative-flux sweeps via utils/englePriorTable.py), and A21 (variance budget and value of an X-ray measurement)."
     },
     {
       "sName": "Joint Sample Preparation",
@@ -726,8 +731,8 @@
         "pytest tests/test_integrity.py"
       ],
       "saDependencies": [
-        "{step:engle-age-distribution.maxlike_results}",
-        "{step:engle-hierarchical-refit.age_samples}"
+        "{step:maximum-likelihood.maxlike_results}",
+        "{step:engle-age-distribution.age_samples}"
       ],
       "bRunEnabled": true,
       "sStepId": "bayesian-posteriors",
@@ -848,9 +853,7 @@
         "pytest tests/test_quantitative.py",
         "pytest tests/test_integrity.py"
       ],
-      "saDependencies": [
-        "{step:kepler-ffd-corner.manual}"
-      ],
+      "saDependencies": [],
       "bRunEnabled": true,
       "sStepId": "cumulative-xuv-and-cosmic-shoreline",
       "saOutputDataFiles": [
@@ -1207,7 +1210,7 @@
     ],
     "sRelatedGithubUrl": "https://github.com/RoryBarnes/GJ1132_XUV"
   },
-  "iWorkflowSchemaVersion": 13,
+  "iWorkflowSchemaVersion": 14,
   "dictRemotes": {
     "overleaf": {
       "sProjectId": "68656ed576acad848ef2ee0c"
