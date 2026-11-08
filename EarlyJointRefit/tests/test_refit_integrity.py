@@ -23,17 +23,32 @@ def fdictLoadJson(sName):
 
 @pytest.mark.parametrize("sTag", SA_TAGS)
 def test_chain_converged_and_finite(sTag):
-    """HARD GATE: every fit variant converged (>= 50 tau) with finite draws."""
-    sChainPath = os.path.join(S_DIRECTORY, f"jointChain_{sTag}.npy")
-    assert os.path.exists(sChainPath), f"missing chain for {sTag}"
-    daChain = np.load(sChainPath)
-    assert daChain.ndim == 2 and daChain.shape[1] == 12
-    assert daChain.shape[0] > 1000
-    assert np.all(np.isfinite(daChain))
+    """HARD GATE: both chains exist and are finite; every emcee run reached
+    50 tau and split-R-hat < 1.01; the nested run returned a finite evidence."""
+    for sStem in ("jointChain", "jointChainEmcee"):
+        sChainPath = os.path.join(S_DIRECTORY, f"{sStem}_{sTag}.npy")
+        assert os.path.exists(sChainPath), f"missing {sStem} for {sTag}"
+        daChain = np.load(sChainPath)
+        assert daChain.ndim == 2 and daChain.shape[1] == 12
+        assert daChain.shape[0] > 1000
+        assert np.all(np.isfinite(daChain))
     dictSummary = fdictLoadJson(f"jointFitSummary_{sTag}.json")
-    assert dictSummary["bConverged"], \
-        f"{sTag}: chain shorter than 50 x autocorrelation time"
-    assert dictSummary["iSteps"] > 50 * dictSummary["dTauMax"]
+    assert np.isfinite(dictSummary["dictNested"]["dLogEvidence"])
+    dictEmcee = dictSummary["dictEmcee"]
+    assert dictEmcee["bConverged"], \
+        f"{sTag}: an emcee run is short of 50 tau or split-R-hat >= 1.01"
+    assert all(iSteps >= 50 * dTau for iSteps, dTau
+               in zip(dictEmcee["iaSteps"], dictEmcee["daTauSteps"]))
+
+
+@pytest.mark.parametrize("sTag", SA_TAGS)
+def test_independent_samplers_agree(sTag):
+    """HARD GATE: nested-sampling and emcee posterior means agree to within
+    0.3 nested-sampling standard deviations for every hyperparameter."""
+    daNested = np.load(os.path.join(S_DIRECTORY, f"jointChain_{sTag}.npy"))
+    daEmcee = np.load(os.path.join(S_DIRECTORY, f"jointChainEmcee_{sTag}.npy"))
+    daOffset = np.abs(np.mean(daNested, axis=0) - np.mean(daEmcee, axis=0))
+    assert np.all(daOffset < 0.3 * np.std(daNested, axis=0)), daOffset
 
 
 @pytest.mark.parametrize("sTag", SA_TAGS)

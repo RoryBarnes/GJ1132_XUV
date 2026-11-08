@@ -8,9 +8,15 @@ asymmetric age errors) calibrate the rotation relation, while the X-ray field
 stars enter with LATENT ages informed by their rotation periods through that
 same relation - so the gyrochronology-derived ages of the activity sample are
 modeled rather than double-counted (their tabulated ages are never used).
-Cluster-ensemble X-ray rows carry independent ages. Latent field-star and
-ensemble ages are marginalized by Gauss-Hermite quadrature so the sampled
-dimension stays near 50.
+Cluster-ensemble X-ray rows carry independent ages. EVERY latent age -
+benchmark, field-star and ensemble - is marginalized by Gauss-Hermite
+quadrature, so only the 12 hyperparameters are sampled. Sampling the 34
+benchmark latents jointly with the scatter (the centered parameterization)
+creates a funnel (Neal 2003, Ann. Stat. 31, 705) into which emcee walkers
+collapse from any start, underestimating the rotation scatter roughly
+tenfold; marginalizing removes it (Papaspiliopoulos, Roberts & Skold 2007,
+Stat. Sci. 22, 59). Each benchmark integral uses nodes centered on a
+Gaussian approximation to that star's latent-age posterior.
 
 Both relations are continuous two-segment hinges y = a x + b + c max(x-d, 0).
 Each carries a log-linear intrinsic-scatter law (Wallis-consistent split
@@ -28,8 +34,12 @@ Engle & Guinan (2023) calibrate the M2.5-6.5 young track on M2.5-3.5 stars
 only. Halo subdwarfs are included or excluded via --subdwarfs, giving the
 with/without sensitivity pair.
 
-Convergence is gated on the integrated autocorrelation time of the 12
-hyperparameters (chain length >= 50 tau; Foreman-Mackey et al. 2013).
+The posterior is sampled twice with independent algorithms (utils/
+sampleJointPosterior.py): dynesty nested sampling (Speagle 2020), whose chain
+is the step's primary product, and four emcee runs from dispersed starts,
+gated on 50 integrated autocorrelation times per run (Foreman-Mackey et al.
+2013) and split-R-hat (Gelman et al. 2013, BDA3, Section 11.4), as a
+cross-check.
 
 Usage: python dataRefitJointRelations.py --sample midlate --subdwarfs exclude
        --joint-sample jointSampleMidLate.json --output-directory .
@@ -40,15 +50,10 @@ import json
 import os
 
 import numpy as np
-import emcee
 
 I_HYPER_DIMENSIONS = 12
 I_QUADRATURE_NODES = 40
-I_WALKERS = 128
-I_THIN_BY = 20
-I_CHUNK_STORED = 200
-I_MAX_STORED = 10000
-D_CONVERGENCE_FACTOR = 50.0
+D_PROPOSAL_WIDENING = 1.5
 D_MIN_SCATTER = 1e-3
 D_MAX_SCATTER = 3.0
 
@@ -213,22 +218,29 @@ def fdictBuildData(sJointSamplePath, sSample, bIncludeSubdwarfs):
     return dictData
 
 
+def flistPriorSpecification(dictBounds):
+    """Return each hyperparameter's prior as (kind, location/low, scale/high).
+
+    The single definition both fdHyperLogPrior and the nested sampler's prior
+    transform read, so the two cannot drift apart.
+    """
+    return [("normal", 0.0, 0.1), ("normal", 0.0, 5.0), ("normal", 0.0, 0.1),
+            ("uniform", *dictBounds["tRotationBreakBounds"]),
+            ("normal", np.log(0.15), 1.5), ("normal", 0.0, 2.0),
+            ("normal", 0.0, 1.0), ("normal", -3.5, 2.0), ("normal", 0.0, 3.0),
+            ("uniform", *dictBounds["tActivityBreakBounds"]),
+            ("normal", np.log(0.30), 1.5), ("normal", 0.0, 2.0)]
+
+
 def fdHyperLogPrior(daTheta, dictBounds):
-    """Weakly-informative prior over the 12 hyperparameters."""
-    daCr, daCx = daTheta[0:4], daTheta[6:10]
-    dEr, dFr, dEx, dFx = daTheta[4], daTheta[5], daTheta[10], daTheta[11]
-    if not (dictBounds["tRotationBreakBounds"][0] < daCr[3]
-            < dictBounds["tRotationBreakBounds"][1]):
-        return -np.inf
-    if not (dictBounds["tActivityBreakBounds"][0] < daCx[3]
-            < dictBounds["tActivityBreakBounds"][1]):
-        return -np.inf
-    dLogPrior = -0.5 * ((daCr[0] / 0.1) ** 2 + (daCr[1] / 5.0) ** 2
-                        + (daCr[2] / 0.1) ** 2)
-    dLogPrior += -0.5 * ((daCx[0] / 1.0) ** 2 + ((daCx[1] + 3.5) / 2.0) ** 2
-                         + (daCx[2] / 3.0) ** 2)
-    dLogPrior += -0.5 * (((dEr - np.log(0.15)) / 1.5) ** 2 + (dFr / 2.0) ** 2)
-    dLogPrior += -0.5 * (((dEx - np.log(0.30)) / 1.5) ** 2 + (dFx / 2.0) ** 2)
+    """Weakly-informative prior over the 12 hyperparameters (unnormalized)."""
+    dLogPrior = 0.0
+    for dValue, (sKind, dFirst, dSecond) in zip(
+            daTheta, flistPriorSpecification(dictBounds)):
+        if sKind == "uniform" and not dFirst < dValue < dSecond:
+            return -np.inf
+        if sKind == "normal":
+            dLogPrior += -0.5 * ((dValue - dFirst) / dSecond) ** 2
     return dLogPrior
 
 
@@ -259,135 +271,121 @@ def fdaQuadratureActivityLogLike(daMu, daSpread, daY, daYErr, daCx, dEx, dFx,
     return daMax + np.log(np.sum(np.exp(daTerms - daMax[:, None]), axis=1))
 
 
-def fdBenchmarkLogLike(daTheta, dictData):
-    """Rotation-relation likelihood of the benchmarks with latent ages."""
-    daCr, dEr, dFr = daTheta[0:4], daTheta[4], daTheta[5]
-    daLatent = daTheta[I_HYPER_DIMENSIONS:]
+def ftBenchmarkLatentPrior(daTheta, dictData):
+    """Return each benchmark's latent log-age prior mean and spread, or None."""
     dictBench = dictData["dictBench"]
-    daSpread = fdaLatentAgeSpread(daCr, dEr, dFr, dictBench["daProt"],
-                                  dictBench["daSigProt"], dictData)
+    daSpread = fdaLatentAgeSpread(daTheta[0:4], daTheta[4], daTheta[5],
+                                  dictBench["daProt"], dictBench["daSigProt"],
+                                  dictData)
     if daSpread is None:
-        return -np.inf
-    daMu = fdaHinge(daCr, dictBench["daProt"])
-    dLogLike = np.sum(-0.5 * ((daLatent - daMu) / daSpread) ** 2
-                      - np.log(daSpread))
-    dLogLike += np.sum(fdaSplitNormalLogPdf(
-        dictBench["daTauObs"], daLatent,
-        dictBench["daSigPlus"], dictBench["daSigMinus"]))
-    return dLogLike
+        return None
+    return fdaHinge(daTheta[0:4], dictBench["daProt"]), daSpread
 
 
-def fdBenchmarkXrayLogLike(daTheta, dictData):
-    """Activity likelihood of benchmarks that also carry X-ray data."""
-    daCx, dEx, dFx = daTheta[6:10], daTheta[10], daTheta[11]
+def fdaBenchmarkLogIntegrand(daTau, iStar, daTheta, dictData, tLatentPrior):
+    """Log of latent-age prior x age likelihood x optional X-ray likelihood."""
     dictBench = dictData["dictBench"]
-    baMask = dictBench["baHasXray"]
-    if not np.any(baMask):
-        return 0.0
-    daLatent = daTheta[I_HYPER_DIMENSIONS:][baMask]
-    daScatter = fdaScatterLaw(dEx, dFx, daLatent, dictData["dPivotTau"],
-                              dictData["dScaleTau"])
-    if np.any(daScatter > D_MAX_SCATTER):
-        return -np.inf
-    daVariance = dictBench["daYErr"][baMask] ** 2 + daScatter ** 2
-    daResidual = dictBench["daY"][baMask] - fdaHinge(daCx, daLatent)
-    return float(np.sum(-0.5 * daResidual ** 2 / daVariance
-                        - 0.5 * np.log(2.0 * np.pi * daVariance)))
+    daMu, daSpread = tLatentPrior
+    daLog = (-0.5 * ((daTau - daMu[iStar]) / daSpread[iStar]) ** 2
+             - np.log(daSpread[iStar] * np.sqrt(2.0 * np.pi)))
+    daLog = daLog + fdaSplitNormalLogPdf(
+        dictBench["daTauObs"][iStar], daTau,
+        dictBench["daSigPlus"][iStar], dictBench["daSigMinus"][iStar])
+    if dictBench["baHasXray"][iStar]:
+        daScatter = fdaScatterLaw(daTheta[10], daTheta[11], daTau,
+                                  dictData["dPivotTau"], dictData["dScaleTau"])
+        daVariance = dictBench["daYErr"][iStar] ** 2 + daScatter ** 2
+        daResidual = dictBench["daY"][iStar] - fdaHinge(daTheta[6:10], daTau)
+        daLog = daLog - 0.5 * (daResidual ** 2 / daVariance
+                               + np.log(2.0 * np.pi * daVariance))
+    return daLog
 
 
-def fdJointLogPosterior(daTheta, dictData, dictBounds):
-    """Full joint log-posterior over hyperparameters and benchmark latents."""
-    dLogPrior = fdHyperLogPrior(daTheta, dictBounds)
-    daLatent = daTheta[I_HYPER_DIMENSIONS:]
-    if not np.isfinite(dLogPrior) or np.any(daLatent < -2.0) \
-            or np.any(daLatent > 1.3):
+def ftLatentPosteriorApproximation(iStar, dictBench, tLatentPrior):
+    """Gaussian approximation (center, widened width) to one latent posterior."""
+    daMu, daSpread = tLatentPrior
+    dSigmaObserved = 0.5 * (dictBench["daSigPlus"][iStar]
+                            + dictBench["daSigMinus"][iStar])
+    dVariance = 1.0 / (1.0 / daSpread[iStar] ** 2 + 1.0 / dSigmaObserved ** 2)
+    dCenter = dVariance * (daMu[iStar] / daSpread[iStar] ** 2
+                           + dictBench["daTauObs"][iStar] / dSigmaObserved ** 2)
+    return dCenter, D_PROPOSAL_WIDENING * np.sqrt(dVariance)
+
+
+def fdLogBenchmarkIntegral(iStar, daTheta, dictData, tLatentPrior):
+    """Marginalize one benchmark's latent log-age by importance Gauss-Hermite."""
+    dCenter, dWidth = ftLatentPosteriorApproximation(
+        iStar, dictData["dictBench"], tLatentPrior)
+    daTau = dCenter + dWidth * DA_NODES
+    daTerms = (np.log(DA_WEIGHTS) + 0.5 * DA_NODES ** 2
+               + fdaBenchmarkLogIntegrand(daTau, iStar, daTheta, dictData,
+                                          tLatentPrior))
+    dMax = np.max(daTerms)
+    return float(np.log(dWidth) + dMax + np.log(np.sum(np.exp(daTerms - dMax))))
+
+
+def fdBenchmarkMarginalLogLike(daTheta, dictData):
+    """Benchmark likelihood with every latent true log-age marginalized."""
+    tLatentPrior = ftBenchmarkLatentPrior(daTheta, dictData)
+    if tLatentPrior is None:
         return -np.inf
-    dTotal = dLogPrior + fdBenchmarkLogLike(daTheta, dictData)
-    if not np.isfinite(dTotal):
-        return -np.inf
-    dTotal += fdBenchmarkXrayLogLike(daTheta, dictData)
-    dictField = dictData["dictField"]
+    return sum(fdLogBenchmarkIntegral(iStar, daTheta, dictData, tLatentPrior)
+               for iStar in range(dictData["iBenchmarks"]))
+
+
+def fdNonBenchmarkLogLike(daTheta, dictData):
+    """Field-star and cluster-ensemble activity likelihood by quadrature."""
+    dictField, dictEnsemble = dictData["dictField"], dictData["dictEnsemble"]
     daSpread = fdaLatentAgeSpread(daTheta[0:4], daTheta[4], daTheta[5],
                                   dictField["daProt"], dictField["daSigProt"],
                                   dictData)
     if daSpread is None:
         return -np.inf
-    daMu = fdaHinge(daTheta[0:4], dictField["daProt"])
     daFieldLike = fdaQuadratureActivityLogLike(
-        daMu, daSpread, dictField["daY"], dictField["daYErr"],
-        daTheta[6:10], daTheta[10], daTheta[11], dictData)
-    dictEnsemble = dictData["dictEnsemble"]
+        fdaHinge(daTheta[0:4], dictField["daProt"]), daSpread, dictField["daY"],
+        dictField["daYErr"], daTheta[6:10], daTheta[10], daTheta[11], dictData)
     daEnsembleLike = fdaQuadratureActivityLogLike(
         dictEnsemble["daTau"], dictEnsemble["daSigTau"], dictEnsemble["daY"],
         dictEnsemble["daYErr"], daTheta[6:10], daTheta[10], daTheta[11],
         dictData)
     if daFieldLike is None or daEnsembleLike is None:
         return -np.inf
-    return dTotal + np.sum(daFieldLike) + np.sum(daEnsembleLike)
+    return float(np.sum(daFieldLike) + np.sum(daEnsembleLike))
 
 
-def fdaInitialGuess(sSample, dictData):
-    """Return the initial parameter vector from the published coefficients."""
-    dictPub = DICT_PUBLISHED[sSample]
-    daActivity = dictPub["daActivityRatio"]
-    daHyper = np.concatenate([
-        dictPub["daRotation"], [np.log(0.15), 0.0],
-        daActivity, [np.log(0.30), 0.0]])
-    return np.concatenate([daHyper, dictData["dictBench"]["daTauObs"]])
+def fdLogLikelihood(daTheta, dictData):
+    """Full marginalized log-likelihood of the 12 hyperparameters."""
+    dBenchmark = fdBenchmarkMarginalLogLike(daTheta, dictData)
+    if not np.isfinite(dBenchmark):
+        return -np.inf
+    return dBenchmark + fdNonBenchmarkLogLike(daTheta, dictData)
 
 
-LIST_MOVES = [(emcee.moves.DEMove(), 0.8), (emcee.moves.DESnookerMove(), 0.2)]
+def fdJointLogPosterior(daTheta, dictData, dictBounds):
+    """Log-posterior of the 12 hyperparameters (latent ages marginalized)."""
+    dLogPrior = fdHyperLogPrior(daTheta, dictBounds)
+    if not np.isfinite(dLogPrior):
+        return -np.inf
+    dLogLikelihood = fdLogLikelihood(daTheta, dictData)
+    return dLogPrior + dLogLikelihood if np.isfinite(dLogLikelihood) else -np.inf
 
 
-def ftRunConvergedSampler(fdLogPosterior, daInitial, tArgs, iSeed):
-    """Run emcee (DE moves, thinned storage) until the 50-tau gate passes.
-
-    Storing every I_THIN_BY-th proposal bounds memory; the convergence
-    inequality is invariant under thinning. DE moves mix far better than the
-    stretch move in this correlated hierarchical space.
-    """
-    np.random.seed(iSeed)
-    iDimensions = len(daInitial)
-    daStart = daInitial + 1e-4 * np.random.randn(I_WALKERS, iDimensions)
-    sampler = emcee.EnsembleSampler(I_WALKERS, iDimensions, fdLogPosterior,
-                                    args=tArgs, moves=LIST_MOVES)
-    state, iStored, bConverged, dTauStored = daStart, 0, False, np.inf
-    while iStored < I_MAX_STORED and not bConverged:
-        state = sampler.run_mcmc(state, I_CHUNK_STORED, thin_by=I_THIN_BY,
-                                 progress=False)
-        iStored += I_CHUNK_STORED
-        dTauStored = float(np.max(
-            sampler.get_autocorr_time(tol=0)[:I_HYPER_DIMENSIONS]))
-        bConverged = iStored > D_CONVERGENCE_FACTOR * dTauStored
-        print(f"  proposals={iStored * I_THIN_BY} "
-              f"tau={dTauStored * I_THIN_BY:.0f} converged={bConverged}",
-              flush=True)
-    return sampler, iStored, bConverged, dTauStored
-
-
-def fdictSummarizeFit(sampler, iSteps, bConverged, dTauMax, dictData, sSample):
-    """Build the posterior summary dictionary for one fit variant."""
-    iDiscard = int(min(5 * dTauMax, iSteps // 2))
-    iThin = max(1, int(dTauMax / 2))
-    daFlat = sampler.get_chain(discard=iDiscard, thin=iThin, flat=True)
+def fdictSummarizeChain(daChain, dictData, sSample):
+    """Build the per-parameter posterior summary for one chain."""
     saNames = ["a_rot", "b_rot", "c_rot", "d_rot", "e_rot", "f_rot",
                "a_act", "b_act", "c_act", "d_act", "e_act", "f_act"]
-    dictSummary = {"sSample": sSample, "bConverged": bConverged,
-                   "iSteps": iSteps * I_THIN_BY,
-                   "dTauMax": dTauMax * I_THIN_BY,
-                   "iThinBy": I_THIN_BY,
-                   "iPosteriorDraws": int(daFlat.shape[0]),
+    dictSummary = {"sSample": sSample, "iPosteriorDraws": int(daChain.shape[0]),
                    "dPivotProt": dictData["dPivotProt"],
                    "dScaleProt": dictData["dScaleProt"],
                    "dPivotTau": dictData["dPivotTau"],
                    "dScaleTau": dictData["dScaleTau"]}
     for iIndex, sName in enumerate(saNames):
-        daColumn = daFlat[:, iIndex]
+        daColumn = daChain[:, iIndex]
         dictSummary[sName] = {"mean": float(np.mean(daColumn)),
                               "std": float(np.std(daColumn)),
                               "ci68": [float(np.percentile(daColumn, 16)),
                                        float(np.percentile(daColumn, 84))]}
-    return dictSummary, daFlat
+    return dictSummary
 
 
 def ftParseArguments():
@@ -405,8 +403,18 @@ def ftParseArguments():
     return parser.parse_args()
 
 
+def fnSaveProducts(sDirectory, sTag, daNested, daEmcee, dictSummary):
+    """Write the primary (nested) chain, the emcee chain, and the summary."""
+    np.save(os.path.join(sDirectory, f"jointChain_{sTag}.npy"), daNested)
+    np.save(os.path.join(sDirectory, f"jointChainEmcee_{sTag}.npy"), daEmcee)
+    with open(os.path.join(sDirectory, f"jointFitSummary_{sTag}.json"),
+              "w") as fileHandle:
+        json.dump(dictSummary, fileHandle, indent=2)
+
+
 def main():
-    """Run one fit variant end to end and persist its posterior products."""
+    """Run one fit variant with both samplers and persist the products."""
+    from sampleJointPosterior import fdictRunNestedSampler, fdictRunEmceeRuns
     args = ftParseArguments()
     bInclude = args.subdwarfs == "include"
     sTag = f"{args.sample}_{'withsd' if bInclude else 'nosd'}"
@@ -416,18 +424,14 @@ def main():
           f"ensembles={len(dictData['dictEnsemble']['daY'])}", flush=True)
     iSeed = {"midlate_withsd": 42, "midlate_nosd": 43,
              "early_withsd": 44, "early_nosd": 45}[sTag]
-    sampler, iSteps, bConverged, dTauMax = ftRunConvergedSampler(
-        fdJointLogPosterior, fdaInitialGuess(args.sample, dictData),
-        (dictData, DICT_PUBLISHED[args.sample]), iSeed)
-    dictSummary, daFlat = fdictSummarizeFit(
-        sampler, iSteps, bConverged, dTauMax, dictData, args.sample)
-    np.save(os.path.join(args.output_directory, f"jointChain_{sTag}.npy"),
-            daFlat[:, :I_HYPER_DIMENSIONS])
-    with open(os.path.join(args.output_directory,
-                           f"jointFitSummary_{sTag}.json"), "w") as fileHandle:
-        json.dump(dictSummary, fileHandle, indent=2)
-    print(f"[{sTag}] done: converged={bConverged} tau={dTauMax:.1f} "
-          f"draws={dictSummary['iPosteriorDraws']}", flush=True)
+    dictNested = fdictRunNestedSampler(dictData, args.sample, iSeed)
+    dictEmcee = fdictRunEmceeRuns(dictData, args.sample, iSeed)
+    daNested = dictNested.pop("daChain")
+    dictSummary = fdictSummarizeChain(daNested, dictData, args.sample)
+    dictSummary.update({"dictNested": dictNested, "dictEmcee": dictEmcee["dictDiagnostics"]})
+    print(f"[{sTag}] done: nested draws={dictSummary['iPosteriorDraws']} "
+          f"emcee converged={dictEmcee['dictDiagnostics']['bConverged']}", flush=True)
+    fnSaveProducts(args.output_directory, sTag, daNested, dictEmcee["daChain"], dictSummary)
 
 
 if __name__ == "__main__":

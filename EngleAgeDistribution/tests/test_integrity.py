@@ -34,3 +34,23 @@ def test_age_samples_no_nan():
                 except ValueError:
                     pass
 
+
+
+def test_independent_gaussian_age_samples_valid():
+    """The published-fit comparison ages exist, are finite, and respect the ceiling."""
+    sPath = os.path.join(_STEP_DIRECTORY, 'ageSamplesIndependentGaussian.txt')
+    assert os.path.isfile(sPath)
+    daAge = np.loadtxt(sPath)
+    assert len(daAge) >= 80000
+    assert np.all(np.isfinite(daAge))
+    assert np.all((daAge > 0) & (daAge <= 13.0e9 * (1 + 1e-9)))
+
+
+def test_emcee_cross_check_age_samples_valid():
+    """The emcee cross-check ages exist, are finite, and respect the ceiling."""
+    sPath = os.path.join(_STEP_DIRECTORY, 'ageSamplesEmcee.txt')
+    assert os.path.isfile(sPath)
+    daAge = np.loadtxt(sPath)
+    assert len(daAge) >= 1000
+    assert np.all(np.isfinite(daAge))
+    assert np.all((daAge > 0) & (daAge <= 13.0e9 * (1 + 1e-9)))
